@@ -1,0 +1,8 @@
+---
+applications:
+- name: act-api
+  random-route: true
+  memory: 2048M
+  env:
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
