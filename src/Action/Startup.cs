@@ -20,10 +20,13 @@ namespace Action
 {
     public class Startup
     {
+	    
+	    public static string RootPath { get; set; }
         public IConfigurationRoot Configuration { get; }
 
         public Startup(IHostingEnvironment env)
         {
+	        RootPath = env.ContentRootPath;
 	        var builder = new ConfigurationBuilder()
 		        .SetBasePath(env.ContentRootPath)
 		        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)

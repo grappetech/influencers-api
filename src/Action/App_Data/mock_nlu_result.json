@@ -1,3 +1,174 @@
 ﻿{
-  
+    "source":1,
+    "date":"2017-09-07",
+    "url":"http://revistaquem.globo.com/QUEM-News/noticia/2017/10/campea-do-bbb16-munik-nunes-se-casa-em-fortaleza.html",
+    "relations": [
+        {
+            "type": "participou_de",
+            "sentence": "Os doces e chocolates serão do La Maison Buffet e os bem casados serão Célia Bezerra.Um pedido da noiva foram  mini burguers e milk-shake para servir os convidados na recepção que está programada para ir até às 5h do dia seguinte.O som, para não desanimar os convidados, ficará por conta da DJ Bárbara Labre (The Voice Kids) e dos artistas locais Gustavo Serpa (que também tocará na igreja), Marcinho (que toca tradicionalmente no Colosso Lake Lounge), a dupla Kadu & Daniel e o cantor Felipão.Durante a festa, um palco flutuante, preparado especialmente para a ocasião pela Montagio Produções, os convidados vão poder registrar os melhores momentos em totem de fotos lembranças.",
+            "score": 0.723319,
+            "arguments": [
+                {
+                    "text": "DJ Bárbara",
+                    "entities": [
+                        {
+                            "type": "Cantores",
+                            "text": "DJ Bárbara",
+                            "disambiguation": {
+                                "subtype": [
+                                    "NONE"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "text": "The Voice Kids",
+                    "entities": [
+                        {
+                            "type": "Programa_De_TV",
+                            "text": "The Voice Kids",
+                            "disambiguation": {
+                                "subtype": [
+                                    "NONE"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "keywords": [
+        {
+            "text": "Pão Inox",
+            "relevance": 0.926102
+        },
+        {
+            "text": "Colosso Lake Lounge",
+            "relevance": 0.727121
+        }
+    ],
+    "entities": [
+        {
+            "type": "Data",
+            "text": "terça-feira (3",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        },
+        {
+            "type": "Marcas",
+            "text": "Zwilling J.A.",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        },
+        {
+            "type": "Cantores",
+            "text": "Daniel",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        },
+        {
+            "type": "Agencia",
+            "text": "Montagio Produções",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        },
+        {
+            "type": "Atriz",
+            "text": "Munik Nunes",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        },
+        {
+            "type": "Atriz",
+            "text": "Ela",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        },
+        {
+            "type": "Ator",
+            "text": "Colosso Lake Lounge",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        },
+        {
+            "type": "Cantores",
+            "text": "Solange Sahdo",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        },
+        {
+            "type": "Agencia",
+            "text": "La Maison Buffet",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        },
+        {
+            "type": "Cantores",
+            "text": "DJ Bárbara",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        },
+        {
+            "type": "Programa_De_TV",
+            "text": "The Voice Kids",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        },
+        {
+            "type": "Cantores",
+            "text": "dupla Kadu",
+            "disambiguation": {
+                "subtype": [
+                    "NONE"
+                ]
+            },
+            "count": 1
+        }
+    ]
 }

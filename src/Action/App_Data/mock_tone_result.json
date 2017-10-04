@@ -1,3 +1,142 @@
 ﻿{
-  
+    "document_tone": {
+        "tones": [
+            {
+                "score": 0.657108,
+                "tone_id": "joy",
+                "tone_name": "Alegria"
+            }
+        ]
+    },
+    "sentences_tone": [
+        {
+            "sentence_id": 0,
+            "text": "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
+            "tones": []
+        },
+        {
+            "sentence_id": 1,
+            "text": "The former BBB, winner of the BBB16, has officialized its relationship with the businessman Anderson Felício.RECOMENDADO PARA VOCÊCAMICADO.COM.BRQaca Dayton Stainless Steel Knife ... Daytona Stainless Steel Knife - Zwilling JA HenckelsR $ 89,90CLIQUE AQUICAMICADO.COM.BRFaca Stainless Steel Knife ... Stainless Steel Bread Knife 20cm -... R $ 48,93 AQUICAMICADO.COM.BRPack for Guarnecer In ... Knife for Stainless Steel Daytona - Zwilling JA..R $ 59,90CLICK AQUICAMICADO.",
+            "tones": [
+                {
+                    "score": 0.570627,
+                    "tone_id": "joy",
+                    "tone_name": "Alegria"
+                }
+            ]
+        },
+        {
+            "sentence_id": 2,
+            "text": "COM.BRFaca de Legumes Inox M ... Inox Motion Knife 18cm - Zwilling ... R $ 59,90 CLICK HERE TO READ MORE: Munik Nunes wedding will have 400 guests and buffets with lobsters and prawns With a wedding dress of laced income, Munik received about 400 guests at a wedding feast of those in the capital of Ceará.",
+            "tones": [
+                {
+                    "score": 0.699611,
+                    "tone_id": "joy",
+                    "tone_name": "Alegria"
+                }
+            ]
+        },
+        {
+            "sentence_id": 3,
+            "text": "She and Anderson have been together for just over a year.",
+            "tones": [
+                {
+                    "score": 0.562071,
+                    "tone_id": "joy",
+                    "tone_name": "Alegria"
+                },
+                {
+                    "score": 0.786991,
+                    "tone_id": "tentative",
+                    "tone_name": "Hesitante"
+                }
+            ]
+        },
+        {
+            "sentence_id": 4,
+            "text": "For the party, Munik chose the Colosso Lake Lounge, where the couple's first kiss took place and has an estimated rent of $ 20,000.",
+            "tones": [
+                {
+                    "score": 0.657229,
+                    "tone_id": "joy",
+                    "tone_name": "Alegria"
+                }
+            ]
+        },
+        {
+            "sentence_id": 5,
+            "text": "The dress, signed by Solange Sahdo, cost 40 thousand reais.",
+            "tones": []
+        },
+        {
+            "sentence_id": 6,
+            "text": "The menu was made by La Maison Buffet and had delicacies from the land of Ceará like lobsters and shrimps and gastronomic islands of sushi, ice cream and coffees.",
+            "tones": [
+                {
+                    "score": 0.67578,
+                    "tone_id": "joy",
+                    "tone_name": "Alegria"
+                }
+            ]
+        },
+        {
+            "sentence_id": 7,
+            "text": "The candy and chocolates will be from La Maison Buffet and the well-behaved will be Célia Bezerra.",
+            "tones": []
+        },
+        {
+            "sentence_id": 8,
+            "text": "A request from the bride were mini burguers and milkshakes to serve the guests at the reception which is scheduled to go until 5pm the next day.",
+            "tones": []
+        },
+        {
+            "sentence_id": 9,
+            "text": "not to discourage the guests, it will be by DJ Bárbara Labre (The Voice Kids) and local artists Gustavo Serpa (who will also play in the church), Marcinho (who plays traditionally in the Colosso Lake Lounge), the duo Kadu & Daniel and the singer During the party, a floating stage, specially prepared for the occasion by Montagio Productions, the guests will be able to record the best moments in photo totem souvenirs.",
+            "tones": [
+                {
+                    "score": 0.769618,
+                    "tone_id": "joy",
+                    "tone_name": "Alegria"
+                }
+            ]
+        },
+        {
+            "sentence_id": 10,
+            "text": "A sneaker machine will provide models for the guests to enjoy the party more comfortably.",
+            "tones": [
+                {
+                    "score": 0.533703,
+                    "tone_id": "joy",
+                    "tone_name": "Alegria"
+                }
+            ]
+        },
+        {
+            "sentence_id": 11,
+            "text": "After the ceremony, the bride and groom will embark for the paradisiac Cancun on their honeymoon.",
+            "tones": [
+                {
+                    "score": 0.650783,
+                    "tone_id": "joy",
+                    "tone_name": "Alegria"
+                }
+            ]
+        },
+        {
+            "sentence_id": 12,
+            "text": "Pure luxury!",
+            "tones": [
+                {
+                    "score": 0.773905,
+                    "tone_id": "joy",
+                    "tone_name": "Alegria"
+                },
+                {
+                    "score": 0.97759,
+                    "tone_id": "confident",
+                    "tone_name": "Confiante"
+                }
+            ]
+        }
+    ]
 }
