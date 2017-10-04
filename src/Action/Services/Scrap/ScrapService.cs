@@ -1,29 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Action.Models;
 using Action.Models.Scrap;
+using Action.Services.Scrap.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Action.Services.Scrap
 {
     public class ScrapService
     {
-        public static void ExecutarCrawler(Dictionary<string, KeyValuePair<string, string>> pFontes, ApplicationDbContext context)
+   
+        public void StartScraper()
         {
-            List<ScrapedPage> lLista = new List<ScrapedPage>();
-            foreach (var lItem in pFontes)
-                lLista.AddRange(ScrapPages(lItem.Key, lItem.Value.Key, lItem.Value.Value, 1, 2));
-
-            lLista.Where(x => x.Text.Length > 100).ToList().ForEach(x =>
+            using (var ctx = new ScrapperContext())
             {
-                context.ScrapedPages.Add(x);
-            });
-            context.SaveChanges();
-        }
-
-        private static IEnumerable<ScrapedPage> ScrapPages(string lItemKey, string valueKey, string valueValue, int i, int i1)
-        {
-            throw new NotImplementedException();
+                List<ScrapedPage> lLista = new List<ScrapedPage>();
+                foreach (ScrapSource lItem in ctx.ScrapSources.ToList())
+                {
+                    Scraper.ScrapedPageObject(lItem.Url, lItem.StarTag, lItem.EndTag, lItem.Dept, lItem.Limit)
+                        .Where(x => x.Text.Length > 100).ToList()
+                        .ForEach(x =>{
+                        x.ScrapSourceId = lItem.Id;
+                        ctx.Entry(x).State = EntityState.Added;
+                        ctx.SaveChanges();
+                    });
+                }
+            }
         }
     }
 }

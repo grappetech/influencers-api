@@ -101,31 +101,14 @@ namespace Action
 	        var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
 
 	        EnsureDatabaseCreated(dbContext);
-		    // StartScraper(dbContext);
+		    StartScraper();
 
 		}
 
-        private void EnsureDatabaseCreated(ApplicationDbContext dbContext)
-        {
-           // dbContext.Database.Migrate();
-        }
+        private void EnsureDatabaseCreated(ApplicationDbContext dbContext){}
 	    
-	    
-        
-	    private  void StartScraper(ApplicationDbContext dbContext)
+	    private  void StartScraper()
 	    {
-		    Dictionary<string, KeyValuePair<string, string>> lDicionario = new Dictionary<string, KeyValuePair<string, string>>()
-		    {
-			    //["http://caras.uol.com.br/"] = (new KeyValuePair<string, string>("article", "article")),//(["article"]=""),
-			    ["http://exame.abril.com.br/ultimas-noticias/"] = (new KeyValuePair<string, string>("article", "article")),
-			    ["http://www.infomoney.com.br/negocios/ultimas-noticias"] = (new KeyValuePair<string, string>("article", "article")),
-			    //["http://www.meioemensagem.com.br/"] = (new KeyValuePair<string, string>("article", "article")),//["article"] = "",
-			    ["http://veja.abril.com.br/economia/"] = (new KeyValuePair<string, string>("article", "article")),
-			    ["http://exame.abril.com.br/noticias-sobre/empresas/"] = (new KeyValuePair<string, string>("article", "article")),
-			    ["http://epocanegocios.globo.com/Empresa/index.html"] = (new KeyValuePair<string, string>("article", "article")),
-			    ["https://economia.uol.com.br/noticias/"] = (new KeyValuePair<string, string>("article", "article"))
-		    };
-
 		    MemoryStorage lMemoryStorage = new MemoryStorage();
 		    BackgroundJobServerOptions lOptions = new BackgroundJobServerOptions();
 
@@ -133,7 +116,7 @@ namespace Action
 		    {
 			    JobStorage.Current = new MemoryStorage();
 			    RecurringJob.AddOrUpdate(
-				    () => ScrapService.ExecutarCrawler(lDicionario, dbContext),
+				    () => new ScrapService().StartScraper(),
 				    Cron.MinuteInterval(60));
 		    }
 	    }

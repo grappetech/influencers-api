@@ -98,7 +98,7 @@ namespace Action.Services.Scrap
         /// Crawls a page.
         /// </summary>
         /// <param name="url">The url to crawl.</param>
-        private static void CrawlPage(string url, string pTagInicial, string pTagFinal, int pNivel, int pLimite, ref List<ScrapedPage> pPaginas)
+        private static void ScrapPage(string url, string pTagInicial, string pTagFinal, int pNivel, int pLimite, ref List<ScrapedPage> pPaginas)
         {
             if (!PageHasBeenCrawled(url))
             {
@@ -130,7 +130,7 @@ namespace Action.Services.Scrap
                             int lLimite = pLimite - pNivel;
                             if (lLimite <= 0)
                                 return;
-                            CrawlPage(formattedLink, pTagInicial, pTagFinal, pNivel + 1, pLimite, ref pPaginas);
+                            ScrapPage(formattedLink, pTagInicial, pTagFinal, pNivel + 1, pLimite, ref pPaginas);
                         }
                     }
                     catch (Exception)
@@ -360,7 +360,7 @@ namespace Action.Services.Scrap
         {
             List<ScrapedPage> lListScraperObject = new List<ScrapedPage>();
 
-            CrawlPage(pUrl, pTagInicial, pTagFinal, pNivel, pLimite, ref lListScraperObject);
+            ScrapPage(pUrl, pTagInicial, pTagFinal, pNivel, pLimite, ref lListScraperObject);
 
 
             string lTexto = "";
@@ -376,7 +376,7 @@ namespace Action.Services.Scrap
         {
             List<ScrapedPage> lListScraperObject = new List<ScrapedPage>();
 
-            CrawlPage(pUrl, pTagInicial, pTagFinal, pNivel, pLimite, ref lListScraperObject);
+            ScrapPage(pUrl, pTagInicial, pTagFinal, pNivel, pLimite, ref lListScraperObject);
 
             return lListScraperObject;
         }

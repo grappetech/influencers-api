@@ -8,9 +8,10 @@ using Action.Models;
 namespace Action.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171002041119_ScrapSourceId")]
+    partial class ScrapSourceId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.3");
@@ -57,12 +58,6 @@ namespace Action.Migrations
                     b.Property<string>("Alias");
 
                     b.Property<int>("Dept");
-
-                    b.Property<string>("EndTag");
-
-                    b.Property<int>("Limit");
-
-                    b.Property<string>("StarTag");
 
                     b.Property<string>("Url");
 

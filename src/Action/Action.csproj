@@ -12,6 +12,15 @@
   <ItemGroup>
     <PackageReference Include="Hangfire" Version="1.6.17" />
     <PackageReference Include="Hangfire.MemoryStorage" Version="1.5.1" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.Conversation.v1" Version="1.2.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.Discovery.v1" Version="1.2.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.LanguageTranslator.v2" Version="1.2.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.NaturalLanguageUnderstanding.v1" Version="1.2.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.PersonalityInsights.v3" Version="1.2.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.SpeechToText.v1" Version="1.2.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.TextToSpeech.v1" Version="1.2.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.ToneAnalyzer.v3" Version="1.2.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.VisualRecognition.v3" Version="1.2.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.0.*" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.0.*" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="1.0.*" />

@@ -1,6 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
-namespace System
+namespace Action.Extensions
 {
     public static class ExtensionMethodsSys
     {

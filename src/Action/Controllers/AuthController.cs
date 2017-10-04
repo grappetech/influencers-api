@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Action.Filters;
 using Action.Models;
-using Action.ViewModels;
+using Action.VewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
@@ -117,6 +117,7 @@ namespace Action.Controllers
 			}
 		}
 
+	    [Authorize]
 		[HttpGet("permitions/{id}")]
 		public IActionResult Permitions(string id)
 		{
