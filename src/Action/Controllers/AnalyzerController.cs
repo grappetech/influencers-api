@@ -84,7 +84,7 @@ namespace Action.Controllers
         [HttpPost("analyze")]
         public dynamic PostAnalyze(AnalyseRequest entity)
         {
-            var json = System.IO.File.ReadAllText(Path.Combine(new HostingEnvironment().ContentRootPath,"App_Data","mock_analyze_result.json"));
+            var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath,"App_Data","mock_analyze_result.json"));
             return JsonConvert.DeserializeObject<dynamic>(json);
             
         }
