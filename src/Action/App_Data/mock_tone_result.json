@@ -1,12 +1,7 @@
 ﻿{
     "document_tone": {
-        "tones": [
-            {
-                "score": 0.657108,
-                "tone_id": "joy",
-                "tone_name": "Alegria"
-            }
-        ]
+                "positive": 0.657108,
+                "negative": 0.342892
     },
     "sentences_tone": [
         {

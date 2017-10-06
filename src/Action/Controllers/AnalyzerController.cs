@@ -21,7 +21,7 @@ namespace Action.Controllers
     {
         private readonly HtmlEncoder _htmlEncoder;
         private readonly ApplicationDbContext _dbContext;
-
+        Random number = new Random(DateTime.Now.Millisecond);
         public AnalyzerController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
         {
             _dbContext = dbContext;
@@ -47,8 +47,12 @@ namespace Action.Controllers
         public dynamic GetPersonality(string entity)
         {
             var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath,"App_Data","mock_personality_result.json"));
-            return JsonConvert.DeserializeObject<dynamic>(json);
+            var result =  JsonConvert.DeserializeObject<dynamic>(json);
             
+            result.mentions = number.Next(100,300);
+            result.sources = number.Next(1,10);
+            return result;
+
         }
         
         
@@ -66,8 +70,13 @@ namespace Action.Controllers
         public dynamic GetTone(string entity)
         {
             var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath,"App_Data","mock_tone_result.json"));
-            return JsonConvert.DeserializeObject<dynamic>(json);
-            
+            var result =  JsonConvert.DeserializeObject<dynamic>(json);
+            var number2 = new Random(DateTime.Now.Millisecond);
+            var number3 = number2.Next(100, 999) / 1000.0;
+            result.document_tone.positive = number3;
+            result.document_tone.negative = 1.0 - number3; 
+            return result;
+
         }
         
         

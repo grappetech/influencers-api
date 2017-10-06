@@ -104,6 +104,7 @@ namespace Action.Controllers
 						);
 					return Ok(new
 					{
+					    user = model.Email,
 						token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
 						expiration = jwtSecurityToken.ValidTo
 					});
