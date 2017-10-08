@@ -84,6 +84,10 @@ namespace Action.Controllers
         [HttpPost("analyze")]
         public dynamic PostAnalyze(AnalyseRequest entity)
         {
+
+            if (entity.Brand == "" || entity.Briefing == "" || entity.Factor == "" || entity.Product == "")
+                return BadRequest("Dados inválidos");
+
             var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath,"App_Data","mock_analyze_result.json"));
             return JsonConvert.DeserializeObject<dynamic>(json);
             
