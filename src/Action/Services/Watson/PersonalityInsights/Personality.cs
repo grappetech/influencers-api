@@ -10,5 +10,4 @@ namespace Action.Services.Watson.PersonalityInsights
         public double? Percentile { get; set; }
         public List<Detail> Details { get; set; }
     }
-
 }

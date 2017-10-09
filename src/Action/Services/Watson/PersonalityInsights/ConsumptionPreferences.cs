@@ -10,5 +10,4 @@ namespace Action.Services.Watson.PersonalityInsights
         public string Name { get; set; }
         public List<ConsumptionDetail> ConsumptionDetails { get; set; }
     }
-
 }

@@ -5,15 +5,17 @@ using Action.Services.Scrap.Interfaces;
 namespace Action.Services.Scrap.Logging
 {
     /// <summary>
-    /// Reporting class to create HTML report.
+    ///     Reporting class to create HTML report.
     /// </summary>
     public static class Reporting
     {
         /// <summary>
-        /// Creates a report out of the data gathered.
+        ///     Creates a report out of the data gathered.
         /// </summary>
         /// <returns></returns>
-        public static StringBuilder CreateReport(IRepository externalUrlRepository, IRepository otherUrlRepository, IRepository failedUrlRepository, IRepository currentPageUrlRepository, List<Page> pages, List<string> exceptions)
+        public static StringBuilder CreateReport(IRepository externalUrlRepository, IRepository otherUrlRepository,
+            IRepository failedUrlRepository, IRepository currentPageUrlRepository, List<Page> pages,
+            List<string> exceptions)
         {
             var sb = new StringBuilder();
 
@@ -28,14 +30,15 @@ namespace Action.Services.Scrap.Logging
             sb.Append("<h1>Crawl Report</h1>");
 
             sb.Append("<h2>Internal Urls - In Order Crawled</h2>");
-            sb.Append("<p>These are the links found within the site. This is the order in which they were crawled.</p>");
+            sb.Append(
+                "<p>These are the links found within the site. This is the order in which they were crawled.</p>");
 
             sb.Append("<table><tr><th>Sr. No.</th><th>Url</th></tr>");
             var counter = 1;
             foreach (var page in currentPageUrlRepository.List)
             {
                 sb.Append("<tr><td>");
-                sb.Append(counter++);              
+                sb.Append(counter++);
                 sb.Append("</td><td>");
                 sb.Append(page);
                 sb.Append("</td></tr>");
@@ -44,10 +47,11 @@ namespace Action.Services.Scrap.Logging
             sb.Append("</table>");
 
             sb.Append("<h2>External Urls</h2>");
-            sb.Append("<p>These are the links to the pages which are inside as well as outside the site which are crawled one by one.</p>");
+            sb.Append(
+                "<p>These are the links to the pages which are inside as well as outside the site which are crawled one by one.</p>");
 
             sb.Append("<table><tr><th> Sr. No. </th><th>Url</th></tr>");
-           // var counter2 = 1;
+            // var counter2 = 1;
             //foreach (string str in externalUrlRepository.List)
             //{
             //    sb.Append("<tr><td>");
@@ -60,7 +64,8 @@ namespace Action.Services.Scrap.Logging
             sb.Append("</table>");
 
             sb.Append("<h2>Other Urls</h2>");
-            sb.Append("<p>These are the links to things on the site that are not html files (html, aspx, etc.), like images and css files. If you do not have permission to view some websites then this will fall in this category.</p>");
+            sb.Append(
+                "<p>These are the links to things on the site that are not html files (html, aspx, etc.), like images and css files. If you do not have permission to view some websites then this will fall in this category.</p>");
 
             sb.Append("<table><tr><th> Sr. No. </th><th>Url</th></tr>");
             //var counter3 = 1;
@@ -105,25 +110,21 @@ namespace Action.Services.Scrap.Logging
             sb.Append("<table><tr><th> Sr. No. </th><th>Exception</th></tr>");
             var counter5 = 1;
             if (exceptions.Count > 0)
-            {
-                foreach (string str in exceptions)
+                foreach (var str in exceptions)
                 {
                     sb.Append("<tr><td>");
                     sb.Append(counter5++);
-                    sb.Append("</td><td>");                     
+                    sb.Append("</td><td>");
                     sb.Append(str);
                     sb.Append("</td></tr>");
                 }
-            }
             else
-            {
                 sb.Append("<tr><td>0</td><td>No exceptions thrown.</td></tr>");
-            }
 
             sb.Append("</table>");
 
             sb.Append("</body></html>");
             return sb;
-        }    
+        }
     }
 }

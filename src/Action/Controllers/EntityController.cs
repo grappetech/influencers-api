@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using Action.Models;
-using Microsoft.AspNetCore.Mvc;
-
 using Action.Models.Watson;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Action.Controllers
 {
     [Route("api/[controller]")]
     public class EntityController : Controller
     {
-        private readonly HtmlEncoder _htmlEncoder;
         private readonly ApplicationDbContext _dbContext;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public EntityController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
         {
@@ -28,14 +26,25 @@ namespace Action.Controllers
             try
             {
                 if (_dbContext == null)
-                {
                     return NotFound("No database connection");
-                }
-                else
-                {
-                    var data = _dbContext.Entities.ToList();
-                    return data;
-                }
+                var data = _dbContext.Entities.ToList();
+                return data;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public dynamic GetById(long id)
+        {
+            try
+            {
+                if (_dbContext == null)
+                    return NotFound("No database connection");
+                var data = _dbContext.Entities.FirstOrDefault(x => x.Id == id);
+                return data;
             }
             catch (Exception ex)
             {
@@ -45,25 +54,22 @@ namespace Action.Controllers
 
         // POST api/values
         [HttpPost]
-        public dynamic Post([FromBody]Entity entity)
+        public dynamic Post([FromBody] Entity entity)
         {
-			try
-			{
-				if (_dbContext == null)
-				{
-					return NotFound("No database connection");
-				}
-				else
-				{
-					var data = _dbContext.Entities.Add(entity);
-                    _dbContext.SaveChanges();
-					return data;
-				}
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex.Message);
-			}
+            try
+            {
+                if (_dbContext == null)
+                {
+                    return NotFound("No database connection");
+                }
+                var data = _dbContext.Entities.Add(entity);
+                _dbContext.SaveChanges();
+                return data;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

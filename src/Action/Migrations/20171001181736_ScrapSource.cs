@@ -8,8 +8,8 @@ namespace Action.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ScrapSources",
-                columns: table => new
+                "ScrapSources",
+                table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySql:ValueGeneratedOnAdd", true),
@@ -17,14 +17,11 @@ namespace Action.Migrations
                     Dept = table.Column<int>(nullable: false),
                     Url = table.Column<string>(nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ScrapSources", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_ScrapSources", x => x.Id); });
 
             migrationBuilder.CreateTable(
-                name: "ScrapedPages",
-                columns: table => new
+                "ScrapedPages",
+                table => new
                 {
                     Id = table.Column<Guid>(nullable: false)
                         .Annotation("MySql:ValueGeneratedOnAdd", true),
@@ -37,26 +34,26 @@ namespace Action.Migrations
                 {
                     table.PrimaryKey("PK_ScrapedPages", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ScrapedPages_ScrapSources_ScrapSourceId",
-                        column: x => x.ScrapSourceId,
-                        principalTable: "ScrapSources",
-                        principalColumn: "Id",
+                        "FK_ScrapedPages_ScrapSources_ScrapSourceId",
+                        x => x.ScrapSourceId,
+                        "ScrapSources",
+                        "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ScrapedPages_ScrapSourceId",
-                table: "ScrapedPages",
-                column: "ScrapSourceId");
+                "IX_ScrapedPages_ScrapSourceId",
+                "ScrapedPages",
+                "ScrapSourceId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ScrapedPages");
+                "ScrapedPages");
 
             migrationBuilder.DropTable(
-                name: "ScrapSources");
+                "ScrapSources");
         }
     }
 }

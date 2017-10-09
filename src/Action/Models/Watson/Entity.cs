@@ -7,10 +7,11 @@ namespace Action.Models.Watson
     {
         [Key]
         public long Id { get; set; }
+
         public string Name { get; set; }
         public string Alias { get; set; }
         public ECategory CategoryId { get; set; }
-        public string Category { get { return Enum.GetName(typeof(ECategory),CategoryId); }}
+        public string Category => Enum.GetName(typeof(ECategory), CategoryId);
         public DateTime Date { get; set; } = DateTime.Today;
     }
 }

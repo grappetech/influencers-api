@@ -12,8 +12,8 @@ namespace Action.Controllers
     [Route("api/[controller]")]
     public class VisitorsController : Controller
     {
-        private readonly HtmlEncoder _htmlEncoder;
         private readonly ApplicationDbContext _dbContext;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public VisitorsController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
         {
@@ -28,14 +28,9 @@ namespace Action.Controllers
             try
             {
                 if (_dbContext == null)
-                {
-                    return new string[] {"No database connection"};
-                }
-                else
-                {
-                    var data = _dbContext.Visitors.Select(m => _htmlEncoder.Encode(m.Name)).ToList();
-                    return data;
-                }
+                    return new[] {"No database connection"};
+                var data = _dbContext.Visitors.Select(m => _htmlEncoder.Encode(m.Name)).ToList();
+                return data;
             }
             catch (Exception ex)
             {
@@ -46,18 +41,15 @@ namespace Action.Controllers
 
         // POST api/values
         [HttpPost]
-        public IEnumerable<string> Post([FromBody]Visitor visitor)
+        public IEnumerable<string> Post([FromBody] Visitor visitor)
         {
             if (_dbContext == null)
             {
-                return new string[] { _htmlEncoder.Encode(visitor.Name) };
+                return new[] {_htmlEncoder.Encode(visitor.Name)};
             }
-            else
-            {
-                _dbContext.Visitors.Add(visitor);
-                _dbContext.SaveChanges();
-                return _dbContext.Visitors.Select(m => _htmlEncoder.Encode(m.Name)).ToList();
-            }
+            _dbContext.Visitors.Add(visitor);
+            _dbContext.SaveChanges();
+            return _dbContext.Visitors.Select(m => _htmlEncoder.Encode(m.Name)).ToList();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-namespace Action.Models
+﻿namespace Action.Models
 {
     public enum ECategory
     {

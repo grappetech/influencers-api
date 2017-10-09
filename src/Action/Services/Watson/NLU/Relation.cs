@@ -10,11 +10,7 @@ namespace Action.Services.Watson.NLU
         public string type { get; set; }
         public string sentence { get; set; }
         public float? score { get; set; }
-        private List<Argument> _arguments = new List<Argument>();
-        public List<Argument> Arguments
-        {
-            get { return _arguments; }
-            set { _arguments = value; }
-        }
+
+        public List<Argument> Arguments { get; set; } = new List<Argument>();
     }
 }

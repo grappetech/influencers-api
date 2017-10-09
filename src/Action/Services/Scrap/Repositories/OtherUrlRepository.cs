@@ -4,17 +4,17 @@ using Action.Services.Scrap.Interfaces;
 namespace Action.Services.Scrap.Repositories
 {
     /// <summary>
-    /// Class for External Urls.
+    ///     Class for External Urls.
     /// </summary>
     public class OtherUrlRepository : IRepository
     {
         /// <summary>
-        /// List of external Urls.
+        ///     List of external Urls.
         /// </summary>
-        Dictionary<string, string> _listOfOtherUrl;
+        private readonly Dictionary<string, string> _listOfOtherUrl;
 
         /// <summary>
-        /// Constructor of the class.
+        ///     Constructor of the class.
         /// </summary>
         public OtherUrlRepository()
         {
@@ -22,18 +22,12 @@ namespace Action.Services.Scrap.Repositories
         }
 
         /// <summary>
-        /// List to gather Urls.
+        ///     List to gather Urls.
         /// </summary>
-        public Dictionary<string, string> List
-        {
-            get
-            {
-                return _listOfOtherUrl;
-            }
-        }
+        public Dictionary<string, string> List => _listOfOtherUrl;
 
         /// <summary>
-        /// Method to add new Url.
+        ///     Method to add new Url.
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="pText"></param>

@@ -1,48 +1,38 @@
 ﻿namespace Action.Services.Scrap
 {
     /// <summary>
-    /// Page class
+    ///     Page class
     /// </summary>
     public class Page
     {
         #region Constructor
 
-        /// <summary>
-        /// Default constructor.
-        /// </summary>
-        public Page() { }
-
         #endregion
+
         #region Private Instance Fields
 
-        private int _size;
         private string _text;
-        private string _url;
+
         //private int _viewstateSize;
 
         #endregion
+
         #region Public Properties
 
-        public int Size
-        {
-            get { return _size; }
-        }
+        public int Size { get; private set; }
 
         public string Text
         {
-            get { return _text; }
+            get => _text;
             set
             {
                 _text = value;
-                _size = value.Length;
+                Size = value.Length;
             }
         }
 
-        public string Url
-        {
-            get { return _url; }
-            set { _url = value; }
-        }  
+        public string Url { get; set; }
+
         #endregion
     }
 }

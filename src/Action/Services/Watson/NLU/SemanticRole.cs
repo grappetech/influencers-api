@@ -2,7 +2,7 @@
 
 namespace Action.Services.Watson.NLU
 {
-    public partial class SemanticRole
+    public class SemanticRole
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public SemanticSubject Subject { get; set; }

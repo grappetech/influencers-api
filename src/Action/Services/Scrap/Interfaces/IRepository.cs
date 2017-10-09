@@ -3,17 +3,17 @@
 namespace Action.Services.Scrap.Interfaces
 {
     /// <summary>
-    /// Repository interface
+    ///     Repository interface
     /// </summary>
     public interface IRepository
     {
         /// <summary>
-        /// List of Url
+        ///     List of Url
         /// </summary>
-        Dictionary<string,string> List { get; }
+        Dictionary<string, string> List { get; }
 
         /// <summary>
-        /// To add url into List.
+        ///     To add url into List.
         /// </summary>
         /// <param name="url"></param>
         /// <param name="pText"></param>

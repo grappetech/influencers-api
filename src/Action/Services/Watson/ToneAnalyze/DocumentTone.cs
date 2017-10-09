@@ -7,11 +7,6 @@ namespace Action.Services.Watson.ToneAnalyze
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        private List<ToneCategories> _toneCategories = new List<ToneCategories>();
-        public List<ToneCategories> ToneCategories
-        {
-            get { return _toneCategories; }
-            set { _toneCategories = value; }
-        }
+        public List<ToneCategories> ToneCategories { get; set; } = new List<ToneCategories>();
     }
 }

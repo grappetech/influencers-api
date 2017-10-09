@@ -9,5 +9,4 @@ namespace Action.Services.Watson.ToneAnalyze
         public string ToneId { get; set; }
         public string ToneName { get; set; }
     }
-
 }

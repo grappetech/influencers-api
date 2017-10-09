@@ -11,7 +11,7 @@ namespace Action.Extensions
         }
 
         /// <summary>
-        /// Calcula a data que representa o fim do mês da data de referência
+        ///     Calcula a data que representa o fim do mês da data de referência
         /// </summary>
         /// <param name="pDateTime">Data de referência</param>
         /// <returns>DateTime representando o fim do mês</returns>
@@ -21,7 +21,7 @@ namespace Action.Extensions
         }
 
         /// <summary>
-        /// Calcula a data que representa o início do ano da data de referência
+        ///     Calcula a data que representa o início do ano da data de referência
         /// </summary>
         /// <param name="pDateTime">Data de referência</param>
         /// <returns>DateTime representando o início do ano</returns>
@@ -31,7 +31,7 @@ namespace Action.Extensions
         }
 
         /// <summary>
-        /// Calcula a data que representa o fim do ano da data de referência
+        ///     Calcula a data que representa o fim do ano da data de referência
         /// </summary>
         /// <param name="pDateTime">Data de referência</param>
         /// <returns>DateTime representando o fim do ano</returns>

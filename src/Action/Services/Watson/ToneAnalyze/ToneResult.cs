@@ -10,45 +10,35 @@ namespace Action.Services.Watson.ToneAnalyze
 
         public DocumentTone DocumentTone { get; set; }
 
-        private List<SentencesTone> _setenceTones = new List<SentencesTone>();
-
-        public List<SentencesTone> SetenceTones
-        {
-            get { return _setenceTones; }
-            set { _setenceTones = value; }
-        }
+        public List<SentencesTone> SetenceTones { get; set; } = new List<SentencesTone>();
 
         public static ToneResult Parse(ToneAnalysis pResult)
         {
-            ToneResult lResultadoTone = new ToneResult();
+            var lResultadoTone = new ToneResult();
 
-            DocumentTone lDocumentTone = new DocumentTone();
+            var lDocumentTone = new DocumentTone();
             if (pResult.DocumentTone != null)
-            {
                 foreach (var toneCategory in pResult.DocumentTone.ToneCategories)
                 {
-                    ToneCategories lTone = new ToneCategories();
+                    var lTone = new ToneCategories();
                     lTone.CategoryId = toneCategory.CategoryId;
                     lTone.CategoryName = toneCategory.CategoryName;
 
                     foreach (var tone in toneCategory.Tones)
-                    {
-                        lTone.Tones.Add(new Tone()
+                        lTone.Tones.Add(new Tone
                         {
                             ToneId = tone.ToneId,
                             ToneName = tone.ToneName,
                             Score = tone.Score
                         });
-                    }
 
                     lDocumentTone.ToneCategories.Add(lTone);
                 }
-            }
 
-            List<SentencesTone> lSetencesTones = new List<SentencesTone>();
+            var lSetencesTones = new List<SentencesTone>();
             foreach (var lItem in pResult.SentencesTone)
             {
-                SentencesTone lSetenceTone = new SentencesTone();
+                var lSetenceTone = new SentencesTone();
                 lSetenceTone.Text = lItem.Text;
                 lSetenceTone.InputFrom = lItem.InputFrom;
                 lSetenceTone.InputTo = lItem.InputTo;
@@ -56,19 +46,17 @@ namespace Action.Services.Watson.ToneAnalyze
 
                 foreach (var lItemToneCategory in lItem.ToneCategories)
                 {
-                    ToneCategories lTone = new ToneCategories();
+                    var lTone = new ToneCategories();
                     lTone.CategoryId = lItemToneCategory.CategoryId;
                     lTone.CategoryName = lItemToneCategory.CategoryName;
 
                     foreach (var tone in lItemToneCategory.Tones)
-                    {
-                        lTone.Tones.Add(new Tone()
+                        lTone.Tones.Add(new Tone
                         {
                             ToneId = tone.ToneId,
                             ToneName = tone.ToneName,
                             Score = tone.Score
                         });
-                    }
 
                     lSetenceTone.ToneCategories.Add(lTone);
                 }
@@ -80,6 +68,5 @@ namespace Action.Services.Watson.ToneAnalyze
 
             return lResultadoTone;
         }
-
     }
 }

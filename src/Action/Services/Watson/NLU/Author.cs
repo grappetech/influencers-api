@@ -7,5 +7,4 @@ namespace Action.Services.Watson.NLU
         public Guid Id { get; set; } = Guid.NewGuid();
         public string name { get; set; }
     }
-
 }

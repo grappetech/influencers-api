@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Action.Migrations
 {
@@ -9,19 +7,19 @@ namespace Action.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_ScrapedPages_ScrapSources_ScrapSourceId",
-                table: "ScrapedPages");
+                "FK_ScrapedPages_ScrapSources_ScrapSourceId",
+                "ScrapedPages");
 
             migrationBuilder.AlterColumn<int>(
-                name: "ScrapSourceId",
-                table: "ScrapedPages",
+                "ScrapSourceId",
+                "ScrapedPages",
                 nullable: true);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ScrapedPages_ScrapSources_ScrapSourceId",
-                table: "ScrapedPages",
-                column: "ScrapSourceId",
-                principalTable: "ScrapSources",
+                "FK_ScrapedPages_ScrapSources_ScrapSourceId",
+                "ScrapedPages",
+                "ScrapSourceId",
+                "ScrapSources",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Restrict);
         }
@@ -29,19 +27,19 @@ namespace Action.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_ScrapedPages_ScrapSources_ScrapSourceId",
-                table: "ScrapedPages");
+                "FK_ScrapedPages_ScrapSources_ScrapSourceId",
+                "ScrapedPages");
 
             migrationBuilder.AlterColumn<int>(
-                name: "ScrapSourceId",
-                table: "ScrapedPages",
+                "ScrapSourceId",
+                "ScrapedPages",
                 nullable: false);
 
             migrationBuilder.AddForeignKey(
-                name: "FK_ScrapedPages_ScrapSources_ScrapSourceId",
-                table: "ScrapedPages",
-                column: "ScrapSourceId",
-                principalTable: "ScrapSources",
+                "FK_ScrapedPages_ScrapSources_ScrapSourceId",
+                "ScrapedPages",
+                "ScrapSourceId",
+                "ScrapSources",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }

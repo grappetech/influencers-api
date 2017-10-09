@@ -3,17 +3,17 @@
 namespace Action.Services.Scrap.Logging
 {
     /// <summary>
-    /// Logging class for Log functionality
+    ///     Logging class for Log functionality
     /// </summary>
     public static class Logging
     {
         /// <summary>
-        /// Method to write reports to local machine.
+        ///     Method to write reports to local machine.
         /// </summary>
         /// <param name="contents">string contents</param>
         public static void WriteReportToDisk(string contents)
         {
-            string fileName = "";// ConfigurationManager.AppSettings["logTextFileName"].ToString();
+            var fileName = ""; // ConfigurationManager.AppSettings["logTextFileName"].ToString();
             FileStream fStream = null;
             if (File.Exists(fileName))
             {

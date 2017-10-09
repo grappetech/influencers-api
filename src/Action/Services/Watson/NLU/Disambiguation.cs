@@ -7,16 +7,9 @@ namespace Action.Services.Watson.NLU
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        private List<DisambiguationSubtype> _Subtype = new List<DisambiguationSubtype>();
-        public List<DisambiguationSubtype> Subtype
-        {
-            get { return _Subtype; }
-            set { _Subtype = value; }
-        }
+        public List<DisambiguationSubtype> Subtype { get; set; } = new List<DisambiguationSubtype>();
 
         public string Name { get; set; }
         public string Dbpedia_resource { get; set; }
     }
-
-
 }

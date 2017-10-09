@@ -4,8 +4,5 @@ namespace Action.Models
 {
     public class User : IdentityUser
     {
-        public User()
-        {
-        }
     }
 }

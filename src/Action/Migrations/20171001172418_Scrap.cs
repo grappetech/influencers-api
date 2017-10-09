@@ -8,8 +8,8 @@ namespace Action.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Entities",
-                columns: table => new
+                "Entities",
+                table => new
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGeneratedOnAdd", true),
@@ -18,16 +18,13 @@ namespace Action.Migrations
                     Date = table.Column<DateTime>(nullable: false),
                     Name = table.Column<string>(nullable: true)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Entities", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey("PK_Entities", x => x.Id); });
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Entities");
+                "Entities");
         }
     }
 }

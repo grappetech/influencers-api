@@ -7,12 +7,7 @@ namespace Action.Services.Watson.NLU
     {
         public Guid Id { get; set; } = Guid.NewGuid();
         public string text { get; set; }
-        private List<EntityRelation> _entityRelations = new List<EntityRelation>();
-        public List<EntityRelation> EntityRelations
-        {
-            get { return _entityRelations; }
-            set { _entityRelations = value; }
-        }
-    }
 
+        public List<EntityRelation> EntityRelations { get; set; } = new List<EntityRelation>();
+    }
 }

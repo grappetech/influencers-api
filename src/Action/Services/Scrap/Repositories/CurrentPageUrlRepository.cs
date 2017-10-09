@@ -6,12 +6,12 @@ namespace Action.Services.Scrap.Repositories
     public class CurrentPageUrlRepository : IRepository
     {
         /// <summary>
-        /// List of external Urls.
+        ///     List of external Urls.
         /// </summary>
-        Dictionary<string, string> _listOfCurrentPageUrl;
+        private readonly Dictionary<string, string> _listOfCurrentPageUrl;
 
         /// <summary>
-        /// Constructor of the class.
+        ///     Constructor of the class.
         /// </summary>
         public CurrentPageUrlRepository()
         {
@@ -19,18 +19,12 @@ namespace Action.Services.Scrap.Repositories
         }
 
         /// <summary>
-        /// List to gather Urls.
+        ///     List to gather Urls.
         /// </summary>
-        public Dictionary<string, string> List
-        {
-            get
-            {
-                return _listOfCurrentPageUrl;
-            }
-        }
+        public Dictionary<string, string> List => _listOfCurrentPageUrl;
 
         /// <summary>
-        /// Method to add new Url.
+        ///     Method to add new Url.
         /// </summary>
         /// <param name="entity"></param>
         /// <param name="pText"></param>

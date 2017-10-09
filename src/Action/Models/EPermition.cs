@@ -1,12 +1,11 @@
 ﻿namespace Action.Models
 {
-    public enum EPermition 
+    public enum EPermition
     {
         None = 0,
         Read,
         Create,
         Update,
         Delete
-            
     }
 }

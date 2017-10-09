@@ -22,107 +22,105 @@ using Newtonsoft.Json;
 namespace Action.Controllers
 {
     [Route("api/[controller]")]
-	[EnableCors("Default")]
-	public class AuthController : Controller
-	{
-		private readonly UserManager<User> _userManager;
-		private readonly SignInManager<User> _signInManager;
-		private readonly RoleManager<Role> _roleManager;
-		private IPasswordHasher<User> _passwordHasher;
-		private IConfigurationRoot _configurationRoot;
-		private ILogger<AuthController> _logger;
+    [EnableCors("Default")]
+    public class AuthController : Controller
+    {
+        private readonly RoleManager<Role> _roleManager;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly IConfigurationRoot _configurationRoot;
+        private readonly ILogger<AuthController> _logger;
+        private readonly IPasswordHasher<User> _passwordHasher;
 
 
-		public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, RoleManager<Role> roleManager
-			, IPasswordHasher<User> passwordHasher, IConfigurationRoot configurationRoot, ILogger<AuthController> logger)
-		{
-			_userManager = userManager;
-			_signInManager = signInManager;
-			_roleManager = roleManager;
-			_logger = logger;
-			_passwordHasher = passwordHasher;
-			_configurationRoot = configurationRoot;
-		}
-		[AllowAnonymous]
-		[HttpPost("register")]
-		public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest();
-			}
-			var user = new User()
-			{
-				UserName = model.Email,
-				Email = model.Email
-			};
-			var result = await _userManager.CreateAsync(user, model.Password);
+        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
+            RoleManager<Role> roleManager
+            , IPasswordHasher<User> passwordHasher, IConfigurationRoot configurationRoot,
+            ILogger<AuthController> logger)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _roleManager = roleManager;
+            _logger = logger;
+            _passwordHasher = passwordHasher;
+            _configurationRoot = configurationRoot;
+        }
 
-			if (result.Succeeded)
-			{
-				return Ok(result);
-			}
-			foreach (var error in result.Errors)
-			{
-				ModelState.AddModelError("error", error.Description);
-			}
-			return BadRequest(result.Errors);
-		}
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+            var user = new User
+            {
+                UserName = model.Email,
+                Email = model.Email
+            };
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-		[ValidateForm]
-		[HttpPost("login")]
-		[Route("token")]
-		public async Task<IActionResult> CreateToken([FromBody] LoginViewModel model)
-		{
-			try
-			{
-				var user = await _userManager.FindByNameAsync(model.Email);
-				if (user == null)
-				{
-					return Unauthorized();
-				}
-				if (_passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password) == PasswordVerificationResult.Success)
-				{
-					var userClaims = await _userManager.GetClaimsAsync(user);
+            if (result.Succeeded)
+                return Ok(result);
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("error", error.Description);
+            return BadRequest(result.Errors);
+        }
 
-					var claims = new[]
-					{
-						new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-						new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-						new Claim(JwtRegisteredClaimNames.Email, user.Email)
-					}.Union(userClaims);
+        [ValidateForm]
+        [HttpPost("login")]
+        [Route("token")]
+        public async Task<IActionResult> CreateToken([FromBody] LoginViewModel model)
+        {
+            try
+            {
+                var user = await _userManager.FindByNameAsync(model.Email);
+                if (user == null)
+                    return Unauthorized();
+                if (_passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password) ==
+                    PasswordVerificationResult.Success)
+                {
+                    var userClaims = await _userManager.GetClaimsAsync(user);
 
-					var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
-					var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+                    var claims = new[]
+                    {
+                        new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Email, user.Email)
+                    }.Union(userClaims);
 
-					var jwtSecurityToken = new JwtSecurityToken(
-						issuer: _configurationRoot["JwtSecurityToken:Issuer"],
-						audience: _configurationRoot["JwtSecurityToken:Audience"],
-						claims: claims,
-						expires: DateTime.UtcNow.AddMinutes(60),
-						signingCredentials: signingCredentials
-						);
-					return Ok(new
-					{
-					    user = model.Email,
-						token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-						expiration = jwtSecurityToken.ValidTo
-					});
-				}
-				return Unauthorized();
-			}
-			catch (Exception ex)
-			{
-				_logger.LogError($"error while creating token: {ex}");
-				return StatusCode((int)HttpStatusCode.InternalServerError, "error while creating token");
-			}
-		}
+                    var symmetricSecurityKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
+                    var signingCredentials =
+                        new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
-	    [Authorize]
-		[HttpGet("permitions/{id}")]
-		public IActionResult Permitions(string id)
-		{
-			return Ok(JsonConvert.DeserializeObject<dynamic>(@"[
+                    var jwtSecurityToken = new JwtSecurityToken(
+                        _configurationRoot["JwtSecurityToken:Issuer"],
+                        _configurationRoot["JwtSecurityToken:Audience"],
+                        claims,
+                        expires: DateTime.UtcNow.AddMinutes(60),
+                        signingCredentials: signingCredentials
+                    );
+                    return Ok(new
+                    {
+                        user = model.Email,
+                        token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                        expiration = jwtSecurityToken.ValidTo
+                    });
+                }
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"error while creating token: {ex}");
+                return StatusCode((int) HttpStatusCode.InternalServerError, "error while creating token");
+            }
+        }
+
+        [Authorize]
+        [HttpGet("permitions/{id}")]
+        public IActionResult Permitions(string id)
+        {
+            return Ok(JsonConvert.DeserializeObject<dynamic>(@"[
   {
     ""permissionId"": 1,
     ""name"": ""Usuario"",
@@ -365,6 +363,6 @@ namespace Action.Controllers
     ]
   }
 ]"));
-		}
-	}
+        }
+    }
 }

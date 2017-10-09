@@ -8,44 +8,24 @@ namespace Action.Services.Watson.PersonalityInsights
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        private List<Personality> _personality = new List<Personality>();
-        public List<Personality> Personality
-        {
-            get { return _personality; }
-            set { _personality = value; }
-        }
+        public List<Personality> Personality { get; set; } = new List<Personality>();
 
-        private List<Detail> _needs = new List<Detail>();
-        public List<Detail> Needs
-        {
-            get { return _needs; }
-            set { _needs = value; }
-        }
+        public List<Detail> Needs { get; set; } = new List<Detail>();
 
-        private List<Detail> _values = new List<Detail>();
-        public List<Detail> Values
-        {
-            get { return _values; }
-            set { _values = value; }
-        }
+        public List<Detail> Values { get; set; } = new List<Detail>();
 
-        private List<ConsumptionPreferences> _consumptionPreferences = new List<ConsumptionPreferences>();
-        public List<ConsumptionPreferences> ConsumptionPreferences
-        {
-            get { return _consumptionPreferences; }
-            set { _consumptionPreferences = value; }
-        }
+        public List<ConsumptionPreferences> ConsumptionPreferences { get; set; } = new List<ConsumptionPreferences>();
 
         public static PersonalityResult Parse(Profile pResult)
         {
-            PersonalityResult lPersonalityResult = new PersonalityResult();
+            var lPersonalityResult = new PersonalityResult();
 
             foreach (var lPersonality in pResult.Personality)
             {
-                List<Detail> lDetails = new List<Detail>();
-                lPersonality.Children.ForEach(x => lDetails.Add(new Detail { Name = x.Name, Percentile = x.Percentile }));
+                var lDetails = new List<Detail>();
+                lPersonality.Children.ForEach(x => lDetails.Add(new Detail {Name = x.Name, Percentile = x.Percentile}));
 
-                Personality lNewPersonality = new Personality
+                var lNewPersonality = new Personality
                 {
                     Name = lPersonality.Name,
                     Percentile = lPersonality.Percentile,
@@ -55,16 +35,19 @@ namespace Action.Services.Watson.PersonalityInsights
                 lPersonalityResult.Personality.Add(lNewPersonality);
             }
 
-            pResult.Needs.ForEach(x => lPersonalityResult.Needs.Add(new Detail { Name = x.Name, Percentile = x.Percentile }));
+            pResult.Needs.ForEach(x =>
+                lPersonalityResult.Needs.Add(new Detail {Name = x.Name, Percentile = x.Percentile}));
 
-            pResult.Values.ForEach(x => lPersonalityResult.Values.Add(new Detail { Name = x.Name, Percentile = x.Percentile }));
+            pResult.Values.ForEach(x =>
+                lPersonalityResult.Values.Add(new Detail {Name = x.Name, Percentile = x.Percentile}));
 
             foreach (var lConsumption in pResult.ConsumptionPreferences)
             {
-                List<ConsumptionDetail> lDetails = new List<ConsumptionDetail>();
-                lConsumption.ConsumptionPreferences.ForEach(x => lDetails.Add(new ConsumptionDetail { Name = x.Name, Score = Convert.ToInt32(x.Score) }));
+                var lDetails = new List<ConsumptionDetail>();
+                lConsumption.ConsumptionPreferences.ForEach(x =>
+                    lDetails.Add(new ConsumptionDetail {Name = x.Name, Score = Convert.ToInt32(x.Score)}));
 
-                ConsumptionPreferences lNewConsumption = new ConsumptionPreferences
+                var lNewConsumption = new ConsumptionPreferences
                 {
                     ConsumptionPreferenceId = lConsumption.ConsumptionPreferenceCategoryId,
                     Name = lConsumption.Name,

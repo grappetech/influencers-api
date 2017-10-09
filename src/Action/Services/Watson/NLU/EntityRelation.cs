@@ -8,5 +8,4 @@ namespace Action.Services.Watson.NLU
         public string type { get; set; }
         public string text { get; set; }
     }
-
 }

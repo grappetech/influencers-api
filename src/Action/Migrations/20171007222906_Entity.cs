@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Action.Migrations
 {
@@ -9,12 +7,12 @@ namespace Action.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Category",
-                table: "Entities");
+                "Category",
+                "Entities");
 
             migrationBuilder.AddColumn<int>(
-                name: "CategoryId",
-                table: "Entities",
+                "CategoryId",
+                "Entities",
                 nullable: false,
                 defaultValue: 0);
         }
@@ -22,12 +20,12 @@ namespace Action.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "CategoryId",
-                table: "Entities");
+                "CategoryId",
+                "Entities");
 
             migrationBuilder.AddColumn<string>(
-                name: "Category",
-                table: "Entities",
+                "Category",
+                "Entities",
                 nullable: true);
         }
     }

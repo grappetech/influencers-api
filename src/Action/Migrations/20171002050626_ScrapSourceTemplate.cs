@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Action.Migrations
 {
@@ -9,35 +7,35 @@ namespace Action.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "EndTag",
-                table: "ScrapSources",
+                "EndTag",
+                "ScrapSources",
                 nullable: true);
 
             migrationBuilder.AddColumn<int>(
-                name: "Limit",
-                table: "ScrapSources",
+                "Limit",
+                "ScrapSources",
                 nullable: false,
                 defaultValue: 0);
 
             migrationBuilder.AddColumn<string>(
-                name: "StarTag",
-                table: "ScrapSources",
+                "StarTag",
+                "ScrapSources",
                 nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "EndTag",
-                table: "ScrapSources");
+                "EndTag",
+                "ScrapSources");
 
             migrationBuilder.DropColumn(
-                name: "Limit",
-                table: "ScrapSources");
+                "Limit",
+                "ScrapSources");
 
             migrationBuilder.DropColumn(
-                name: "StarTag",
-                table: "ScrapSources");
+                "StarTag",
+                "ScrapSources");
         }
     }
 }

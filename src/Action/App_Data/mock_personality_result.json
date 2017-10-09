@@ -1,6 +1,6 @@
 ﻿{
-    "sources":23,
-    "mentions":120,
+  "sources": 23,
+  "mentions": 120,
     "personality": [
         {
             "trait_id": "big5_openness",
