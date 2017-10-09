@@ -13,8 +13,14 @@ namespace Action.Services.Scrap.Repositories
         }
 
 
-        public static string ConnectionString { get; set; } =
-            "Server=sl-us-south-1-portal.2.dblayer.com;port=23818;Database=compose;Uid=admin;Pwd=KQCVOHDRPOEPUSXN;";
+        public static string ConnectionString
+        {
+            get
+            {
+                return
+                    "Server=sl-us-south-1-portal.2.dblayer.com;port=23818;Database=compose;Uid=admin;Pwd=KQCVOHDRPOEPUSXN;";
+            }
+        }
 
         public DbSet<ScrapedPage> ScrapedPages { get; set; }
         public DbSet<ScrapSource> ScrapSources { get; set; }

@@ -36,7 +36,6 @@ namespace Action.Services.Scrap
         /// <summary>
         ///     Crawls a page.
         /// </summary>
-        /// <param name="url">The url to crawl.</param>
         private static void ScrapPage(string url, string pTagInicial, string pTagFinal, int pNivel, int pLimite,
             ref List<ScrapedPage> pPaginas)
         {
@@ -160,6 +159,7 @@ namespace Action.Services.Scrap
         /// </summary>
         /// <param name="targetList">The list into which to merge.</param>
         /// <param name="sourceList">The list whose values need to be merged.</param>
+        /// <param name="pText"></param>
         private static void AddRangeButNoDuplicates(Dictionary<string, string> targetList, List<string> sourceList,
             string pText)
         {
@@ -172,6 +172,10 @@ namespace Action.Services.Scrap
         ///     Gets the response text for a given url.
         /// </summary>
         /// <param name="url">The url whose text needs to be fetched.</param>
+        /// <param name="pNivel"></param>
+        /// <param name="pLinks"></param>
+        /// <param name="pTagInicial"></param>
+        /// <param name="pTagFinal"></param>
         /// <returns>The text of the response.</returns>
         public static string GetWebText(string url, string pTagInicial, string pTagFinal, int pNivel,
             List<string> pLinks)

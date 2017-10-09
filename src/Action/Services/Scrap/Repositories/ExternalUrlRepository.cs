@@ -30,6 +30,7 @@ namespace Action.Services.Scrap.Repositories
         ///     Method to add new Url.
         /// </summary>
         /// <param name="entity"></param>
+        /// <param name="pText"></param>
         public void Add(string entity, string pText)
         {
             _listOfExternalUrl.Add(entity, pText);

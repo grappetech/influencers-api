@@ -6,6 +6,8 @@ using Action.Models;
 using Action.Services.Scrap;
 using Action.Services.Scrap.Repositories;
 using Action.Services.Watson.NLU;
+using Action.Services.Watson.PersonalityInsights;
+using Action.Services.Watson.ToneAnalyze;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -46,8 +48,20 @@ namespace Action
                 options.UseMySql(Configuration.GetConnectionString("DataConnection"),
                     opt => opt.MigrationsAssembly("Action")));
 
-            ScrapperContext.ConnectionString = Configuration.GetConnectionString("DataConnection");
+            //ScrapperContext.ConnectionString = Configuration.GetConnectionString("DataConnection");
             NluService.Instance.AppContext = new ApplicationDbContext(
+                new DbContextOptionsBuilder<ApplicationDbContext>().UseMySql(
+                    Configuration.GetConnectionString("DataConnection"),
+                    opt => opt.MigrationsAssembly("Action")).Options);
+            
+            //ScrapperContext.ConnectionString = Configuration.GetConnectionString("DataConnection");
+            PersonalityService.Instance.AppContext = new ApplicationDbContext(
+                new DbContextOptionsBuilder<ApplicationDbContext>().UseMySql(
+                    Configuration.GetConnectionString("DataConnection"),
+                    opt => opt.MigrationsAssembly("Action")).Options);
+            
+            //ScrapperContext.ConnectionString = Configuration.GetConnectionString("DataConnection");
+            ToneService.Instance.AppContext = new ApplicationDbContext(
                 new DbContextOptionsBuilder<ApplicationDbContext>().UseMySql(
                     Configuration.GetConnectionString("DataConnection"),
                     opt => opt.MigrationsAssembly("Action")).Options);

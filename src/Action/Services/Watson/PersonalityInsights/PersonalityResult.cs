@@ -15,6 +15,9 @@ namespace Action.Services.Watson.PersonalityInsights
         public List<Detail> Values { get; set; } = new List<Detail>();
 
         public List<ConsumptionPreferences> ConsumptionPreferences { get; set; } = new List<ConsumptionPreferences>();
+        public long EntityId { get; set; }
+        public Guid ScrapedPageId { get; set; }
+        public int ScrapSourceId { get; set; }
 
         public static PersonalityResult Parse(Profile pResult)
         {

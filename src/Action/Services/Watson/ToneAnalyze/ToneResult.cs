@@ -11,13 +11,16 @@ namespace Action.Services.Watson.ToneAnalyze
         public DocumentTone DocumentTone { get; set; }
 
         public List<SentencesTone> SetenceTones { get; set; } = new List<SentencesTone>();
+        public long EntityId { get; set; }
+        public Guid ScrapedPageId { get; set; }
+        public int ScrapSourceId { get; set; }
 
         public static ToneResult Parse(ToneAnalysis pResult)
         {
             var lResultadoTone = new ToneResult();
 
             var lDocumentTone = new DocumentTone();
-            if (pResult.DocumentTone != null)
+            if (pResult?.DocumentTone?.ToneCategories != null)
                 foreach (var toneCategory in pResult.DocumentTone.ToneCategories)
                 {
                     var lTone = new ToneCategories();
@@ -36,32 +39,35 @@ namespace Action.Services.Watson.ToneAnalyze
                 }
 
             var lSetencesTones = new List<SentencesTone>();
-            foreach (var lItem in pResult.SentencesTone)
-            {
-                var lSetenceTone = new SentencesTone();
-                lSetenceTone.Text = lItem.Text;
-                lSetenceTone.InputFrom = lItem.InputFrom;
-                lSetenceTone.InputTo = lItem.InputTo;
-                lSetenceTone.SentenceId = lItem.SentenceId;
-
-                foreach (var lItemToneCategory in lItem.ToneCategories)
+            if (pResult?.SentencesTone != null)
+                foreach (var lItem in pResult.SentencesTone)
                 {
-                    var lTone = new ToneCategories();
-                    lTone.CategoryId = lItemToneCategory.CategoryId;
-                    lTone.CategoryName = lItemToneCategory.CategoryName;
+                    var lSetenceTone = new SentencesTone();
+                    lSetenceTone.Text = lItem.Text;
+                    lSetenceTone.InputFrom = lItem.InputFrom;
+                    lSetenceTone.InputTo = lItem.InputTo;
+                    lSetenceTone.SentenceId = lItem.SentenceId;
 
-                    foreach (var tone in lItemToneCategory.Tones)
-                        lTone.Tones.Add(new Tone
-                        {
-                            ToneId = tone.ToneId,
-                            ToneName = tone.ToneName,
-                            Score = tone.Score
-                        });
+                    foreach (var lItemToneCategory in lItem?.ToneCategories)
+                    {
+                        var lTone = new ToneCategories();
+                        lTone.CategoryId = lItemToneCategory.CategoryId;
+                        lTone.CategoryName = lItemToneCategory.CategoryName;
 
-                    lSetenceTone.ToneCategories.Add(lTone);
+                        foreach (var tone in lItemToneCategory.Tones)
+                            lTone.Tones.Add(new Tone
+                            {
+                                ToneId = tone.ToneId,
+                                ToneName = tone.ToneName,
+                                Score = tone.Score
+                            });
+
+                        lSetenceTone.ToneCategories.Add(lTone);
+                    }
+                    lSetencesTones.Add(lSetenceTone);
                 }
-                lSetencesTones.Add(lSetenceTone);
-            }
+            else
+                return null;
 
             lResultadoTone.DocumentTone = lDocumentTone;
             lResultadoTone.SetenceTones.AddRange(lSetencesTones);

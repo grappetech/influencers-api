@@ -8,34 +8,13 @@ using Action.Models;
 namespace Action.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171009084610_ToneExtract")]
+    partial class ToneExtract
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.3");
-
-            modelBuilder.Entity("Action.Models.Briefing", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Analysis");
-
-                    b.Property<string>("Brand");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("Factor");
-
-                    b.Property<byte[]>("File");
-
-                    b.Property<string>("Product");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Briefings");
-                });
 
             modelBuilder.Entity("Action.Models.Permition", b =>
                 {
