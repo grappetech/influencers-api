@@ -10,6 +10,7 @@ using Action.VewModels;
 using Dapper;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
@@ -96,18 +97,18 @@ namespace Action.Controllers
         {
             try
             {
-                var mentions = _dbContext.EntityMentions.Count(x => x.EntityId == entity);
-                var sources = _dbContext.EntityMentions.Select(x => x.ScrapedPageId).Distinct().Count();
-                var personalities = _dbContext.Personalities
+                var Mentions = _dbContext.EntityMentions.Count(x => x.EntityId == entity);
+                var Sources = _dbContext.EntityMentions.Select(x => x.ScrapedPageId).Distinct().Count();
+                var Personalities = _dbContext.Personalities
                     .Include(x => x.Personality)
                     .ThenInclude(x => x.Details)
                     .Include(x => x.Needs)
                     .Include(x => x.Values).Where(x => x.EntityId == entity).ToList();
 
-                var needs = personalities.SelectMany(x => x.Needs.Select(c => new {c.Name, c.Percentile}))
-                    .GroupBy(x => x.Name).Select(c => new {name = c.Key, percentile = c.Average(p => p.Percentile)});
+                var Needs = Personalities.SelectMany(x => x.Needs.Select(c => new {c.Name, c.Percentile}))
+                    .GroupBy(x => x.Name).Select(c => new {Name = c.Key, Percentile = c.Average(p => p.Percentile)});
 
-                var personality = personalities
+                var Personality = Personalities
                     .SelectMany(x => x.Personality.Select(c => new {c.Name, c.Percentile, c.Details}))
                     .GroupBy(x => x.Name).Select(c => new
                     {
@@ -115,20 +116,20 @@ namespace Action.Controllers
                         percentile = c.Average(p => p.Percentile),
                         details = c.SelectMany(d => d.Details)
                             .GroupBy(e => e.Name)
-                            .Select(f => new {name = f.Key, percentile = f.Average(g => g.Percentile)})
+                            .Select(f => new {Name = f.Key, Percentile = f.Average(g => g.Percentile)})
                             .ToList()
                     });
 
-                var values = personalities.SelectMany(x => x.Values.Select(c => new {c.Name, c.Percentile}))
-                    .GroupBy(x => x.Name).Select(c => new {name = c.Key, percentile = c.Average(p => p.Percentile)});
+                var Values = Personalities.SelectMany(x => x.Values.Select(c => new {c.Name, c.Percentile}))
+                    .GroupBy(x => x.Name).Select(c => new {Name = c.Key, Percentile = c.Average(p => p.Percentile)});
 
                 var result = new
                 {
-                    mentions,
-                    sources,
-                    needs,
-                    personality,
-                    values,
+                    Mentions,
+                    Sources,
+                    Needs,
+                    Personality,
+                    Values,
                 };
                 return Ok(result);
             }
@@ -165,36 +166,47 @@ namespace Action.Controllers
         [HttpPost("analyze")]
         public dynamic PostAnalyze([FromBody]AnalyseRequest entity)
         {
-            if (entity.Brand == "" || entity.Briefing == "" || entity.Factor == "" || entity.Product == "")
-                return BadRequest("Dados inválidos");
-
-
-            var analisys = PersonalityService.GetPersonalityResult(entity.Briefing);
-            var briefing = new Briefing
-            {
-                Brand = entity.Brand,
-                Description = entity.Briefing,
-                Factor = entity.Factor,
-                Product = entity.Product,
-                Analysis = JsonConvert.SerializeObject(analisys)
-            };
             
-            _dbContext.Briefings.Add(briefing);
-
-            _dbContext.SaveChanges();
-
-            return Ok(new
-            {
-                briefing.Id,
-                Briefing = briefing.Description,
-                briefing.Product,
-                briefing.Brand,
-                briefing.Factor,
-                Personality = analisys.Personality,
-                Values = analisys.Values,
-                Needs = analisys.Needs
-            });
             
+            var json = System.IO.File.ReadAllText(
+                Path.Combine(Startup.RootPath, "App_Data", "mock_analyze_result.json"));
+            var result = JsonConvert.DeserializeObject<dynamic>(json);
+            result.Brand = entity.Brand;
+            result.Product = entity.Product;
+            return result;
+
+            /*    
+                if (entity.Brand == "" || entity.Briefing == "" || entity.Factor == "" || entity.Product == "")
+                    return BadRequest("Dados inválidos");
+    
+    
+                var analisys = PersonalityService.GetPersonalityResult(entity.Briefing);
+                var briefing = new Briefing
+                {
+                    Id = 1,
+                    Brand = entity.Brand,
+                    Description = entity.Briefing,
+                    Factor = entity.Factor,
+                    Product = entity.Product,
+                    Analysis = JsonConvert.SerializeObject(analisys)
+                };
+                
+                //_dbContext.Briefings.Add(briefing);
+    
+                //_dbContext.SaveChanges();
+    
+                return Ok(new
+                {
+                    briefing.Id,
+                    Briefing = briefing.Description,
+                    briefing.Product,
+                    briefing.Brand,
+                    briefing.Factor,
+                    Personality = analisys.Personality,
+                    Values = analisys.Values,
+                    Needs = analisys.Needs
+                });
+                */
         }
     }
 }
