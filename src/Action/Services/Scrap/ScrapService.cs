@@ -15,7 +15,7 @@ namespace Action.Services.Scrap
         public void StartScraper()
         {
             var lLista = new List<ScrapedPage>();
-            var items = new ScrapperContext().ScrapSources.Where(x => x.PageStatus == EPageStatus.Enabled).ToList();
+            var items = new ScrapperContext().ScrapSources.Where(x => x.PageStatus == EPageStatus.Enabled).ToList().AsParallel();
             Parallel.ForEach(items, item =>
             {
                 using (var ctx = new ScrapperContext())

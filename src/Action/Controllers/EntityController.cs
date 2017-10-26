@@ -3,11 +3,17 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using Action.Models;
 using Action.Models.Watson;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Action.Controllers
 {
     [Route("api/[controller]")]
+    
+    [EnableCors("Default")]
+    [AllowAnonymous]
     public class EntityController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
@@ -63,6 +69,27 @@ namespace Action.Controllers
                     return NotFound("No database connection");
                 }
                 var data = _dbContext.Entities.Add(entity);
+                _dbContext.SaveChanges();
+                return data;
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        
+        // POST api/values
+        [HttpPut]
+        public dynamic Put([FromBody] Entity entity)
+        {
+            try
+            {
+                if (_dbContext == null)
+                {
+                    return NotFound("No database connection");
+                }
+                var data = _dbContext.Entry(entity).State = EntityState.Modified;
                 _dbContext.SaveChanges();
                 return data;
             }

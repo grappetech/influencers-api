@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using Action.Models;
 using Action.Models.Scrap;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 namespace Action.Controllers
 {
     //[Authorize]
+    
+    [EnableCors("Default")]
     [Route("api/[controller]")]
     public class ScrapSourcesController : Controller
     {
@@ -24,12 +27,30 @@ namespace Action.Controllers
         }
 
         // GET: api/values
-        [HttpGet]
+        [HttpGet("alias/{source}")]
+        public IEnumerable<ScrapSource> Get([FromRoute] string source)
+        {
+            if (_dbContext == null)
+                return null;
+            return _dbContext.ScrapSources.Where(x=>x.Alias.ToLower().Contains(source.ToLower()) && x.PageStatus != EPageStatus.Error).ToList();
+        }
+        
+        // GET: api/values
+        [HttpGet("{id}")]
+        public ScrapSource GetById([FromRoute] int id)
+        {
+            if (_dbContext == null)
+                return null;
+            return _dbContext.ScrapSources.Find(id);
+        }
+        
+        // GET: api/values
+        [HttpGet("")]
         public IEnumerable<ScrapSource> Get()
         {
             if (_dbContext == null)
                 return null;
-            return _dbContext.ScrapSources.ToList();
+            return _dbContext.ScrapSources.Where(x=>x.PageStatus != EPageStatus.Error).ToList();
         }
 
         // POST api/values
@@ -44,7 +65,7 @@ namespace Action.Controllers
         }
 
         // PUT api/values
-        [HttpPut]
+        [HttpPut("")]
         public ScrapSource Put([FromBody] ScrapSource model)
         {
             if (_dbContext == null)
@@ -55,7 +76,7 @@ namespace Action.Controllers
         }
 
         // DELETE api/values
-        [HttpPut]
+        [HttpDelete]
         public ScrapSource Delete([FromBody] ScrapSource model)
         {
             if (_dbContext == null)

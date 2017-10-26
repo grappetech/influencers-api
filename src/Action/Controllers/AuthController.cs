@@ -116,6 +116,56 @@ namespace Action.Controllers
             }
         }
 
+        [HttpPost("")]
+        [Route("requiretoken")]
+        public async Task<IActionResult> RequireToken([FromBody] RequireAuthViewModel model)
+        {
+            try
+            {
+                var user = await _userManager.FindByNameAsync(model.Email);
+                if (user != null)
+                {
+                    var userClaims = await _userManager.GetClaimsAsync(user);
+
+                    var claims = new[]
+                    {
+                        new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Email, user.Email)
+                    }.Union(userClaims);
+
+                    var symmetricSecurityKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
+                    var signingCredentials =
+                        new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+                    var jwtSecurityToken = new JwtSecurityToken(
+                        _configurationRoot["JwtSecurityToken:Issuer"],
+                        _configurationRoot["JwtSecurityToken:Audience"],
+                        claims,
+                        expires: DateTime.UtcNow.AddDays(1),
+                        signingCredentials: signingCredentials
+                    );
+                    return Ok(new
+                    {
+                        user = model.Email,
+                        token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                        expiration = jwtSecurityToken.ValidTo
+                    });
+                }
+                else
+                {
+                    return Unauthorized();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"error while creating token: {ex}");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "error while creating token");
+            }
+        }
+
+
         [Authorize]
         [HttpGet("permitions/{id}")]
         public IActionResult Permitions(string id)

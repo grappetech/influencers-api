@@ -13,5 +13,11 @@ namespace Action.Models.Watson
         public ECategory CategoryId { get; set; }
         public string Category => Enum.GetName(typeof(ECategory), CategoryId);
         public DateTime Date { get; set; } = DateTime.Today;
+        public string FacebookUser { get; set; }
+        public string TweeterUser { get; set; }
+        public string InstagranUser { get; set; }
+        public string YoutubeUser { get; set; }
+        public string PictureUrl { get; set; }
+        public string SiteUrl { get; set; }
     }
 }

@@ -8,9 +8,10 @@ using Action.Models;
 namespace Action.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171009124209_AnalyzerData")]
+    partial class AnalyzerData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.3");
@@ -192,19 +193,7 @@ namespace Action.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<string>("FacebookUser");
-
-                    b.Property<string>("InstagranUser");
-
                     b.Property<string>("Name");
-
-                    b.Property<string>("PictureUrl");
-
-                    b.Property<string>("SiteUrl");
-
-                    b.Property<string>("TweeterUser");
-
-                    b.Property<string>("YoutubeUser");
 
                     b.HasKey("Id");
 
