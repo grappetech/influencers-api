@@ -1,4 +1,7 @@
-﻿using Action.Models.Scrap;
+﻿using System.Collections.Immutable;
+using Action.Models.Plans;
+using Action.Models.Scrap;
+using Action.Models.ServiceAccount;
 using Action.Services.Watson.NLU;
 using Action.Services.Watson.PersonalityInsights;
 using Action.Services.Watson.ToneAnalyze;
@@ -24,13 +27,43 @@ namespace Action.Models
         public DbSet<PersonalityResult> Personalities { get; set; }
         public DbSet<ToneResult> Tones { get; set; }
         public DbSet<Briefing> Briefings { get; set; }
-
+        public DbSet<Plan> Plans { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
+            builder.Entity<Account>()
+                .HasMany(x => x.Users);
+            
+            builder.Entity<Account>()
+                .HasOne(x => x.Plan)
+                .WithMany()
+                .HasForeignKey(x => x.PlanId);
+
+            builder.Entity<Account>()
+                .HasOne(x => x.Administrator)
+                .WithMany()
+                .HasForeignKey(x => x.AdministratorId);
+            
+            builder.Entity<Plan>()
+                .HasMany(x => x.Featrures);
+            
             builder.Entity<ScrapedPage>()
                 .HasOne(x => x.ScrapSource)
                 .WithMany()
                 .HasForeignKey(x => x.ScrapSourceId);
+
+            builder.Entity<User>()
+                .HasOne(x => x.Plan)
+                .WithMany()
+                .HasForeignKey(x => x.PlanId);
+            
+            builder.Entity<User>()
+                .HasOne(x => x.Account)
+                .WithMany(x=>x.Users)
+                .HasForeignKey(x => x.AccountId);
+            
             base.OnModelCreating(builder);
         }
     }

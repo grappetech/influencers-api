@@ -26,15 +26,16 @@ namespace Action.Controllers
         }
 
         // GET: api/values
-        [HttpGet]
-        public dynamic Get()
+        [HttpGet("")]
+        public dynamic Get([FromQuery] string name = "")
         {
             try
             {
                 if (_dbContext == null)
                     return NotFound("No database connection");
-                var data = _dbContext.Entities.ToList();
-                return data;
+                var data = _dbContext.Entities.Where(x=>x.Name.ToLower().Contains(name.ToLower())).ToList();
+                return
+                    from d in data select new {d.Id, imageUrl = d.PictureUrl, type = d.Category, entity = d.Alias};
             }
             catch (Exception ex)
             {
@@ -50,7 +51,7 @@ namespace Action.Controllers
                 if (_dbContext == null)
                     return NotFound("No database connection");
                 var data = _dbContext.Entities.FirstOrDefault(x => x.Id == id);
-                return data;
+                return new {data.Id, imageUrl = data.PictureUrl, type = data.Category, entity = data.Alias};
             }
             catch (Exception ex)
             {

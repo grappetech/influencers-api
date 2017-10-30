@@ -1,18 +1,22 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Action.Filters;
 using Action.Models;
 using Action.Services.Scrap;
 using Action.Services.Scrap.Repositories;
+using Action.Services.SMTP;
 using Action.Services.Watson.NLU;
 using Action.Services.Watson.PersonalityInsights;
 using Action.Services.Watson.ToneAnalyze;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -75,19 +79,35 @@ namespace Action
                     .AllowAnyHeader();
             }));
 
-            services.AddIdentity<User, Role>(config => config.Cookies.ApplicationCookie.Events =
-                    new CookieAuthenticationEvents
-                    {
-                        OnRedirectToLogin = ctx =>
-                        {
-                            if (ctx.Request.Path.StartsWithSegments("/api"))
-                                ctx.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-                            return Task.FromResult(0);
-                        }
-                    }).AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            //Enables Authentication
+            services.AddIdentity<User, Role>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddAuthentication().AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = Configuration["JwtSecurityToken:Issuer"],
+                    ValidAudience = Configuration["JwtSecurityToken:Audience"],
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey =
+                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityToken:Key"])),
+                    ValidateLifetime = true
+                };
+            });
 
 
+            //ConfigureSmtp
+            services.Configure<SmtpConfiguration>(Configuration.GetSection("SmtpConfiguration"));
+            SmtpConfiguration.Configure(Configuration["SmtpConfiguration:Host"],
+                Convert.ToInt32(Configuration["SmtpConfiguration:Port"]),
+                Configuration["SmtpConfiguration:UserName"],
+                Configuration["SmtpConfiguration:Password"],
+                Configuration["SmtpConfiguration:Sender"],
+                Convert.ToBoolean(Configuration["SmtpConfiguration:IsSSL"]));
+            
+            
+            //Enables TaskManager
             services.AddHangfire(x => x.UseStorage(new MemoryStorage()));
         }
 
@@ -96,27 +116,13 @@ namespace Action
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseIdentity();
+            app.UseAuthentication();
             app.UseHangfireDashboard("/tasks", new DashboardOptions
             {
                 Authorization = new[] {new DashboardAuthorizeFilter()}
             });
             app.UseHangfireServer();
             app.UseCors("Default");
-            app.UseJwtBearerAuthentication(new JwtBearerOptions
-            {
-                AutomaticAuthenticate = true,
-                AutomaticChallenge = true,
-                TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidIssuer = Configuration["JwtSecurityToken:Issuer"],
-                    ValidAudience = Configuration["JwtSecurityToken:Audience"],
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey =
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtSecurityToken:Key"])),
-                    ValidateLifetime = true
-                }
-            });
             app.UseMvc(routes => { });
 
             var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>()
@@ -125,7 +131,13 @@ namespace Action
             var dbContext = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
 
             EnsureDatabaseCreated(dbContext);
+            NotifyApplicationSupport();
             StartScraper();
+        }
+
+        private void NotifyApplicationSupport()
+        {
+            //SmtpService.SendMessage("luiz@nexo.ai", "[ACTION API INICIALIZATION]", "API INICIALIZADA");
         }
 
         private void EnsureDatabaseCreated(ApplicationDbContext dbContext)

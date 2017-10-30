@@ -8,5 +8,9 @@ namespace Action.VewModels
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
+        
+        [Url]
+        [Display(Name = "Url")]
+        public string Url { get; set; }
     }
 }

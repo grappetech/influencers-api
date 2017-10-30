@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Action.Models;
 using Action.Models.Scrap;
+using Action.Models.Watson;
 using Action.Services.Scrap.Repositories;
 using Action.Services.Watson.LanguageTranslator;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ namespace Action.Services.Scrap
         public void StartScraper()
         {
             var lLista = new List<ScrapedPage>();
+            
             var items = new ScrapperContext().ScrapSources.Where(x => x.PageStatus == EPageStatus.Enabled).ToList().AsParallel();
             Parallel.ForEach(items, item =>
             {
