@@ -69,40 +69,71 @@ namespace Action.Controllers
             var result = await _userManager.CreateAsync(user, model.Password);
 
 
-
-          if (result.Succeeded)
-          {
-            Account account;
-            if (model.AccountId == null)
+            if (result.Succeeded)
             {
-              account = new Account
-              {
-                ActivationDate = DateTime.UtcNow,
-                AdministratorId = user.Id,
-                PlanId = user.PlanId,
-                Name = string.Join(user.Name, "_", user.Surname)
-              };
-              account.Users.Add(user);
-              _dbContext.Accounts.Add(account);
-            }
-            else
-            {
-              account = _dbContext.Accounts.Find(model.AccountId.Value);
-              account.Users.Add(user);
+                Account account;
+                if (model.AccountId == null)
+                {
+                    account = new Account
+                    {
+                        ActivationDate = DateTime.UtcNow,
+                        AdministratorId = user.Id,
+                        PlanId = user.PlanId,
+                        Name = string.Join(user.Name, "_", user.Surname)
+                    };
+                    account.Users.Add(user);
+                    _dbContext.Accounts.Add(account);
+                }
+                else
+                {
+                    account = _dbContext.Accounts.Find(model.AccountId.Value);
+                    account.Users.Add(user);
 
-              _dbContext.Entry(account).State = EntityState.Modified;
+                    _dbContext.Entry(account).State = EntityState.Modified;
+                }
+                _dbContext.SaveChanges();
+
+                var plan = _dbContext.Accounts.Find(user.AccountId);
+                var userClaims = await _userManager.GetClaimsAsync(user);
+
+                var claims = new[]
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                    new Claim("accountId", user.AccountId.ToString()),
+                    new Claim("planId", plan.Id.ToString())
+                }.Union(userClaims);
+
+                var symmetricSecurityKey =
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
+                var signingCredentials =
+                    new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+                var jwtSecurityToken = new JwtSecurityToken(
+                    _configurationRoot["JwtSecurityToken:Issuer"],
+                    _configurationRoot["JwtSecurityToken:Audience"],
+                    claims,
+                    expires: DateTime.UtcNow.AddMinutes(60),
+                    signingCredentials: signingCredentials
+                );
+                return Ok(new
+                {
+                    accountId = user.AccountId,
+                    planId = plan.PlanId,
+                    user = model.Email,
+                    token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                    expiration = jwtSecurityToken.ValidTo
+                });
             }
-            _dbContext.SaveChanges();
-              
-            return Ok(new {accountId = account.Id});
-          }
-          
-          foreach (var error in result.Errors)
+
+            foreach (var error in result.Errors)
                 ModelState.AddModelError("error", error.Description);
             return BadRequest(result.Errors);
         }
 
         [ValidateForm]
+        [AllowAnonymous]
         [HttpPost("login")]
         [Route("token")]
         public async Task<IActionResult> CreateToken([FromBody] LoginViewModel model)
@@ -115,8 +146,7 @@ namespace Action.Controllers
                 if (_passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password) ==
                     PasswordVerificationResult.Success)
                 {
-
-                  var plan = _dbContext.Accounts.Find(user.AccountId);
+                    var plan = _dbContext.Accounts.Find(user.AccountId);
                     var userClaims = await _userManager.GetClaimsAsync(user);
 
                     var claims = new[]
@@ -124,8 +154,8 @@ namespace Action.Controllers
                         new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                         new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                        new Claim("accountId",user.AccountId.ToString()),
-                        new Claim("planId",plan.Id.ToString())
+                        new Claim("accountId", user.AccountId.ToString()),
+                        new Claim("planId", plan.Id.ToString())
                     }.Union(userClaims);
 
                     var symmetricSecurityKey =
@@ -168,16 +198,16 @@ namespace Action.Controllers
                 if (user != null)
                 {
                     var userClaims = await _userManager.GetClaimsAsync(user);
-                  var plan = _dbContext.Accounts.Find(user.AccountId);
-                  var claims = new[]
-                  {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim("accountId", user.AccountId.ToString()),
-                    new Claim("planId", plan.Id.ToString())
-                  }.Union(userClaims);
-                  
+                    var plan = _dbContext.Accounts.Find(user.AccountId);
+                    var claims = new[]
+                    {
+                        new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                        new Claim("accountId", user.AccountId.ToString()),
+                        new Claim("planId", plan.Id.ToString())
+                    }.Union(userClaims);
+
 
                     var symmetricSecurityKey =
                         new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
@@ -194,7 +224,7 @@ namespace Action.Controllers
                     var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
                     SmtpService.SendMessage(model.Email, "[ACTION-API Acesso]",
-                        string.Concat(model.Url, "?token=", token));
+                        string.Concat(model.Url, "?token=", token, "&key=", user.AccountId));
 
                     return Ok();
                 }

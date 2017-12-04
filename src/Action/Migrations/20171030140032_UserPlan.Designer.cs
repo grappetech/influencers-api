@@ -1047,7 +1047,7 @@ namespace Action.Migrations
             modelBuilder.Entity("Action.Models.Plans.Features", b =>
                 {
                     b.HasOne("Action.Models.Plans.Plan")
-                        .WithMany("Featrures")
+                        .WithMany("Features")
                         .HasForeignKey("PlanId");
                 });
 

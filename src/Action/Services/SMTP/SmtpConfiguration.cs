@@ -1,4 +1,7 @@
-﻿namespace Action.Services.SMTP
+﻿using System;
+using System.Threading.Tasks;
+
+namespace Action.Services.SMTP
 {
     public class SmtpConfiguration
     {
@@ -20,11 +23,13 @@
                 Sender = sennder,
                 IsSSL = isSSL
             };
+            
         }
 
         public static SmtpConfiguration GetConfiguration()
         {
             return _instance;
+            
         }
         
         public string Host { get; set; }

@@ -33,7 +33,7 @@ namespace Action.Controllers
             {
                 if (_dbContext == null)
                     return NotFound("No database connection");
-                var data = _dbContext.Plans.Include(x=>x.Featrures).ToList();
+                var data = _dbContext.Plans.Include(x=>x.Features).ToList();
                 return data;
             }
             catch (Exception ex)

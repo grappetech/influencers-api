@@ -47,7 +47,7 @@ namespace Action.Models
                 .HasForeignKey(x => x.AdministratorId);
             
             builder.Entity<Plan>()
-                .HasMany(x => x.Featrures);
+                .HasMany(x => x.Features);
             
             builder.Entity<ScrapedPage>()
                 .HasOne(x => x.ScrapSource)

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Action.Models.Plans;
+using Action.Models.Watson;
 
 namespace Action.Models.ServiceAccount
 {
@@ -15,6 +16,6 @@ namespace Action.Models.ServiceAccount
         public User Administrator { get; set; }
         public string AdministratorId { get; set; }
         public List<User> Users { get; set; } = new List<User>();
-
+        public List<Entity> Entities { get; set; }
     }
 }

@@ -33,42 +33,6 @@ namespace Action.Controllers
             _htmlEncoder = htmlEncoder;
         }
 
-
-        // GET: api/values
-        //[Authorize]
-        [HttpGet("entities/{entity}")]
-        public dynamic Get(string entity)
-        {
-            try
-            {
-                var result = new EntityList();
-
-                var ids = _dbContext.Database.GetDbConnection()
-                    .ExecuteReader("SELECT DISTINCT EntityId AS Id FROM Personalities;")
-                    .Parse<IdListViewModel<long>>().ToList();
-
-                var entities = _dbContext.Entities
-                    .Where(x => x.Alias.ToLower().Contains(entity.ToLower()) &&
-                                x.CategoryId == ECategory.Brand).ToList();
-
-                foreach (var item in entities)
-                    if (ids.Any(x => x.Id == item.Id))
-                        result.Entities.Add(new SimpleEntity
-                        {
-                            Entity = item.Name,
-                            Id = item.Id,
-                            Type = item.Category
-                        });
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-
         // GET: api/values
         //[Authorize]
         [HttpGet("persons/{entity}")]
@@ -150,15 +114,13 @@ namespace Action.Controllers
 
         //[Authorize]
         [HttpGet("tone/{entity}")]
-        public dynamic GetTone(string entity)
+        public dynamic GetTone([FromRoute]int entity, [FromQuery] DateTime from, [FromQuery] DateTime to)
         {
-            var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_tone_result.json"));
-            var result = JsonConvert.DeserializeObject<dynamic>(json);
-            var number2 = new Random(DateTime.Now.Millisecond);
-            var number3 = number2.Next(100, 999) / 1000.0;
-            result.document_tone.positive = number3;
-            result.document_tone.negative = 1.0 - number3;
-            return result;
+            var ltones = _dbContext.Tones.Where(x => x.EntityId == entity).ToList();
+            for (var i = 0; i < ltones.Count; i ++) {
+                var lpage = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Id == ltones[i].ScrapedPageId);
+            }
+            return ltones; 
         }
 
 

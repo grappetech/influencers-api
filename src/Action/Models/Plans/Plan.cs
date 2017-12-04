@@ -10,6 +10,6 @@ namespace Action.Models.Plans
         public string Name { get; set; }
         public string Slug { get; set; }
         public decimal Price { get; set; }
-        public List<Features> Featrures { get; set; } = new List<Features>();
+        public List<Features> Features { get; set; } = new List<Features>();
     }
 }
