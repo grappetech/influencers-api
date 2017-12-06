@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <VersionPrefix>1.0.4</VersionPrefix>
-      <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <DebugType>portable</DebugType>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>Action</AssemblyName>
@@ -21,15 +21,15 @@
     <PackageReference Include="IBM.WatsonDeveloperCloud.TextToSpeech.v1" Version="1.2.0" />
     <PackageReference Include="IBM.WatsonDeveloperCloud.ToneAnalyzer.v3" Version="1.2.0" />
     <PackageReference Include="IBM.WatsonDeveloperCloud.VisualRecognition.v3" Version="1.2.0" />
-      <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="1.1.10"/>
-      <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0"/>
-      <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.0.0"/>
-      <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0"/>
-      <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.0"/>
+    <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="1.1.10"/>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.0.0"/>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0"/>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.0"/>
   </ItemGroup>
   <ItemGroup>
-      <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0"/>
-      <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0"/>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0"/>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.0"/>
   </ItemGroup>
   <Target Name="AddWwwRoot" BeforeTargets="AssignTargetPaths" DependsOnTargets="BeforeBuild;BeforePublish">
     <ItemGroup>
@@ -37,7 +37,7 @@
     </ItemGroup>
   </Target>
   <ItemGroup>
-      <Folder Include="MachineLearn"/>
+    <Folder Include="MachineLearn"/>
     <Folder Include="Migrations\" />
     <Folder Include="VewModels\" />
     <Folder Include="Filters\" />

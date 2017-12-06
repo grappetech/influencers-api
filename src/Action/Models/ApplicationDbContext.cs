@@ -29,6 +29,7 @@ namespace Action.Models
         public DbSet<Briefing> Briefings { get; set; }
         public DbSet<Plan> Plans { get; set; }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Industry> Industries { get; set; }
         
         protected override void OnModelCreating(ModelBuilder builder)
         {
