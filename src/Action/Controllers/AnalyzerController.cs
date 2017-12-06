@@ -69,23 +69,23 @@ namespace Action.Controllers
                     .Include(x => x.Needs)
                     .Include(x => x.Values).Where(x => x.EntityId == entity).ToList();
 
-                var Needs = Personalities.SelectMany(x => x.Needs.Select(c => new {c.Name, c.Percentile}))
-                    .GroupBy(x => x.Name).Select(c => new {Name = c.Key, Percentile = c.Average(p => p.Percentile)});
+                var Needs = Personalities.SelectMany(x => x.Needs.Select(c => new { c.Name, c.Percentile }))
+                    .GroupBy(x => x.Name).Select(c => new { Name = c.Key, Percentile = c.Average(p => p.Percentile) });
 
                 var Personality = Personalities
-                    .SelectMany(x => x.Personality.Select(c => new {c.Name, c.Percentile, c.Details}))
+                    .SelectMany(x => x.Personality.Select(c => new { c.Name, c.Percentile, c.Details }))
                     .GroupBy(x => x.Name).Select(c => new
                     {
                         name = c.Key,
                         percentile = c.Average(p => p.Percentile),
                         details = c.SelectMany(d => d.Details)
                             .GroupBy(e => e.Name)
-                            .Select(f => new {Name = f.Key, Percentile = f.Average(g => g.Percentile)})
+                            .Select(f => new { Name = f.Key, Percentile = f.Average(g => g.Percentile) })
                             .ToList()
                     });
 
-                var Values = Personalities.SelectMany(x => x.Values.Select(c => new {c.Name, c.Percentile}))
-                    .GroupBy(x => x.Name).Select(c => new {Name = c.Key, Percentile = c.Average(p => p.Percentile)});
+                var Values = Personalities.SelectMany(x => x.Values.Select(c => new { c.Name, c.Percentile }))
+                    .GroupBy(x => x.Name).Select(c => new { Name = c.Key, Percentile = c.Average(p => p.Percentile) });
 
                 var result = new
                 {
@@ -117,10 +117,94 @@ namespace Action.Controllers
         public dynamic GetTone([FromRoute]int entity, [FromQuery] DateTime from, [FromQuery] DateTime to)
         {
             var ltones = _dbContext.Tones.Where(x => x.EntityId == entity).ToList();
-            for (var i = 0; i < ltones.Count; i ++) {
+            for (var i = 0; i < ltones.Count; i++)
+            {
                 var lpage = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Id == ltones[i].ScrapedPageId);
             }
-            return ltones; 
+            //return ltones; 
+            return Ok(new
+            {
+                sources = 170, // Nova propriedade
+                tone = new
+                {
+                    positive = 0.408,
+                    negative = 0.59200000000000008,
+                    neutro = 0.59200000000000008
+                },
+                tones = new[] {
+                    new {
+                        score= 0.570627,
+                        id= "joy",
+                        name= "Alegria"
+                    },
+                    new {
+                        score= 0.570627,
+                        id= "medo",
+                        name= "Medo"
+                    },
+                    new {
+                        score= 0.570627,
+                        id= "raiva",
+                        name= "raiva"
+                    },
+                    new {
+                        score= 0.570627,
+                        id= "nojo",
+                        name= "nojo"
+                    },
+                    new {
+                        score= 0.570627,
+                        id= "tristeza",
+                        name= "tristeza"
+                    }
+                },
+                mentions = new[] {
+                    new {
+                        id= 0,
+                        text= "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
+                        toneId= "joy",
+                        url= "https=//app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
+                        type= "positive",
+                        date= "2017-10-28T00=00=00"
+                    },
+                    new {
+                        id= 0,
+                        text= "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
+                        toneId= "joy",
+                        url= "https=//app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
+                        type= "negative",
+                        date= "2017-10-28T00=00=00"
+                    },
+                    new {
+                        id= 0,
+                        text= "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
+                        toneId= "joy",
+                        url= "https=//app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
+                        type= "neutro",
+                        date= "2017-10-28T00=00=00"
+                    }
+                },
+                words = new[] {
+                    new {
+                        id= "5243g67346h834j893",
+                        text= "altar",
+                        weight= 123,
+                        type = "positive"
+                    },
+                    new {
+                        id= "5243g67346h834j893",
+                        text= "Tuesday",
+                        weight= 2,
+                        type = "neutral"
+                    },
+                    new {
+                        id= "5243g67346h834j893",
+                        text= "relationship",
+                        weight= 33,
+                        type = "negative"
+                    }
+                }
+            });
         }
 
 
@@ -128,8 +212,8 @@ namespace Action.Controllers
         [HttpPost("analyze")]
         public dynamic PostAnalyze([FromBody]AnalyseRequest entity)
         {
-            
-            
+
+
             var json = System.IO.File.ReadAllText(
                 Path.Combine(Startup.RootPath, "App_Data", "mock_analyze_result.json"));
             var result = JsonConvert.DeserializeObject<dynamic>(json);

@@ -117,13 +117,15 @@ namespace Action.Controllers
                     expires: DateTime.UtcNow.AddMinutes(60),
                     signingCredentials: signingCredentials
                 );
+                //TODO: Ajustar o retorno do CompanyName
                 return Ok(new
                 {
                     accountId = user.AccountId,
                     planId = plan.PlanId,
                     user = model.Email,
                     token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                    expiration = jwtSecurityToken.ValidTo
+                    expiration = jwtSecurityToken.ValidTo,
+                    companyName = "Nexo Company"
                 });
             }
 
@@ -223,8 +225,10 @@ namespace Action.Controllers
                     );
                     var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
+                    string lConcat = Convert.ToBase64String(Encoding.UTF8.GetBytes(String.Concat(token, user.AccountId)));
+
                     SmtpService.SendMessage(model.Email, "[ACTION-API Acesso]",
-                        string.Concat(model.Url, "?token=", token, "&key=", user.AccountId));
+                        string.Concat(model.Url, "?token=", lConcat));
 
                     return Ok();
                 }
