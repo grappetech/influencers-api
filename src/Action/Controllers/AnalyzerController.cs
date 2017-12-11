@@ -254,5 +254,41 @@ namespace Action.Controllers
                 });
                 */
         }
+
+        //[Authorize]
+        [HttpGet("analyze/socialengagement")]
+        public dynamic GetSocialEngagement()
+        {
+            var json = System.IO.File.ReadAllText(
+                Path.Combine(Startup.RootPath, "App_Data", "mock_social_engagement.json"));
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
+
+        //[Authorize]
+        [HttpGet("analyze/cardrecomedation")]
+        public dynamic GetCardRecomedation()
+        {
+            var json = System.IO.File.ReadAllText(
+                Path.Combine(Startup.RootPath, "App_Data", "mock_card_recomedation_artist.json"));
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
+
+        //[Authorize]
+        [HttpGet("analyze/cardinformationrecomedation")]
+        public dynamic GetCardInformationRecomedation()
+        {
+            var json = System.IO.File.ReadAllText(
+                Path.Combine(Startup.RootPath, "App_Data", "mock_cardinformation_recomendation_artist.json"));
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
+
+        //[Authorize]
+        [HttpGet("analyze/recomedation")]
+        public dynamic GetRecomedation()
+        {
+            var json = System.IO.File.ReadAllText(
+                Path.Combine(Startup.RootPath, "App_Data", "mock_recomendation.json"));
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
     }
 }

@@ -1,0 +1,107 @@
+{
+	"id":"AUGabUBAkja",
+	"name":"Marina Moschen",
+	"tones":[
+    {
+      "entity": "Renault",
+      "text": "Lorem ipsum dolor Renault sit amet",
+      "url": "http://lorem.ipsum.dolor.moda.sit.amet/lorem",
+      "date":"2017-11-06T00:00:00",
+      "tone":"positivo",
+      "mentions":20
+    },
+    {
+      "entity": "Renault",
+      "text": "Lorem ipsum dolor Renault sit amet.",
+      "url": "http://lorem.ipsum.dolor.moda.sit.amet/lorem2",
+      "date":"2017-11-06T00:00:00",
+      "tone":"negativo",
+      "mentions":10
+    },
+    {
+      "entity": "Renault",
+      "text": "Lorem ipsum dolor Renault sit amet.",
+      "url": "http://lorem.ipsum.dolor.moda.sit.amet/lorem3",
+      "date":"2017-11-06T00:00:00",
+      "tone":"positivo",
+      "mentions":30
+    }
+    ],
+	"personality":[
+	{
+	   "name":"Abertura",
+       "children":[
+        {
+          "name": "Desejo de aventura",
+          "percentile": 0.4643507668577935,
+        },
+		{
+          "name": "Interesses artísticos",
+          "percentile": 0.7953686989391023,
+        },
+		{
+          "name": "Emotividade",
+          "percentile": 0.4122563395247698,
+        },
+		{
+          "name": "Imaginação",
+          "percentile": 0.6629401102105492,
+        },
+       ]
+	}
+    ],
+    "relations":[
+    {
+      "type": "Vida Pessoal",
+      "text":"São Paulo",
+      "sentence":"Lorem ipsum dolor São Paulo sit amet.",
+      "url":"http://lorem.ipsum.dolor.moda.sit.amet/lorem2"
+    },
+    {
+      "type": "Vida Pessoal",
+      "text":"São Paulo",
+      "sentence":"Lorem ipsum dolor São Paulo sit amet.",
+      "url":"http://lorem.ipsum.dolor.moda.sit.amet/lorem2"
+    },
+    {
+      "type": "Vida Pessoal",
+      "text":"São Paulo",
+      "sentence":"Lorem ipsum dolor São Paulo sit amet.",
+      "url":"http://lorem.ipsum.dolor.moda.sit.amet/lorem2"
+    },
+    {
+      "type": "Vida Pessoal",
+      "text":"São Paulo",
+      "sentence":"Lorem ipsum dolor São Paulo sit amet.",
+      "url":"http://lorem.ipsum.dolor.moda.sit.amet/lorem2"
+    }
+    ],
+    "values":[
+    {
+      "name":"Conservação",
+      "percentile":"0.08"
+    },
+    {
+      "name":"Abertura à mundança",
+      "percentile":"0.07"
+    },
+    {
+      "name":"Hedonismo",
+      "percentile":"0.125"
+    }
+    ],
+    "sentences_tone":[
+    {
+      "tone":"alegria",
+      "score":"0.57"
+    },
+    {
+      "tone":"Hesitante",
+      "score":"0.78"
+    },
+    {
+      "tone":"Confiante",
+      "score":"0.97"
+    },
+    ]
+}

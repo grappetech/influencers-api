@@ -185,7 +185,7 @@ namespace Action.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"error while creating token: {ex}");
-                return StatusCode((int) HttpStatusCode.InternalServerError, "error while creating token");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "error while creating token");
             }
         }
 
@@ -225,10 +225,9 @@ namespace Action.Controllers
                     );
                     var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
-                    string lConcat = Convert.ToBase64String(Encoding.UTF8.GetBytes(String.Concat(token, user.AccountId)));
-
                     SmtpService.SendMessage(model.Email, "[ACTION-API Acesso]",
-                        string.Concat(model.Url, "?token=", lConcat));
+                        string.Concat(model.Url, "?token=", token, "&key=", user.AccountId));
+
 
                     return Ok();
                 }
@@ -240,7 +239,7 @@ namespace Action.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"error while creating token: {ex}");
-                return StatusCode((int) HttpStatusCode.InternalServerError, "error while creating token");
+                return StatusCode((int)HttpStatusCode.InternalServerError, "error while creating token");
             }
         }
 
