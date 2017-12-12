@@ -256,11 +256,65 @@ namespace Action.Controllers
         }
 
         //[Authorize]
-        [HttpGet("analyze/socialengagement")]
-        public dynamic GetSocialEngagement()
+        [HttpGet("analyze/sentiment")]
+        public dynamic GetSentiment([FromQuery] DateTime from, [FromQuery] DateTime to)
         {
             var json = System.IO.File.ReadAllText(
-                Path.Combine(Startup.RootPath, "App_Data", "mock_social_engagement.json"));
+                Path.Combine(Startup.RootPath, "App_Data", "mock_sentiment.json"));
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
+
+        //[Authorize]
+        [HttpGet("analyze/sentimentdetail")]
+        public dynamic GetSentimentDetail([FromQuery] DateTime from, [FromQuery] DateTime to)
+        {
+            var json = System.IO.File.ReadAllText(
+                Path.Combine(Startup.RootPath, "App_Data", "mock_sentimentdetail.json"));
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
+
+        //[Authorize]
+        [HttpGet("analyze/personality")]
+        public dynamic GetPersonality([FromQuery] DateTime from, [FromQuery] DateTime to)
+        {
+            var json = System.IO.File.ReadAllText(
+                Path.Combine(Startup.RootPath, "App_Data", "mock_personality.json"));
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
+
+        //[Authorize]
+        [HttpGet("analyze/personalitydetail")]
+        public dynamic GetPersonalityDetail([FromQuery] DateTime from, [FromQuery] DateTime to)
+        {
+            var json = System.IO.File.ReadAllText(
+                Path.Combine(Startup.RootPath, "App_Data", "mock_personalitydetail.json"));
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
+
+        //[Authorize]
+        [HttpGet("analyze/relationdetail")]
+        public dynamic GetRelationDetail([FromQuery] DateTime from, [FromQuery] DateTime to)
+        {
+            var json = System.IO.File.ReadAllText(
+                Path.Combine(Startup.RootPath, "App_Data", "mock_relationdetail.json"));
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
+
+        //[Authorize]
+        [HttpGet("analyze/valuesdetail")]
+        public dynamic GetValuesDetail([FromQuery] DateTime from, [FromQuery] DateTime to)
+        {
+            var json = System.IO.File.ReadAllText(
+                Path.Combine(Startup.RootPath, "App_Data", "mock_valuesdetail.json"));
+            return JsonConvert.DeserializeObject<dynamic>(json);
+        }
+
+        //[Authorize]
+        [HttpGet("analyze/sentencestonedetails")]
+        public dynamic GetSentencesToneDetail([FromQuery] DateTime from, [FromQuery] DateTime to)
+        {
+            var json = System.IO.File.ReadAllText(
+                Path.Combine(Startup.RootPath, "App_Data", "mock_sentencestonedetail.json"));
             return JsonConvert.DeserializeObject<dynamic>(json);
         }
 

@@ -1,0 +1,25 @@
+{
+  "personality": [
+    {
+      "name": "Abertura",
+      "children": [
+        {
+          "name": "Desejo de aventura",
+          "percentile": 0.4643507668577935
+        },
+        {
+          "name": "Interesses artísticos",
+          "percentile": 0.7953686989391023
+        },
+        {
+          "name": "Emotividade",
+          "percentile": 0.4122563395247698
+        },
+        {
+          "name": "Imaginação",
+          "percentile": 0.6629401102105492
+        }
+      ]
+    }
+  ]
+}

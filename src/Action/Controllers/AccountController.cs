@@ -33,7 +33,7 @@ namespace Action.Controllers
             {
                 if (_dbContext == null)
                     return NotFound("No database connection");
-                var data = _dbContext.Accounts.Include(x => x.Administrator).Include(x => x.Plan).ThenInclude(x => x.Features).Include(x => x.Users).FirstOrDefault(x => x.Id == id);
+                var data = _dbContext.Accounts.Include(x => x.Entities).Include(x => x.Administrator).Include(x => x.Plan).ThenInclude(x => x.Features).Include(x => x.Users).FirstOrDefault(x => x.Id == id);
 
                 //TODO: Alterado o Retorno
                 return Ok(new
@@ -51,21 +51,9 @@ namespace Action.Controllers
                             startDate= "2017-11-06T00:00:00"
                         }
                     },
-                    entities = new List<Entity>(),
-                    users = new[]
-                    {
-                        new
-                        {
-                            id= "2g34h5j6k789l8kj765h4",
-                            accountId= 123,
-                            role= "ADMIN", // ADMIN | USER
-                            email= "luiz@gmail.com",
-                            name= "Luiz",
-                            surname= "Luiz",
-                            phone= "Luiz"
-                        }
-                    },
-                    status = "ACTIVE"
+                    entities = data.Entities,
+                    users = data.Users,
+                    status = data.Status
                     //name = data.Administrator?.Name,
                     //email = data.Administrator?.Email,
 
@@ -78,38 +66,39 @@ namespace Action.Controllers
         }
 
         [HttpPost("{id}/entities")]
-        public dynamic Post([FromRoute] int id, [FromBody] List<AddEntityViewModel> model)
+        public dynamic Post([FromRoute] int id, [FromBody] AddEntityViewModel model)
         {
-            var account = _dbContext.Accounts.Find(id);
-            foreach (var entity in model)
-            {
-                if (entity.Id == 0)
-                {
-                    var obj = new Entity
-                    {
-                        Name = entity.Entity,
-                        CategoryId = Enum.Parse<ECategory>(entity.Type)
-                    };
-                    _dbContext.Entities.Add(obj);
-                    account.Entities.Add(obj);
+            var account = _dbContext.Accounts.Include(x => x.Entities).FirstOrDefault(y => y.Id == id);
 
-                }
-                else
+            if (model.Id == 0)
+            {
+                var obj = new Entity
                 {
-                    if (account.Entities.All(x => x.Id != entity.Id))
-                        account.Entities.Add(_dbContext.Entities.Find(entity.Id));
-                }
+                    Name = model.Entity,
+                    CategoryId = Enum.Parse<ECategory>(model.Type)
+                };
+                _dbContext.Entities.Add(obj);
+                account.Entities.Add(obj);
             }
+            else
+            {
+                if (account.Entities == null)
+                    account.Entities = new List<Entity>();
+
+                if (account.Entities.All(x => x.Id != model.Id))
+                    account.Entities.Add(_dbContext.Entities.Find((long)model.Id));
+            }
+
             _dbContext.Entry(account).State = EntityState.Modified;
             _dbContext.SaveChanges();
             return account.Entities;
         }
 
-        //TODO: Adicionado Dois Retornos Mocados em AccountController
+        //TODO: Implementar o Upload de Imagem
         [HttpPost("{id}/image")]
-        public dynamic Post([FromRoute] int id)
+        public dynamic Post([FromRoute] int id, [FromBody] string image)
         {
-            return "https://cdn1.iconfinder.com/data/icons/social-messaging-productivity-1-1/128/gender-male2-512.png";
+            return Ok();// "https://cdn1.iconfinder.com/data/icons/social-messaging-productivity-1-1/128/gender-male2-512.png";
         }
 
         [HttpPost("{id}/users")]
