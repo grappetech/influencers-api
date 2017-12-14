@@ -42,7 +42,7 @@ namespace Action.Controllers
                     return NotFound("No database connection");
                 var data = _dbContext.Entities.Where(x=>x.Name.ToLower().Contains(name.ToLower())).ToList();
                 return
-                    from d in data select new {d.Id, imageUrl = d.PictureUrl, type = d.Category, entity = d.Alias};
+                    from d in data select new {d.Id, imageUrl = "https://cdn1.iconfinder.com/data/icons/social-messaging-productivity-1-1/128/gender-male2-512.png", type = d.Category, entity = d.Name};
             }
             catch (Exception ex)
             {

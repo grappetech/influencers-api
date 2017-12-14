@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Internal.System.Collections.Sequences;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Action.Controllers
 {
@@ -36,7 +37,7 @@ namespace Action.Controllers
                 var data = _dbContext.Accounts.Include(x => x.Entities).Include(x => x.Administrator).Include(x => x.Plan).ThenInclude(x => x.Features).Include(x => x.Users).FirstOrDefault(x => x.Id == id);
 
                 //TODO: Alterado o Retorno
-                return Ok(new
+                var teste = new
                 {
                     data.Id,
                     data.Plan,
@@ -52,12 +53,30 @@ namespace Action.Controllers
                         }
                     },
                     entities = data.Entities,
-                    users = data.Users,
+                    users = new List<dynamic>(),
+                    //users = data.Users,
                     status = data.Status
                     //name = data.Administrator?.Name,
                     //email = data.Administrator?.Email,
 
-                });
+                };
+
+                foreach (var item in data.Users)
+                {
+                    teste.users.Add(new
+                    {
+                        item.AccountId,
+                        item.Email,
+                        item.Id,
+                        item.Name,
+                        item.PhoneNumber,
+                        item.PlanId,
+                        item.Surname,
+                        item.UserName
+                    });
+                }
+
+                return Ok(teste);
             }
             catch (Exception ex)
             {
@@ -68,30 +87,44 @@ namespace Action.Controllers
         [HttpPost("{id}/entities")]
         public dynamic Post([FromRoute] int id, [FromBody] AddEntityViewModel model)
         {
-            var account = _dbContext.Accounts.Include(x => x.Entities).FirstOrDefault(y => y.Id == id);
-
-            if (model.Id == 0)
+            if (ModelState.IsValid)
             {
-                var obj = new Entity
+                try
                 {
-                    Name = model.Entity,
-                    CategoryId = Enum.Parse<ECategory>(model.Type)
-                };
-                _dbContext.Entities.Add(obj);
-                account.Entities.Add(obj);
+                    var account = _dbContext.Accounts.Include(x => x.Entities).FirstOrDefault(y => y.Id == id);
+
+                    if (model.Id == 0)
+                    {
+                        var obj = new Entity
+                        {
+                            Name = model.Name,
+                            CategoryId = Enum.Parse<ECategory>(model.Category)
+                        };
+                        _dbContext.Entities.Add(obj);
+                        account.Entities.Add(obj);
+                    }
+                    else
+                    {
+                        if (account.Entities == null)
+                            account.Entities = new List<Entity>();
+
+                        if (account.Entities.All(x => x.Id != model.Id))
+                            account.Entities.Add(_dbContext.Entities.Find((long)model.Id));
+                    }
+
+                    _dbContext.Entry(account).State = EntityState.Modified;
+                    _dbContext.SaveChanges();
+                    return account.Entities;
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new { error = ex.Message });
+                }
             }
             else
             {
-                if (account.Entities == null)
-                    account.Entities = new List<Entity>();
-
-                if (account.Entities.All(x => x.Id != model.Id))
-                    account.Entities.Add(_dbContext.Entities.Find((long)model.Id));
+                return StatusCode(400, new { error = "Modelo não é válido." });
             }
-
-            _dbContext.Entry(account).State = EntityState.Modified;
-            _dbContext.SaveChanges();
-            return account.Entities;
         }
 
         //TODO: Implementar o Upload de Imagem
@@ -187,9 +220,18 @@ namespace Action.Controllers
     {
         //TODO: Adicionado as Propriedades imageUrl e industryId
         public int Id { get; set; }
-        public string Entity { get; set; }
-        public string Type { get; set; }
-        public string imageUrl { get; set; }
-        public int industryId { get; set; }
+        [Required(ErrorMessage = "Nome não informado.")]
+        public string Name { get; set; }
+        public string Alias { get; set; }
+        public int CategoryId { get; set; }
+        [Required(ErrorMessage = "Categoria não informada.")]
+        public string Category { get; set; }
+        public string Date { get; set; }
+        public string FacebookUser { get; set; }
+        public string TweeterUser { get; set; }
+        public string InstagranUser { get; set; }
+        public string YoutuberUser { get; set; }
+        public string PictureUrl { get; set; }
+        public string SiteUrl { get; set; }
     }
 }

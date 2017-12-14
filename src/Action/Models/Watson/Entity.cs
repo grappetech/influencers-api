@@ -17,7 +17,19 @@ namespace Action.Models.Watson
         public string TweeterUser { get; set; }
         public string InstagranUser { get; set; }
         public string YoutubeUser { get; set; }
-        public string PictureUrl { get; set; }
+
+        private string _pictureUrl;
+        public string PictureUrl
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(_pictureUrl))
+                    return "https://cdn1.iconfinder.com/data/icons/social-messaging-productivity-1-1/128/gender-male2-512.png";
+                else
+                    return _pictureUrl;
+            }
+            set { _pictureUrl = value; }
+        }
         public string SiteUrl { get; set; }
     }
 }
