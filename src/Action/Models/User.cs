@@ -6,14 +6,13 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Action.Models
 {
-    public class User : IdentityUser
-    {
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public Plan Plan { get; set; }
-        public int? PlanId { get; set; }
-        public Account Account { get; set; }
-        public int? AccountId { get; set; }
-        
-    }
+	public class User : IdentityUser
+	{
+		public string Name { get; set; }
+		public string Surname { get; set; }
+		public Plan Plan { get; set; }
+		public int? PlanId { get; set; }
+		public Account Account { get; set; }
+		public int? AccountId { get; set; }
+	}
 }

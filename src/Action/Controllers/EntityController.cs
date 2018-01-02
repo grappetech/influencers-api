@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -17,161 +18,181 @@ using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace Action.Controllers
 {
-    [Route("api/entities")]
-    
-    [EnableCors("Default")]
-    [AllowAnonymous]
-    public class EntityController : Controller
-    {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly HtmlEncoder _htmlEncoder;
+	[Route("api/entities")]
 
-        public EntityController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
-        {
-            _dbContext = dbContext;
-            _htmlEncoder = htmlEncoder;
-        }
+	[EnableCors("Default")]
+	[AllowAnonymous]
+	public class EntityController : Controller
+	{
+		private readonly ApplicationDbContext _dbContext;
+		private readonly HtmlEncoder _htmlEncoder;
 
-        // GET: api/values
-        [HttpGet("")]
-        public dynamic Get([FromQuery] string name = "")
-        {
-            try
-            {
-                if (_dbContext == null)
-                    return NotFound("No database connection");
-                var data = _dbContext.Entities.Where(x=>x.Name.ToLower().Contains(name.ToLower())).ToList();
-                return
-                    from d in data select new {d.Id, pictureUrl = "https://cdn1.iconfinder.com/data/icons/social-messaging-productivity-1-1/128/gender-male2-512.png", type = d.Category, entity = d.Name};
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+		public EntityController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
+		{
+			_dbContext = dbContext;
+			_htmlEncoder = htmlEncoder;
+		}
 
-        [HttpGet("{id}")]
-        public dynamic GetById(long id)
-        {
-            try
-            {
-                if (_dbContext == null)
-                    return NotFound("No database connection");
-                var data = _dbContext.Entities.FirstOrDefault(x => x.Id == id);
-                return new {data.Id, pictureUrl = data.PictureUrl, type = data.Category, entity = data.Alias};
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        
-        
-        [HttpPost("{id}/image")]
-        public dynamic PostImage([FromRoute]long id, IFormFile file)
-        {
-            
-            try
-            {
-                if (_dbContext == null)
-                    return NotFound("No database connection");
-                var data = _dbContext.Entities.FirstOrDefault(x => x.Id == id);
-                
-                if (file == null || file.Length == 0)
-                    return Content("file not selected");
+		// GET: api/values
+		[HttpGet("")]
+		public dynamic Get([FromQuery] string name = "")
+		{
+			try
+			{
+				if (_dbContext == null)
+					return NotFound("No database connection");
+				var data = _dbContext.Entities.Where(x => x.Name.ToLower().Contains(name.ToLower())).ToList();
 
-                var path = Path.Combine(
-                    Directory.GetCurrentDirectory(), "wwwroot", 
-                    file.FileName);
+				List<EntityViewModel> lEntityViewModel = new List<EntityViewModel>();
+				if (data != null)
+					foreach (var d in data)
+						lEntityViewModel.Add(new EntityViewModel
+						{
+							Id = d.Id,
+							Entity = d.Name,
+							Type = d.Category,
+							ImageUrl = d.PictureUrl,
+						});
+				return lEntityViewModel;
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
 
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    file.CopyTo(stream);
-                }
+		[HttpGet("{id}")]
+		public dynamic GetById(long id)
+		{
+			try
+			{
+				if (_dbContext == null)
+					return NotFound("No database connection");
+				var data = _dbContext.Entities.FirstOrDefault(x => x.Id == id);
 
-                return Ok(Request.Path.Value + "/" + file.FileName.Replace(".","___"));
+				if (data == null)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "Object not found with ID " + id.ToString() + "." });
 
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        
-        [HttpGet("{id}/image/{filename}")]
-        public dynamic GetImage([FromRoute]long id, [FromRoute] string filename)
-        {
-            
-                var path = Path.Combine(
-                    Directory.GetCurrentDirectory(), "wwwroot", 
-                    filename.Replace("___","."));
-            
-            if (System.IO.File.Exists(path))
-            {
-                var bytes = System.IO.File.ReadAllBytes(path);
-                var result_ = new HttpResponseMessage(HttpStatusCode.OK);
-                result_.Content = new ByteArrayContent(bytes);
-                result_.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
-                return result_;
-            }
-            else
-            {
-                return NotFound();
-            }
-                
-        }
-        
+				return new EntityViewModel
+				{
+					Id = data.Id,
+					Entity = data.Name,
+					Type = data.Category,
+					ImageUrl = data.PictureUrl
+				};
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
 
-        // POST api/values
-        [HttpPost]
-        public dynamic Post([FromBody]  EntityCreateViewModel model)
-        {
-            try
-            {
-                if (_dbContext == null)
-                {
-                    return NotFound("No database connection");
-                }
-                
-                var entity = new Entity
-                {
-                    Alias = model.Entity,
-                    CategoryId = ECategory.Brand,
-                    Date = DateTime.Today,
-                    Name = model.Entity
-                    
-                };
-                var data = _dbContext.Entities.Add(entity);
-                _dbContext.SaveChanges();
-                return data;
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        
-        
-        // POST api/values
-        [HttpPut]
-        public dynamic Put([FromBody] Entity entity)
-        {
-            try
-            {
-                if (_dbContext == null)
-                {
-                    return NotFound("No database connection");
-                }
-                var data = _dbContext.Entry(entity).State = EntityState.Modified;
-                _dbContext.SaveChanges();
-                return data;
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-        
-        
-    }
+
+		[HttpPost("{id}/image")]
+		public dynamic PostImage([FromRoute]long id, IFormFile file)
+		{
+
+			try
+			{
+				if (_dbContext == null)
+					return NotFound("No database connection");
+				var data = _dbContext.Entities.FirstOrDefault(x => x.Id == id);
+
+				if (file == null || file.Length == 0)
+					return Content("file not selected");
+
+				var path = Path.Combine(
+					Directory.GetCurrentDirectory(), "wwwroot",
+					file.FileName);
+
+				using (var stream = new FileStream(path, FileMode.Create))
+				{
+					file.CopyTo(stream);
+				}
+
+				return Ok(Request.Path.Value + "/" + file.FileName.Replace(".", "___"));
+
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpGet("{id}/image/{filename}")]
+		public dynamic GetImage([FromRoute]long id, [FromRoute] string filename)
+		{
+
+			var path = Path.Combine(
+				Directory.GetCurrentDirectory(), "wwwroot",
+				filename.Replace("___", "."));
+
+			if (System.IO.File.Exists(path))
+			{
+				var bytes = System.IO.File.ReadAllBytes(path);
+				var result_ = new HttpResponseMessage(HttpStatusCode.OK);
+				result_.Content = new ByteArrayContent(bytes);
+				result_.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("image/jpeg");
+				return result_;
+			}
+			else
+			{
+				return NotFound();
+			}
+
+		}
+
+
+		// POST api/values
+		[HttpPost]
+		public dynamic Post([FromBody]  EntityViewModel model)
+		{
+			try
+			{
+				if (_dbContext == null)
+				{
+					return NotFound("No database connection");
+				}
+
+				var entity = new Entity
+				{
+					Alias = model.Entity,
+					CategoryId = ECategory.Brand,
+					Date = DateTime.Today,
+					Name = model.Entity
+
+				};
+				var data = _dbContext.Entities.Add(entity);
+				_dbContext.SaveChanges();
+				return data;
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+
+		// POST api/values
+		[HttpPut]
+		public dynamic Put([FromBody] Entity entity)
+		{
+			try
+			{
+				if (_dbContext == null)
+				{
+					return NotFound("No database connection");
+				}
+				var data = _dbContext.Entry(entity).State = EntityState.Modified;
+				_dbContext.SaveChanges();
+				return data;
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+
+	}
 }

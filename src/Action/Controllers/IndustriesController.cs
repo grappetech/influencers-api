@@ -8,31 +8,31 @@ using Microsoft.AspNetCore.Cors;
 
 namespace Action.Controllers
 {
-    [Route("api/[controller]")]
-    [EnableCors("Default")]
-    public class IndustriesController : Controller
-    {
-        [HttpGet]
-        public dynamic Get()
-        {
-            return new[]
-            {
-                new
-                {
-                    id = 1,
-                    name = "Celebridade"
-                },
-                new
-                {
-                    id = 2,
-                    name = "Automobilistica"
-                },
-                new
-                {
-                    id = 3,
-                    name = "qwertyui"
-                }
-            };
-        }
-    }
+	[Route("api/[controller]")]
+	[EnableCors("Default")]
+	public class IndustriesController : Controller
+	{
+		[HttpGet]
+		public dynamic Get()
+		{
+			return new[]
+			{
+				new
+				{
+					id = 1,
+					name = "Celebridade"
+				},
+				new
+				{
+					id = 2,
+					name = "Automobilistica"
+				},
+				new
+				{
+					id = 3,
+					name = "qwertyui"
+				}
+			};
+		}
+	}
 }

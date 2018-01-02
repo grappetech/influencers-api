@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
@@ -6,6 +7,7 @@ using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Action.Extensions;
 using Action.Filters;
 using Action.Models;
 using Action.Models.ServiceAccount;
@@ -15,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -25,230 +28,242 @@ using Newtonsoft.Json;
 
 namespace Action.Controllers
 {
-    [Route("api/[controller]")]
-    [EnableCors("Default")]
-    public class AuthController : Controller
-    {
-        private readonly RoleManager<Role> _roleManager;
-        private readonly SignInManager<User> _signInManager;
-        private readonly UserManager<User> _userManager;
-        private readonly IConfigurationRoot _configurationRoot;
-        private readonly ILogger<AuthController> _logger;
-        private readonly IPasswordHasher<User> _passwordHasher;
-        private ApplicationDbContext _dbContext;
+	[Route("api/[controller]")]
+	[EnableCors("Default")]
+	public class AuthController : Controller
+	{
+		private readonly RoleManager<Role> _roleManager;
+		private readonly SignInManager<User> _signInManager;
+		private readonly UserManager<User> _userManager;
+		private readonly IConfigurationRoot _configurationRoot;
+		private readonly ILogger<AuthController> _logger;
+		private readonly IPasswordHasher<User> _passwordHasher;
+		private ApplicationDbContext _dbContext;
 
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
-            RoleManager<Role> roleManager
-            , IPasswordHasher<User> passwordHasher, IConfigurationRoot configurationRoot,
-            ILogger<AuthController> logger, ApplicationDbContext dbContext)
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _roleManager = roleManager;
-            _logger = logger;
-            _passwordHasher = passwordHasher;
-            _configurationRoot = configurationRoot;
-            _dbContext = dbContext;
-        }
+		public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
+			RoleManager<Role> roleManager
+			, IPasswordHasher<User> passwordHasher, IConfigurationRoot configurationRoot,
+			ILogger<AuthController> logger, ApplicationDbContext dbContext)
+		{
+			_userManager = userManager;
+			_signInManager = signInManager;
+			_roleManager = roleManager;
+			_logger = logger;
+			_passwordHasher = passwordHasher;
+			_configurationRoot = configurationRoot;
+			_dbContext = dbContext;
+		}
 
-        [AllowAnonymous]
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest();
-            var user = new User
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                Name = model.Name,
-                Surname = model.Surname,
-                PhoneNumber = model.Phone,
-                PlanId = model.PlanId
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
+		[AllowAnonymous]
+		[HttpPost("register")]
+		public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
+		{
+			if (!ModelState.IsValid)
+				return StatusCode((int)EServerError.ModelIsNotValid, ModelState.GetErrors());
 
+			//if (model.PlanId.HasValue)
+			//{
+			//	var plano = _dbContext.Plans.Where(x => x.Id == model.PlanId.Value).FirstOrDefault();
+			//	if (plano == null)
+			//		return StatusCode((int)EServerError.BusinessError, new List<string> {"Plano não encontrado com o ID " + model.PlanId.Value });
 
-            if (result.Succeeded)
-            {
-                Account account;
-                if (model.AccountId == null)
-                {
-                    account = new Account
-                    {
-                        ActivationDate = DateTime.UtcNow,
-                        AdministratorId = user.Id,
-                        PlanId = user.PlanId,
-                        Name = string.Join(user.Name, "_", user.Surname)
-                    };
-                    account.Users.Add(user);
-                    _dbContext.Accounts.Add(account);
-                }
-                else
-                {
-                    account = _dbContext.Accounts.Find(model.AccountId.Value);
-                    account.Users.Add(user);
+			//	if (plano.TypePlan == ETypePlan.Agency && ( model.CompanyName == null || model.CompanyName.Equals("")))
+			//		return StatusCode((int)EServerError.BusinessError, new List<string> { "Campo CompanyName não informado." });
+			//}
 
-                    _dbContext.Entry(account).State = EntityState.Modified;
-                }
-                _dbContext.SaveChanges();
+			var user = new User
+			{
+				UserName = model.Email,
+				Email = model.Email,
+				Name = model.Name,
+				Surname = model.Surname,
+				PhoneNumber = model.Phone,
+				PlanId = model.PlanId
+			};
+			var result = await _userManager.CreateAsync(user, model.Password);
 
-                var plan = _dbContext.Accounts.Find(user.AccountId);
-                var userClaims = await _userManager.GetClaimsAsync(user);
+			if (result.Succeeded)
+			{
+				Account account;
+				if (model.AccountId == null)
+				{
+					account = new Account
+					{
+						ActivationDate = DateTime.UtcNow,
+						AdministratorId = user.Id,
+						PlanId = model.PlanId,
+						Name = string.Join(user.Name, "_", user.Surname)
+					};
+					account.Users.Add(user);
+					_dbContext.Accounts.Add(account);
+				}
+				else
+				{
+					account = _dbContext.Accounts.Find(model.AccountId.Value);
+					account.Users.Add(user);
 
-                var claims = new[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim("accountId", user.AccountId.ToString()),
-                    new Claim("planId", plan.Id.ToString())
-                }.Union(userClaims);
+					_dbContext.Entry(account).State = EntityState.Modified;
+				}
+				_dbContext.SaveChanges();
 
-                var symmetricSecurityKey =
-                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
-                var signingCredentials =
-                    new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+				var plan = _dbContext.Accounts.Find(user.AccountId);
+				var userClaims = await _userManager.GetClaimsAsync(user);
 
-                var jwtSecurityToken = new JwtSecurityToken(
-                    _configurationRoot["JwtSecurityToken:Issuer"],
-                    _configurationRoot["JwtSecurityToken:Audience"],
-                    claims,
-                    expires: DateTime.UtcNow.AddMinutes(60),
-                    signingCredentials: signingCredentials
-                );
-                //TODO: Ajustar o retorno do CompanyName
-                return Ok(new
-                {
-                    accountId = user.AccountId,
-                    planId = plan.PlanId,
-                    user = model.Email,
-                    token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                    expiration = jwtSecurityToken.ValidTo,
-                    companyName = "Nexo Company"
-                });
-            }
+				var claims = new[]
+				{
+					new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+					new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+					new Claim(JwtRegisteredClaimNames.Email, user.Email),
+					new Claim("accountId", user.AccountId.ToString()),
+					new Claim("planId", plan.Id.ToString())
+				}.Union(userClaims);
 
-            foreach (var error in result.Errors)
-                ModelState.AddModelError("error", error.Description);
-            return BadRequest(result.Errors);
-        }
+				var symmetricSecurityKey =
+					new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
+				var signingCredentials =
+					new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
-        [ValidateForm]
-        [AllowAnonymous]
-        [HttpPost("login")]
-        [Route("token")]
-        public async Task<IActionResult> CreateToken([FromBody] LoginViewModel model)
-        {
-            try
-            {
-                var user = await _userManager.FindByNameAsync(model.Email);
-                if (user == null)
-                    return Unauthorized();
-                if (_passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password) ==
-                    PasswordVerificationResult.Success)
-                {
-                    var plan = _dbContext.Accounts.Find(user.AccountId);
-                    var userClaims = await _userManager.GetClaimsAsync(user);
+				var jwtSecurityToken = new JwtSecurityToken(
+					_configurationRoot["JwtSecurityToken:Issuer"],
+					_configurationRoot["JwtSecurityToken:Audience"],
+					claims,
+					expires: DateTime.UtcNow.AddMinutes(60),
+					signingCredentials: signingCredentials
+				);
 
-                    var claims = new[]
-                    {
-                        new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                        new Claim("accountId", user.AccountId.ToString()),
-                        new Claim("planId", plan.Id.ToString())
-                    }.Union(userClaims);
+				////TODO: Ajustar o retorno do CompanyName
+				//return Ok(new
+				//{
+				//	accountId = user.AccountId,
+				//	planId = plan.PlanId,
+				//	user = model.Email,
+				//	token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+				//	expiration = jwtSecurityToken.ValidTo,
+				//	companyName = "Nexo Company"
+				//});
+				return Ok();
+			}
 
-                    var symmetricSecurityKey =
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
-                    var signingCredentials =
-                        new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+			foreach (var error in result.Errors)
+				ModelState.AddModelError("error", error.Description);
+			return BadRequest(result.Errors);
+		}
 
-                    var jwtSecurityToken = new JwtSecurityToken(
-                        _configurationRoot["JwtSecurityToken:Issuer"],
-                        _configurationRoot["JwtSecurityToken:Audience"],
-                        claims,
-                        expires: DateTime.UtcNow.AddMinutes(60),
-                        signingCredentials: signingCredentials
-                    );
-                    return Ok(new
-                    {
-                        planId = plan.PlanId,
-                        user = model.Email,
-                        token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-                        expiration = jwtSecurityToken.ValidTo
-                    });
-                }
-                return Unauthorized();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"error while creating token: {ex}");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "error while creating token");
-            }
-        }
+		[ValidateForm]
+		[AllowAnonymous]
+		[HttpPost("login")]
+		[Route("token")]
+		public async Task<IActionResult> CreateToken([FromBody] LoginViewModel model)
+		{
+			try
+			{
+				var user = await _userManager.FindByNameAsync(model.Email);
+				if (user == null)
+					return Unauthorized();
+				if (_passwordHasher.VerifyHashedPassword(user, user.PasswordHash, model.Password) ==
+					PasswordVerificationResult.Success)
+				{
+					var plan = _dbContext.Accounts.Find(user.AccountId);
+					var userClaims = await _userManager.GetClaimsAsync(user);
 
-        [HttpPost("")]
-        [AllowAnonymous]
-        [Route("requiretoken")]
-        public async Task<IActionResult> RequireToken([FromBody] RequireAuthViewModel model)
-        {
-            try
-            {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user != null)
-                {
-                    var userClaims = await _userManager.GetClaimsAsync(user);
-                    var plan = _dbContext.Accounts.Find(user.AccountId);
-                    var claims = new[]
-                    {
-                        new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                        new Claim("accountId", user.AccountId.ToString()),
-                        new Claim("planId", plan.Id.ToString())
-                    }.Union(userClaims);
+					var claims = new[]
+					{
+						new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+						new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+						new Claim(JwtRegisteredClaimNames.Email, user.Email),
+						new Claim("accountId", user.AccountId.ToString()),
+						new Claim("planId", plan.Id.ToString())
+					}.Union(userClaims);
 
+					var symmetricSecurityKey =
+						new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
+					var signingCredentials =
+						new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
-                    var symmetricSecurityKey =
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
-                    var signingCredentials =
-                        new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+					var jwtSecurityToken = new JwtSecurityToken(
+						_configurationRoot["JwtSecurityToken:Issuer"],
+						_configurationRoot["JwtSecurityToken:Audience"],
+						claims,
+						expires: DateTime.UtcNow.AddMinutes(60),
+						signingCredentials: signingCredentials
+					);
+					return Ok(new
+					{
+						planId = plan.PlanId,
+						user = model.Email,
+						token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+						expiration = jwtSecurityToken.ValidTo
+					});
+				}
+				return Unauthorized();
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"error while creating token: {ex}");
+				return StatusCode((int)HttpStatusCode.InternalServerError, new List<string> { "error while creating token" });
+			}
+		}
 
-                    var jwtSecurityToken = new JwtSecurityToken(
-                        _configurationRoot["JwtSecurityToken:Issuer"],
-                        _configurationRoot["JwtSecurityToken:Audience"],
-                        claims,
-                        expires: DateTime.UtcNow.AddDays(1),
-                        signingCredentials: signingCredentials
-                    );
-                    var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-
-                    SmtpService.SendMessage(model.Email, "[ACTION-API Acesso]",
-                        string.Concat(model.Url, "?token=", token, "&key=", user.AccountId));
+		[HttpPost("")]
+		[AllowAnonymous]
+		[Route("requiretoken")]
+		public async Task<IActionResult> RequireToken([FromBody] RequireAuthViewModel model)
+		{
+			try
+			{
+				var user = await _userManager.FindByEmailAsync(model.Email);
+				if (user != null)
+				{
+					var userClaims = await _userManager.GetClaimsAsync(user);
+					var plan = _dbContext.Accounts.Find(user.AccountId);
+					var claims = new[]
+					{
+						new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+						new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+						new Claim(JwtRegisteredClaimNames.Email, user.Email),
+						new Claim("accountId", user.AccountId.ToString()),
+						new Claim("planId", plan.Id.ToString())
+					}.Union(userClaims);
 
 
-                    return Ok();
-                }
-                else
-                {
-                    return Unauthorized();
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"error while creating token: {ex}");
-                return StatusCode((int)HttpStatusCode.InternalServerError, "error while creating token");
-            }
-        }
+					var symmetricSecurityKey =
+						new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
+					var signingCredentials =
+						new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+					var jwtSecurityToken = new JwtSecurityToken(
+						_configurationRoot["JwtSecurityToken:Issuer"],
+						_configurationRoot["JwtSecurityToken:Audience"],
+						claims,
+						expires: DateTime.UtcNow.AddDays(1),
+						signingCredentials: signingCredentials
+					);
+					var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+
+					SmtpService.SendMessage(model.Email, "[ACTION-API Acesso]",
+						string.Concat(model.Url, "?token=", token, "&key=", user.AccountId));
 
 
-        [Authorize]
-        [HttpGet("permitions/{id}")]
-        public IActionResult Permitions(string id)
-        {
-            return Ok(JsonConvert.DeserializeObject<dynamic>(@"[
+					return Ok();
+				}
+				else
+				{
+					return Unauthorized();
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError($"error while creating token: {ex}");
+				return StatusCode((int)HttpStatusCode.InternalServerError, new List<string> { "error while creating token" });
+			}
+		}
+
+
+		[Authorize]
+		[HttpGet("permitions/{id}")]
+		public IActionResult Permitions(string id)
+		{
+			return Ok(JsonConvert.DeserializeObject<dynamic>(@"[
   {
     ""permissionId"": 1,
     ""name"": ""Usuario"",
@@ -491,6 +506,7 @@ namespace Action.Controllers
     ]
   }
 ]"));
-        }
-    }
+		}
+		
+	}
 }
