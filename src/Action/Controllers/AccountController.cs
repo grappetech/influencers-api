@@ -56,7 +56,15 @@ namespace Action.Controllers
 					Description = x.Description
 				}));
 
-				//lAccountViewModel.SecondaryPlans
+				data.SecondaryPlans.ForEach(x => lAccountViewModel.SecondaryPlans.Add(new SecondaryPlanViewModel
+				{
+					Account = lAccountViewModel,
+					Id = x.Id,
+					AllowedUsers = x.AllowedUsers,
+					Name = x.Name,
+					Price = x.Price,
+					StartDate = x.StartDate
+				}));
 
 				data.Entities.ForEach(x => lAccountViewModel.Entities.Add(new EntityViewModel
 				{
@@ -139,7 +147,15 @@ namespace Action.Controllers
 						var obj = new Entity
 						{
 							Name = model.Name,
-							CategoryId = Enum.Parse<ECategory>(model.Category)
+							CategoryId = Enum.Parse<ECategory>(model.Category),
+							Date = DateTime.Today,
+							Alias = model.Alias,
+							FacebookUser = model.FacebookUser,
+							InstagranUser = model.InstagranUser,
+							PictureUrl = model.PictureUrl,
+							SiteUrl = model.SiteUrl,
+							TweeterUser = model.TweeterUser,
+							YoutubeUser = model.YoutuberUser
 						};
 						_dbContext.Entities.Add(obj);
 						account.Entities.Add(obj);
@@ -159,7 +175,7 @@ namespace Action.Controllers
 				}
 				catch (Exception ex)
 				{
-					return BadRequest(new { error = ex.Message });
+					return StatusCode((int)EServerError.BusinessError, new List<string> { ex.Message });
 				}
 			}
 			else

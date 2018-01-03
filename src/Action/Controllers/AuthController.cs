@@ -61,15 +61,15 @@ namespace Action.Controllers
 			if (!ModelState.IsValid)
 				return StatusCode((int)EServerError.ModelIsNotValid, ModelState.GetErrors());
 
-			//if (model.PlanId.HasValue)
-			//{
-			//	var plano = _dbContext.Plans.Where(x => x.Id == model.PlanId.Value).FirstOrDefault();
-			//	if (plano == null)
-			//		return StatusCode((int)EServerError.BusinessError, new List<string> {"Plano não encontrado com o ID " + model.PlanId.Value });
+			if (model.PlanId.HasValue)
+			{
+				var plano = _dbContext.Plans.Where(x => x.Id == model.PlanId.Value).FirstOrDefault();
+				if (plano == null)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "Plano não encontrado com o ID " + model.PlanId.Value });
 
-			//	if (plano.TypePlan == ETypePlan.Agency && ( model.CompanyName == null || model.CompanyName.Equals("")))
-			//		return StatusCode((int)EServerError.BusinessError, new List<string> { "Campo CompanyName não informado." });
-			//}
+				if (plano.TypePlan == ETypePlan.Agency && (model.CompanyName == null || model.CompanyName.Equals("")))
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "Campo CompanyName não informado." });
+			}
 
 			var user = new User
 			{

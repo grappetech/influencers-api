@@ -17,6 +17,6 @@ namespace Action.Models.ServiceAccount
 		public string AdministratorId { get; set; }
 		public List<User> Users { get; set; } = new List<User>();
 		public List<Entity> Entities { get; set; }
-		//public List<SecondaryPlan> SecondaryPlans { get; set; } = new List<SecondaryPlan>();
+		public List<SecondaryPlan> SecondaryPlans { get; set; } = new List<SecondaryPlan>();
 	}
 }

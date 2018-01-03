@@ -11,6 +11,6 @@ namespace Action.Models.Plans
 		public string Slug { get; set; }
 		public decimal Price { get; set; }
 		public List<Features> Features { get; set; } = new List<Features>();
-		//public ETypePlan TypePlan { get; set; }
+		public ETypePlan TypePlan { get; set; }
 	}
 }

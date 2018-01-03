@@ -30,7 +30,7 @@ namespace Action.Models
 		public DbSet<Plan> Plans { get; set; }
 		public DbSet<Account> Accounts { get; set; }
 		public DbSet<Industry> Industries { get; set; }
-		//public DbSet<SecondaryPlan> SecondaryPlans { get; set; }
+		public DbSet<SecondaryPlan> SecondaryPlans { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
@@ -48,8 +48,8 @@ namespace Action.Models
 				.WithMany()
 				.HasForeignKey(x => x.AdministratorId);
 
-			//builder.Entity<Account>()
-			//	.HasMany(x => x.SecondaryPlans);
+			builder.Entity<Account>()
+				.HasMany(x => x.SecondaryPlans);
 
 			builder.Entity<Plan>()
 				.HasMany(x => x.Features);
@@ -69,10 +69,10 @@ namespace Action.Models
 				.WithMany(x => x.Users)
 				.HasForeignKey(x => x.AccountId);
 
-			//builder.Entity<SecondaryPlan>()
-			//	.HasOne(x => x.Account)
-			//	.WithMany(x => x.SecondaryPlans)
-			//	.HasForeignKey(x => x.AccountId);
+			builder.Entity<SecondaryPlan>()
+				.HasOne(x => x.Account)
+				.WithMany(x => x.SecondaryPlans)
+				.HasForeignKey(x => x.AccountId);
 
 			base.OnModelCreating(builder);
 		}

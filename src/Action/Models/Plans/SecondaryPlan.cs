@@ -12,7 +12,7 @@ namespace Action.Models.Plans
 		public decimal Price { get; set; }
 		public DateTime StartDate { get; set; }
 		public int AllowedUsers { get; set; }
-		//public Account Account { get; set; }
-		//public int? AccountId { get; set; }
+		public Account Account { get; set; }
+		public int? AccountId { get; set; }
 	}
 }

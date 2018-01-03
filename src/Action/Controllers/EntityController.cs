@@ -145,7 +145,7 @@ namespace Action.Controllers
 
 		// POST api/values
 		[HttpPost]
-		public dynamic Post([FromBody]  EntityViewModel model)
+		public dynamic Post([FromBody]  Entity model)
 		{
 			try
 			{
@@ -154,17 +154,41 @@ namespace Action.Controllers
 					return NotFound("No database connection");
 				}
 
+				var dt = _dbContext.Entities.FirstOrDefault(x => x.Name.Equals(model.Name));
+
+				if (dt != null)
+					return new EntityViewModel
+					{
+						Id = dt.Id,
+						Entity = dt.Name,
+						Type = dt.Category,
+						ImageUrl = dt.PictureUrl
+					};
+
 				var entity = new Entity
 				{
-					Alias = model.Entity,
+					Alias = model.Alias,
 					CategoryId = ECategory.Brand,
 					Date = DateTime.Today,
-					Name = model.Entity
-
+					Name = model.Name,
+					FacebookUser = model.FacebookUser,
+					InstagranUser = model.InstagranUser,
+					PictureUrl = model.PictureUrl,
+					SiteUrl = model.SiteUrl,
+					TweeterUser = model.TweeterUser,
+					YoutubeUser = model.YoutubeUser
 				};
+
 				var data = _dbContext.Entities.Add(entity);
 				_dbContext.SaveChanges();
-				return data;
+
+				return new EntityViewModel
+				{
+					Id = data.Entity.Id,
+					Entity = data.Entity.Name,
+					Type = data.Entity.Category,
+					ImageUrl = data.Entity.PictureUrl
+				};
 			}
 			catch (Exception ex)
 			{
