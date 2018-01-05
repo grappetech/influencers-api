@@ -141,6 +141,8 @@ namespace Action.Controllers
 				try
 				{
 					var account = _dbContext.Accounts.Include(x => x.Entities).FirstOrDefault(y => y.Id == id);
+					if (account == null)
+						throw new Exception("Account not found with ID: " + id);
 
 					if (model.Id == 0)
 					{
@@ -164,6 +166,9 @@ namespace Action.Controllers
 					{
 						if (account.Entities == null)
 							account.Entities = new List<Entity>();
+
+						if (_dbContext.Entities.Find((long)model.Id) == null)
+							throw new Exception("Entity not found with ID: " + model.Id);
 
 						if (account.Entities.All(x => x.Id != model.Id))
 							account.Entities.Add(_dbContext.Entities.Find((long)model.Id));
