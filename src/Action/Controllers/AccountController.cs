@@ -134,7 +134,7 @@ namespace Action.Controllers
 		}
 
 		[HttpPost("{id}/entities")]
-		public dynamic Post([FromRoute] int id, [FromBody] AddEntityViewModel model)
+		public dynamic Post([FromRoute] int id, [FromBody] EntityViewModel model)
 		{
 			if (ModelState.IsValid)
 			{
@@ -146,16 +146,16 @@ namespace Action.Controllers
 					{
 						var obj = new Entity
 						{
-							Name = model.Name,
-							CategoryId = Enum.Parse<ECategory>(model.Category),
+							Name = model.Entity,
+							CategoryId = Enum.Parse<ECategory>(model.Type),
 							Date = DateTime.Today,
-							Alias = model.Alias,
-							FacebookUser = model.FacebookUser,
-							InstagranUser = model.InstagranUser,
-							PictureUrl = model.PictureUrl,
-							SiteUrl = model.SiteUrl,
-							TweeterUser = model.TweeterUser,
-							YoutubeUser = model.YoutuberUser
+							//Alias = model.Alias,
+							//FacebookUser = model.FacebookUser,
+							//InstagranUser = model.InstagranUser,
+							PictureUrl = model.ImageUrl,
+							//SiteUrl = model.SiteUrl,
+							//TweeterUser = model.TweeterUser,
+							//YoutubeUser = model.YoutuberUser
 						};
 						_dbContext.Entities.Add(obj);
 						account.Entities.Add(obj);
