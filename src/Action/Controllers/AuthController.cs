@@ -141,7 +141,7 @@ namespace Action.Controllers
 				//	expiration = jwtSecurityToken.ValidTo,
 				//	companyName = "Nexo Company"
 				//});
-				return Ok();
+				return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken) });
 			}
 
 			foreach (var error in result.Errors)
@@ -240,9 +240,11 @@ namespace Action.Controllers
 					);
 					var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
-					SmtpService.SendMessage(model.Email, "[ACTION-API Acesso]",
-						string.Concat(model.Url, "?token=", token, "&key=", user.AccountId));
+					//SmtpService.SendMessage(model.Email, "[ACTION-API Acesso]",
+					//	string.Concat(model.Url, "?token=", token, "&key=", user.AccountId));
 
+					SmtpService.SendMessage(model.Email, "[ACTION-API Acesso]",
+						string.Concat(model.Url, "?token=", token));
 
 					return Ok();
 				}
