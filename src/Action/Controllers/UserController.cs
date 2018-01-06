@@ -5,6 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
+using System.Security.Claims;
+using Action.Models;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Identity;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Action.VewModels;
 
 namespace Action.Controllers
 {
@@ -12,20 +20,51 @@ namespace Action.Controllers
 	[EnableCors("Default")]
 	public class UserController : Controller
 	{
-		//TODO Criado o UserController
-		[HttpGet]
-		public dynamic Get()
+		private readonly ApplicationDbContext _dbContext;
+		private readonly HtmlEncoder _htmlEncoder;
+		private readonly UserManager<User> _manager;
+
+		public UserController(HtmlEncoder htmlEncoder, UserManager<User> manager, ApplicationDbContext dbContext = null)
 		{
-			return Ok(new
+			_dbContext = dbContext;
+			_htmlEncoder = htmlEncoder;
+			_manager = manager;
+		}
+		
+		[HttpGet("")]
+		public async Task<IActionResult> Get()
+		{
+			JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+			var param = new TokenValidationParameters
 			{
-				id = "2g34h5j6k789l8kj765h4",
-				accountId = 123,
-				role = "ADMIN", // ADMIN | USER
-				email = "luiz@gmail.com",
-				name = "Luiz",
-				surname = "Luiz",
-				phone = "Luiz"
-			});
+				ValidIssuer = "http://nexo.ai",
+				ValidAudience = "https://api-act.mybluemix.net",
+				ValidateIssuerSigningKey = true,
+				IssuerSigningKey =
+						new SymmetricSecurityKey(Encoding.UTF8.GetBytes("kep2EpHUvA_eJAKaS$&G3-?E=#Efa5AX")),
+				ValidateLifetime = true
+			};
+
+			SecurityToken stoken;
+			ClaimsPrincipal claim = handler.ValidateToken(HttpContext.Request.Headers.FirstOrDefault(x => x.Key.ToLower().Equals("authorization")).Value.ToString().Replace("bearer ", ""), param, out stoken);
+			var user = await _manager.FindByEmailAsync(claim.Claims.FirstOrDefault(x => x.Type.ToLower().Contains("nameidentifier")).Value);
+
+			if (user != null)
+			{
+				UserViewModel lUserViewModel = new UserViewModel
+				{
+					AccountId = user.AccountId.Value,
+					Email = user.Email,
+					Id = user.Id,
+					Name = user.Name,
+					Phone = user.PhoneNumber,
+					Role = user.Account != null && user.Account.Administrator != null ? "ADMIN" : "USER",
+					SurName = user.Surname
+				};
+				return Ok(lUserViewModel);
+			}
+			else
+				return StatusCode((int)EServerError.BusinessError, new List<string> { "User not found." });
 		}
 
 		[HttpPut("{id}")]
