@@ -85,16 +85,23 @@ namespace Action.Controllers
 					});
 
 				var Values = Personalities.SelectMany(x => x.Values.Select(c => new { c.Name, c.Percentile }))
-					.GroupBy(x => x.Name).Select(c => new { Name = c.Key, Percentile = c.Average(p => p.Percentile) });
+					.GroupBy(x => x.Name).Select(c => new { Name = c.Key, Percentile = c.Average(p => p.Percentile), Description = "" });
+
+				//var result = new
+				//{
+				//	Mentions,
+				//	Sources,
+				//	Needs,
+				//	Personality,
+				//	Values,
+				//};
 
 				var result = new
 				{
-					Mentions,
-					Sources,
-					Needs,
 					Personality,
-					Values,
+					Values
 				};
+
 				return Ok(result);
 			}
 			catch (Exception ex)
