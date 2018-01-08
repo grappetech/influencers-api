@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
+using Action.Models;
+using System.Text.Encodings.Web;
+using Action.VewModels;
 
 namespace Action.Controllers
 {
@@ -12,36 +15,36 @@ namespace Action.Controllers
 	[EnableCors("Default")]
 	public class SecondaryPlansController : Controller
 	{
+		private readonly ApplicationDbContext _dbContext;
+		private readonly HtmlEncoder _htmlEncoder;
+
+		public SecondaryPlansController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
+		{
+			_dbContext = dbContext;
+			_htmlEncoder = htmlEncoder;
+		}
+
 		[HttpGet]
 		public dynamic Get()
 		{
-			return Ok(new[]
+			try
 			{
-				new
-				{
-					id = "123456",
-					allowedUsers= 3,
-					name= "3 usuários adicionais",
-					price= "12345",
-					startDate= "2017-11-06T00:00:00"
-				},
-				new
-				{
-					id = "3456",
-					allowedUsers= 5,
-					name= "5 usuários adicionais",
-					price= "12345",
-					startDate= "2017-11-06T00:00:00"
-				},
-				new
-				{
-					id = "8745",
-					allowedUsers= 10,
-					name= "10 usuários adicionais",
-					price= "12345",
-					startDate= "2017-11-06T00:00:00"
-				}
-			});
+				if (_dbContext == null)
+					return NotFound("No database connection");
+				var data = _dbContext.SecondaryPlans.ToList();
+
+				return Ok(data.Select(x => new {
+					x.Id,
+					x.AllowedUsers,
+					x.Name,
+					x.Price,
+					x.StartDate
+				}));
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
 		}
 	}
 }

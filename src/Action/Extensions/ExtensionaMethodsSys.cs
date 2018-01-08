@@ -55,7 +55,8 @@ namespace Action.Extensions
 
 			if (!pModel.IsValid)
 			{
-				try {
+				try
+				{
 					var values = pModel.Values;
 					foreach (var value in values)
 						foreach (var error in value.Errors)
@@ -69,5 +70,11 @@ namespace Action.Extensions
 
 			return errors;
 		}
+
+		public static string GetFileExtension(this string pString)
+		{
+			return "." + pString.Split('.')[pString.Split('.').Length - 1];
+		}
+
 	}
 }
