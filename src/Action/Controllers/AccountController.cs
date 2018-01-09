@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using Action.Extensions;
 using Action.VewModels;
+using Action.Models.Plans;
 
 namespace Action.Controllers
 {
@@ -198,16 +199,38 @@ namespace Action.Controllers
 
 		//TODO: Adicionado SecondaryPlan
 		[HttpPost("{id}/secondaryplans")]
-		public dynamic PostSecondaryPlans([FromRoute] int id)
+		public dynamic PostSecondaryPlans([FromRoute] int id, [FromBody] SecondaryPlanViewModel secondaryPlanView)
 		{
-			return Ok(new
+			try
 			{
-				id = "8745",
-				allowedUsers = 10,
-				name = "10 usuários adicionais",
-				price = "12345",
-				startDate = "2017-11-06T00:00:00"
-			});
+				var account = _dbContext.Accounts.Include(x => x.SecondaryPlans).FirstOrDefault(y => y.Id == id);
+				if (account == null)
+					throw new Exception("Account not found with ID: " + id);
+
+				var secondaryPlan = account.SecondaryPlans.FirstOrDefault(x => x.Id == secondaryPlanView.Id);
+				if (secondaryPlan != null)
+					throw new Exception("SecondaryPlan already associated with the Account.");
+
+				SecondaryPlan newSecondaryPlan = new SecondaryPlan
+				{
+					Account = account,
+					AccountId = account.Id,
+					AllowedUsers = secondaryPlanView.AllowedUsers,
+					Name = secondaryPlanView.Name,
+					Price = secondaryPlanView.Price,
+					StartDate = secondaryPlanView.StartDate
+				};
+
+				account.SecondaryPlans.Add(newSecondaryPlan);
+				_dbContext.Entry(account).State = EntityState.Modified;
+				_dbContext.SaveChanges();
+
+				return Ok(newSecondaryPlan);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode((int)EServerError.BusinessError, new List<string> { ex.Message });
+			}
 		}
 
 		[HttpPost("cancela/{id}")]
