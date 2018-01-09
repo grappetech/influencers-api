@@ -30,7 +30,7 @@ namespace Action.Controllers
 			_htmlEncoder = htmlEncoder;
 			_manager = manager;
 		}
-		
+
 		[HttpGet("")]
 		public async Task<IActionResult> Get()
 		{
@@ -75,16 +75,38 @@ namespace Action.Controllers
 		}
 
 		[HttpPut("{id}")]
-		public dynamic Put([FromRoute] int id, [FromBody] AddUserViewModel model)
+		public dynamic Put([FromRoute] string id, [FromBody] AddUserViewModel model)
 		{
-			return Ok(model);
+			try
+			{
+				if (_dbContext == null)
+					return NotFound("No database connection");
+				var data = _dbContext.Users.FirstOrDefault(x => x.Id.Equals(id));
+
+				if (data == null)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "User not found with ID " + id.ToString() + "." });
+
+				data.Email = model.email;
+				data.Name = model.name;
+				data.Surname = model.surname;
+				data.PhoneNumber = model.phone;
+
+				_dbContext.Entry(data).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+				_dbContext.SaveChanges();
+
+				return Ok(model);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
 		}
 	}
 
 	public class AddUserViewModel
 	{
-		public int Id { get; set; }
-		public string accountId { get; set; }
+		public string Id { get; set; }
+		public int accountId { get; set; }
 		public string role { get; set; }
 		public string email { get; set; }
 		public string name { get; set; }
