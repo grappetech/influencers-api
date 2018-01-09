@@ -85,46 +85,6 @@ namespace Action.Controllers
 					SurName = x.Surname,
 				}));
 
-				////TODO: Alterado o Retorno
-				//var teste = new
-				//{
-				//	data.Id,
-				//	data.Plan,
-				//	secondaryPlans = new[]
-				//	{
-				//		new
-				//		{
-				//			id= "123456",
-				//			allowedUsers= 3,
-				//			name= "3 usuários adicionais",
-				//			price= "12345",
-				//			startDate= "2017-11-06T00:00:00"
-				//		}
-				//	},
-				//	entities = data.Entities,
-				//	users = new List<dynamic>(),
-				//	//users = data.Users,
-				//	status = data.Status
-				//	//name = data.Administrator?.Name,
-				//	//email = data.Administrator?.Email,
-
-				//};
-
-				//foreach (var item in data.Users)
-				//{
-				//	teste.users.Add(new
-				//	{
-				//		item.AccountId,
-				//		item.Email,
-				//		item.Id,
-				//		item.Name,
-				//		item.PhoneNumber,
-				//		item.PlanId,
-				//		item.Surname,
-				//		item.UserName
-				//	});
-				//}
-
 				return Ok(lAccountViewModel);
 			}
 			catch (Exception ex)
@@ -208,9 +168,32 @@ namespace Action.Controllers
 
 		//TODO Adicionado delete
 		[HttpDelete("{idaccount}/users/{id}")]
-		public dynamic Delete([FromRoute] int idaccount, [FromRoute] int id)
+		public dynamic Delete([FromRoute] int idaccount, [FromRoute] string id)
 		{
-			return Ok();
+			try
+			{
+				if (_dbContext == null)
+					return NotFound("No database connection");
+				var data = _dbContext.Accounts.Include(x => x.Users).FirstOrDefault(x => x.Id == idaccount);
+
+				if (data == null)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "Account not found with ID " + idaccount.ToString() + "." });
+
+				var user = data.Users.FirstOrDefault(x => x.Id.Equals(id));
+
+				if (user == null)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "User not found with ID " + id.ToString() + "." });
+
+				data.Users.Remove(user);
+				_dbContext.Entry(data).State = EntityState.Modified;
+				_dbContext.SaveChanges();
+
+				return Ok();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
 		}
 
 		//TODO: Adicionado SecondaryPlan
