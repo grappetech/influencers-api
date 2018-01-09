@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal;
+using System.Collections.Generic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -123,97 +124,122 @@ namespace Action.Controllers
 		[HttpGet("tone/{entity}")]
 		public dynamic GetTone([FromRoute]int entity, [FromQuery] DateTime from, [FromQuery] DateTime to)
 		{
-			var ltones = _dbContext.Tones.Where(x => x.EntityId == entity).ToList();
-			for (var i = 0; i < ltones.Count; i++)
+			try
 			{
-				var lpage = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Id == ltones[i].ScrapedPageId);
-			}
-			//return ltones; 
-			return Ok(new
-			{
-				sources = 170, // Nova propriedade
-				tone = new
+				var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
+
+				var pagesId = scrapdPages.Select(x => x.Id).ToList();
+
+				var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId == entity).Select(x => new
 				{
-					positive = 0.408,
-					negative = 0.59200000000000008,
-					neutro = 0.59200000000000008
-				},
-				tones = new[] {
-					new {
-						score= 0.570627,
-						id= "joy",
-						name= "Alegria"
-					},
-					new {
-						score= 0.570627,
-						id= "medo",
-						name= "Medo"
-					},
-					new {
-						score= 0.570627,
-						id= "raiva",
-						name= "raiva"
-					},
-					new {
-						score= 0.570627,
-						id= "nojo",
-						name= "nojo"
-					},
-					new {
-						score= 0.570627,
-						id= "tristeza",
-						name= "tristeza"
+					scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
+					x.SetenceTones,
+					scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
+					Mentions = x.SetenceTones.Select(z => new
+					{
+						z.Id,
+						z.Text,
+						tone = GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
+						{
+							t.Score,
+							id = t.ToneId,
+							name = t.ToneName
+						}))
+					})
+				});
+
+				var stones = tones.SelectMany(x => x.SetenceTones).Select(x => new
+				{
+					x.Text,
+					tones = x.ToneCategories.SelectMany(y => y.Tones).Select(z => new
+					{
+						z.Score,
+						Id = z.ToneId,
+						Name = z.ToneName
+					})
+				});
+
+				#region resultTones
+				var resultTones = new List<ToneItem>();
+
+				foreach (var item in stones)
+				{
+					ToneItem tom = new ToneItem();
+
+					foreach (var item2 in item.tones)
+					{
+						if (item2.Score > tom.Score)
+						{
+							tom.Score = item2.Score.Value;
+							tom.Id = item2.Id;
+							tom.Name = item2.Name;
+						}
 					}
-				},
-				mentions = new[] {
-					new {
-						id= 0,
-						text= "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
-						toneId= "joy",
-						url= "https=//app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
-						type= "positive",
-						date= "2017-10-28T00=00=00"
-					},
-					new {
-						id= 0,
-						text= "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
-						toneId= "joy",
-						url= "https=//app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
-						type= "negative",
-						date= "2017-10-28T00=00=00"
-					},
-					new {
-						id= 0,
-						text= "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
-						toneId= "joy",
-						url= "https=//app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
-						type= "neutro",
-						date= "2017-10-28T00=00=00"
-					}
-				},
-				words = new[] {
-					new {
-						id= "5243g67346h834j893",
-						text= "altar",
-						weight= 123,
-						type = "positive"
-					},
-					new {
-						id= "5243g67346h834j893",
-						text= "Tuesday",
-						weight= 2,
-						type = "neutral"
-					},
-					new {
-						id= "5243g67346h834j893",
-						text= "relationship",
-						weight= 33,
-						type = "negative"
-					}
+					if (tom.Score > 0)
+						resultTones.Add(tom);
 				}
-			});
+				#endregion
+
+				return Ok(new
+				{
+					sources = scrapdPages.Count(),
+
+					tone = new
+					{
+						positive = GetProporcao(resultTones, EToneType.Positivo),
+						negative = GetProporcao(resultTones, EToneType.Negativo),
+						neutro = GetProporcao(resultTones, EToneType.Neutro)
+					},
+
+					tones = resultTones.GroupBy(x => x.Id).Select(x => new
+					{
+						x.Key,
+						avg = x.Average(y => y.Score)
+					}).Select(x => new
+					{
+						score = x.avg,
+						id = x.Key,
+						name = resultTones.FirstOrDefault(y => y.Id.Equals(x.Key)).Name
+					}),
+
+					mentions = tones.SelectMany(x => x.Mentions.Select(y => new
+					{
+						id = y.Id,
+						text = y.Text,
+						toneId = y.tone.Id,
+						url = x.Url,
+						type = y.tone.ToneType.ToString(),
+						date = x.Date
+					})),
+				});
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
 		}
 
+		private ToneItem GetMaxTone(IEnumerable<dynamic> enumerable)
+		{
+			ToneItem tom = new ToneItem();
+			foreach (var item2 in enumerable)
+			{
+				if ((double)item2.Score > tom.Score)
+				{
+					tom.Score = (double)item2.Score.Value;
+					tom.Id = Convert.ToString(item2.id);
+					tom.Name = Convert.ToString(item2.name);
+				}
+			}
+			if (tom.Score > 0)
+				return tom;
+			return null;
+		}
+
+		private decimal GetProporcao(List<ToneItem> pToneItens, EToneType pToneType)
+		{
+			return pToneItens.Count == 0 ? 0 : pToneItens.Count(x => x.ToneType == pToneType) / pToneItens.Count;
+		}
 
 		//[Authorize]
 		[HttpPost("analyze")]
