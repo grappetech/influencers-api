@@ -13,6 +13,14 @@ using System.ComponentModel.DataAnnotations;
 using Action.Extensions;
 using Action.VewModels;
 using Action.Models.Plans;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using Action.Services.SMTP;
 
 namespace Action.Controllers
 {
@@ -22,9 +30,13 @@ namespace Action.Controllers
 	{
 		private readonly ApplicationDbContext _dbContext;
 		private readonly HtmlEncoder _htmlEncoder;
+		private readonly UserManager<User> _userManager;
+		private readonly IConfigurationRoot _configurationRoot;
 
-		public AccountController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
+		public AccountController(UserManager<User> userManager, IConfigurationRoot configurationRoot, HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
 		{
+			_userManager = userManager;
+			_configurationRoot = configurationRoot;
 			_dbContext = dbContext;
 			_htmlEncoder = htmlEncoder;
 		}
@@ -158,13 +170,78 @@ namespace Action.Controllers
 		}
 
 		[HttpPost("{id}/users")]
-		public dynamic PostUsers([FromRoute] int id)
+		public async Task<IActionResult> PostUsers([FromRoute] int id, [FromBody] RequireAuthViewModel requireAuthView)
 		{
-			return Ok(new
+			try
 			{
-				email = "luiz@nexo.ai",
-				url = "http://localhost:3000/#/auth"
-			});
+				if (requireAuthView.Email == null || requireAuthView.Email.Equals(""))
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "E-mail não informado." });
+				if (requireAuthView.Url == null || requireAuthView.Url.Equals(""))
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "URL não informado." });
+
+				if (_dbContext == null)
+					return NotFound("No database connection");
+				var data = _dbContext.Accounts.Include(x => x.Users).FirstOrDefault(x => x.Id.Equals(id));
+
+				if (data == null)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "Account not found with ID " + id.ToString() + "." });
+
+				var user = data.Users.FirstOrDefault(x => x.Email.Equals(requireAuthView.Email));
+				if(user != null)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "Usuário já cadastrado com este e-mail para esta Conta." });
+
+				user = new User
+				{
+					UserName = requireAuthView.Email,
+					Email = requireAuthView.Email,
+					Name = "",
+					Surname = "",
+					PhoneNumber = "",
+					PlanId = data.PlanId,
+					AccountId = data.Id
+				};
+				data.Users.Add(user);
+				_dbContext.Entry(data).State = EntityState.Modified;
+				_dbContext.SaveChanges();
+
+				var userClaims = await _userManager.GetClaimsAsync(user);
+				var plan = _dbContext.Accounts.Find(user.AccountId);
+				var claims = new[]
+					{
+						new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+						new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+						new Claim(JwtRegisteredClaimNames.Email, user.Email),
+						new Claim("accountId", user.AccountId.ToString()),
+						new Claim("planId", plan.Id.ToString())
+					}.Union(userClaims);
+				var symmetricSecurityKey =
+						new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
+				var signingCredentials =
+					new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+
+				var jwtSecurityToken = new JwtSecurityToken(
+					_configurationRoot["JwtSecurityToken:Issuer"],
+					_configurationRoot["JwtSecurityToken:Audience"],
+					claims,
+					expires: DateTime.UtcNow.AddDays(1),
+					signingCredentials: signingCredentials
+				);
+				var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+
+				SmtpService.SendMessage(user.Email, "[ACTION-API Acesso]",
+						string.Concat(requireAuthView.Url, "?token=", token));
+
+				return Ok(new
+				{
+					email = user.Email,
+					url = requireAuthView.Url
+				});
+
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
 		}
 
 		//TODO Adicionado delete
@@ -184,6 +261,9 @@ namespace Action.Controllers
 
 				if (user == null)
 					return StatusCode((int)EServerError.BusinessError, new List<string> { "User not found with ID " + id.ToString() + "." });
+
+				if (user.Account != null && user.Account.Administrator == user)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "Usuário Administrador não pode ser excluído." });
 
 				data.Users.Remove(user);
 				_dbContext.Entry(data).State = EntityState.Modified;
