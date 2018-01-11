@@ -60,7 +60,7 @@ namespace Action.Controllers
 						Id = user.Id,
 						Name = user.Name,
 						Phone = user.PhoneNumber,
-						Role = user.Account != null && user.Account.Administrator != null ? "ADMIN" : "USER",
+						Role = user.Account != null && user.Account.Administrator != null && user.Account.Administrator == user ? "ADMIN" : "USER",
 						SurName = user.Surname
 					};
 					return Ok(lUserViewModel);
