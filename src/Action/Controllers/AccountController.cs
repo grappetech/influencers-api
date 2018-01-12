@@ -21,6 +21,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Action.Services.SMTP;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace Action.Controllers
 {
@@ -191,11 +193,36 @@ namespace Action.Controllers
 			}
 		}
 
-		//TODO: Implementar o Upload de Imagem
 		[HttpPost("{id}/image")]
-		public dynamic Post([FromRoute] int id, [FromBody] string image)
+		public dynamic Post([FromRoute] int id, [FromBody]ImageRequest file)
 		{
-			return Ok();// "https://cdn1.iconfinder.com/data/icons/social-messaging-productivity-1-1/128/gender-male2-512.png";
+			try
+			{
+				if (file == null || file.ImageName.Equals(""))
+					return Content("file not selected");
+
+				if (_dbContext == null)
+					return NotFound("No database connection");
+				var data = _dbContext.Accounts.FirstOrDefault(x => x.Id == id);
+
+				if (data == null)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "Account not found with ID " + id.ToString() + "." });
+
+				if (data.Plan != null && data.Plan.TypePlan != ETypePlan.Agency)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "Imagem só é permitida para Agência." });
+
+				data.ImageUrl = ImageUpload.GenerateImageRoute(file, Request);
+				_dbContext.Entry(data).State = EntityState.Modified;
+				_dbContext.SaveChanges();
+
+				return Ok(new { ImageURL = data.ImageUrl });
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+
+			//return Ok();// "https://cdn1.iconfinder.com/data/icons/social-messaging-productivity-1-1/128/gender-male2-512.png";
 		}
 
 		[HttpPost("{id}/users")]
@@ -216,7 +243,7 @@ namespace Action.Controllers
 					return StatusCode((int)EServerError.BusinessError, new List<string> { "Account not found with ID " + id.ToString() + "." });
 
 				var user = data.Users.FirstOrDefault(x => x.Email.Equals(requireAuthView.Email));
-				if(user != null)
+				if (user != null)
 					return StatusCode((int)EServerError.BusinessError, new List<string> { "Usuário já cadastrado com este e-mail para esta Conta." });
 
 				user = new User

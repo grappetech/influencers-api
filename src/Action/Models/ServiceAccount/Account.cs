@@ -18,5 +18,17 @@ namespace Action.Models.ServiceAccount
 		public List<User> Users { get; set; } = new List<User>();
 		public List<Entity> Entities { get; set; }
 		public List<SecondaryPlan> SecondaryPlans { get; set; } = new List<SecondaryPlan>();
+		private string _imageUrl;
+		public string ImageUrl
+		{
+			get
+			{
+				if (String.IsNullOrEmpty(_imageUrl))
+					return "";
+				else
+					return _imageUrl;
+			}
+			set { _imageUrl = value; }
+		}
 	}
 }
