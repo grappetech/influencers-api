@@ -162,6 +162,35 @@ namespace Action.Controllers
 			}
 		}
 
+		[HttpDelete("{idaccount}/entities/{id}")]
+		public dynamic DeleteEntity([FromRoute] int idaccount, [FromRoute] long id)
+		{
+			try
+			{
+				if (_dbContext == null)
+					return NotFound("No database connection");
+				var data = _dbContext.Accounts.Include(x => x.Entities).FirstOrDefault(x => x.Id == idaccount);
+
+				if (data == null)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "Account not found with ID " + idaccount.ToString() + "." });
+
+				var entity = data.Entities.FirstOrDefault(x => x.Id.Equals(id));
+
+				if (entity == null)
+					return StatusCode((int)EServerError.BusinessError, new List<string> { "Entity not found with ID " + id.ToString() + "." });
+
+				data.Entities.Remove(entity);
+				_dbContext.Entry(data).State = EntityState.Modified;
+				_dbContext.SaveChanges();
+
+				return Ok();
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
 		//TODO: Implementar o Upload de Imagem
 		[HttpPost("{id}/image")]
 		public dynamic Post([FromRoute] int id, [FromBody] string image)
