@@ -96,7 +96,7 @@ namespace Action.Controllers
 					Id = x.Id.ToString(),
 					Name = x.Name,
 					Phone = x.PhoneNumber,
-					Role = x.Account.Administrator != null ? "ADMIN" : "USER",
+					Role = x.Account != null && x.Account.Administrator != null && x.Account.Administrator == x ? "ADMIN" : "USER",
 					SurName = x.Surname,
 				}));
 
