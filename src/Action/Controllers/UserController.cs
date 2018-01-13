@@ -16,7 +16,7 @@ using Action.VewModels;
 
 namespace Action.Controllers
 {
-	[Route("api/[controller]")]
+	[Route("api/users")]
 	[EnableCors("Default")]
 	public class UserController : Controller
 	{
@@ -31,7 +31,7 @@ namespace Action.Controllers
 			_manager = manager;
 		}
 
-		[HttpGet("")]
+		[HttpGet("me")]
 		public async Task<IActionResult> Get()
 		{
 			try
