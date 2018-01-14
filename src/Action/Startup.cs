@@ -82,7 +82,7 @@ namespace Action
             {
                 builder.AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowAnyHeader();
+                    .AllowAnyHeader().Build();
             }));
 
             //Enables Authentication

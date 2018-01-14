@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
 using Action.Extensions;
 using Action.Models;
 using Action.Models.Watson;
@@ -89,36 +90,108 @@ namespace Action.Controllers
 		}
 
 
+		
+        [HttpPost("{id}/images")]
+        public async Task<IActionResult> PostFile([FromRoute] int id, [FromForm]IFormFile file)
+        {
+            try
+            {
+                var fileId = Guid.NewGuid().ToString();
+
+                if (file == null || file.Length == 0)
+                    return Content("file not selected");
+
+                if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images")))
+                    Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images"));
+                
+                var path = Path.Combine(
+                    Directory.GetCurrentDirectory(), "wwwroot/images",
+                    fileId + file.FileName.GetFileExtension());
+
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+
+                if (file == null || file.FileName.Equals(""))
+                    return Content("file not selected");
+
+                if (_dbContext == null)
+                    return NotFound("No database connection");
+
+                var data = _dbContext.Entities.FirstOrDefault(x => x.Id == id);
+
+                if (data == null)
+                    return StatusCode((int) EServerError.BusinessError,
+                        new List<string> {$"Entity not found with ID {id}."});
+
+                data.PictureUrl = ImageUpload.GenerateFileRoute(fileId + file.FileName.GetFileExtension(), Request);
+                _dbContext.Entry(data).State = EntityState.Modified;
+                _dbContext.SaveChanges();
+
+                return Ok(new {ImageURL = data.PictureUrl});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
 		[HttpPost("{id}/image")]
-		public dynamic PostImage([FromRoute]long id, [FromBody]ImageRequest file)
+		public dynamic PostImage([FromRoute] int id, [FromBody]ImageRequest file)
 		{
 			try
 			{
+				if (file == null || file.ImageName.Equals(""))
+					return Content("file not selected");
+
 				if (_dbContext == null)
 					return NotFound("No database connection");
 				var data = _dbContext.Entities.FirstOrDefault(x => x.Id == id);
 
-				if (file == null || file.ImageName.Equals(""))
-					return Content("file not selected");
+				if (data == null)
+					return StatusCode((int) EServerError.BusinessError,
+						new List<string> {"Entity not found with ID " + id.ToString() + "."});
 
-				data.PictureUrl =  ImageUpload.GenerateImageRoute(file, Request);
+
+				data.PictureUrl = ImageUpload.GenerateImageRoute(file, Request);
 				_dbContext.Entry(data).State = EntityState.Modified;
 				_dbContext.SaveChanges();
 
-				return Ok(new { PictureURL = data.PictureUrl });
+				return Ok(new {ImageURL = data.PictureUrl});
 			}
 			catch (Exception ex)
 			{
 				return BadRequest(ex.Message);
 			}
+
 		}
 
+		
 		[HttpGet("image/{filename}")]
-		public dynamic GetImage([FromRoute] string filename)
+		public async  Task<IActionResult> GetImage([FromRoute] string filename)
 		{
+			
+			
+			if (filename == null)
+				return Content("filename not present");
+
+			var path = Path.Combine(
+				Directory.GetCurrentDirectory(),
+				"wwwroot/images", filename);
+
+			var memory = new MemoryStream();
+			using (var stream = new FileStream(path, FileMode.Open))
+			{
+				await stream.CopyToAsync(memory);
+			}
+			memory.Position = 0;
+			return File(memory, path.GetMimeType(), Path.GetFileName(path));
+			/*
 			return File(System.IO.File.ReadAllBytes(Environment.CurrentDirectory +
 				@"\Imagens\" + filename),
-				$"image/{filename.Split('.')[filename.Split('.').Length - 1]}");
+				$"image/{filename.Split('.')[filename.Split('.').Length - 1]}");*/
 		}
 
 

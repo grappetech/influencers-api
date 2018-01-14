@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Action.Extensions
@@ -76,5 +77,24 @@ namespace Action.Extensions
 			return "." + pString.Split('.')[pString.Split('.').Length - 1];
 		}
 
+		public static string GetMimeType(this string filename)
+		{
+			var types = new Dictionary<string, string>
+			{
+				{".txt", "text/plain"},
+				{".pdf", "application/pdf"},
+				{".doc", "application/vnd.ms-word"},
+				{".docx", "application/vnd.ms-word"},
+				{".xls", "application/vnd.ms-excel"},
+				{".xlsx", "application/vnd.openxmlformats officedocument.spreadsheetml.sheet"},
+				{".png", "image/png"},
+				{".jpg", "image/jpeg"},
+				{".jpeg", "image/jpeg"},
+				{".gif", "image/gif"},
+				{".csv", "text/csv"}
+			};
+
+			return types[filename.GetFileExtension()];
+		}
 	}
 }

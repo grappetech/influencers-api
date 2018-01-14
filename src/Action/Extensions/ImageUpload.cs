@@ -10,6 +10,14 @@ namespace Action.Extensions
 {
 	public static class ImageUpload
 	{
+		public static string GenerateFileRoute(string filename, HttpRequest request)
+		{
+			var route = "";
+			route = request.IsHttps ? "Https://" : "Http://";
+			route += $"{request.Host}/api/entities/image/{ filename }";
+			return route;
+		}
+		
 		public static string GenerateImageRoute(ImageRequest model, HttpRequest pRequest)
 		{
 			var route = "";
@@ -29,7 +37,7 @@ namespace Action.Extensions
 
 			var bytes = Convert.FromBase64String(pImagem);
 			var imageid = Guid.NewGuid().ToString();
-			var lPath = Environment.CurrentDirectory + @"\Imagens\" + imageid + fileName.GetFileExtension();
+			var lPath = Directory.GetCurrentDirectory() + @"wwwroot\imagens\" + imageid + fileName.GetFileExtension();
 
 			using (var imageFile = new FileStream(lPath, FileMode.Create))
 			{
