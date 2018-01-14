@@ -91,7 +91,7 @@ namespace Action.Controllers
 
 
 		
-        [HttpPost("{id}/images")]
+        [HttpPost("{id}/image")]
         public async Task<IActionResult> PostFile([FromRoute] int id, [FromForm]IFormFile file)
         {
             try
@@ -138,7 +138,7 @@ namespace Action.Controllers
             }
         }
 
-		[HttpPost("{id}/image")]
+		[HttpPost("{id}/images")]
 		public dynamic PostImage([FromRoute] int id, [FromBody]ImageRequest file)
 		{
 			try
