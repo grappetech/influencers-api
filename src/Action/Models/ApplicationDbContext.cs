@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using System;
+using System.Collections.Immutable;
 using Action.Models.Plans;
 using Action.Models.Scrap;
 using Action.Models.ServiceAccount;
@@ -31,9 +32,13 @@ namespace Action.Models
 		public DbSet<Account> Accounts { get; set; }
 		public DbSet<Industry> Industries { get; set; }
 		public DbSet<SecondaryPlan> SecondaryPlans { get; set; }
+		public DbSet<ImageRepo> Images { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
+			builder.Entity<ImageRepo>()
+				.Property(x => x.Base64Image)
+				.HasMaxLength(Int32.MaxValue);
 
 			builder.Entity<Account>()
 				.HasMany(x => x.Users);

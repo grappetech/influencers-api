@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Internal.System.Collections.Sequences;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 using Action.Extensions;
 using Action.VewModels;
 using Action.Models.Plans;
@@ -29,7 +28,7 @@ namespace Action.Controllers
 {
     [Route("api/[controller]")]
     [EnableCors("Default")]
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly HtmlEncoder _htmlEncoder;
@@ -47,159 +46,165 @@ namespace Action.Controllers
 
         // GET: api/values
         [HttpGet("{id}")]
-        public dynamic Get([FromRoute] int id)
+        public IActionResult Get([FromRoute] int id)
         {
-            try
-            {
-                if (_dbContext == null)
-                    return NotFound("No database connection");
-                var data = _dbContext.Accounts.Include(x => x.Entities).Include(x => x.Administrator)
-                    .Include(x => x.Plan).ThenInclude(x => x.Features).Include(x => x.Users)
-                    .FirstOrDefault(x => x.Id == id);
-
-                if (data == null)
-                    return StatusCode((int) EServerError.BusinessError,
-                        new List<string> {"Object not found with ID " + id.ToString() + "."});
-
-                AccountViewModel lAccountViewModel = new AccountViewModel();
-                lAccountViewModel.Id = data.Id;
-                lAccountViewModel.Status = data.Status.ToString();
-                lAccountViewModel.Plan = new PlanViewModel
-                {
-                    Id = data.Plan.Id,
-                    Name = data.Plan.Name,
-                    Price = data.Plan.Price,
-                    Slug = data.Plan.Slug,
-                };
-                data.Plan.Features.ForEach(x => lAccountViewModel.Plan.Features.Add(new FeatureViewModel
-                {
-                    Description = x.Description
-                }));
-
-                data.SecondaryPlans.ForEach(x => lAccountViewModel.SecondaryPlans.Add(new SecondaryPlanViewModel
-                {
-                    Account = lAccountViewModel,
-                    Id = x.Id,
-                    AllowedUsers = x.AllowedUsers,
-                    Name = x.Name,
-                    Price = x.Price,
-                    StartDate = x.StartDate
-                }));
-
-                data.Entities.ForEach(x => lAccountViewModel.Entities.Add(new EntityViewModel
-                {
-                    Entity = x.Name,
-                    Id = x.Id,
-                    ImageUrl = x.PictureUrl,
-                    Type = x.Category
-                }));
-
-                data.Users.ForEach(x => lAccountViewModel.Users.Add(new UserViewModel
-                {
-                    AccountId = x.AccountId.Value,
-                    Email = x.Email,
-                    Id = x.Id.ToString(),
-                    Name = x.Name,
-                    Phone = x.PhoneNumber,
-                    Role = x.Account != null && x.Account.Administrator != null && x.Account.Administrator == x
-                        ? "ADMIN"
-                        : "USER",
-                    SurName = x.Surname,
-                }));
-
-                return Ok(lAccountViewModel);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPost("{id}/entities")]
-        public dynamic PostEntity([FromRoute] int id, [FromBody] EntityViewModel model)
-        {
-            if (ModelState.IsValid)
+            return ValidateUser(() =>
             {
                 try
                 {
-                    var account = _dbContext.Accounts.Include(x => x.Entities).FirstOrDefault(y => y.Id == id);
-                    if (account == null)
-                        throw new Exception("Account not found with ID: " + id);
+                    if (_dbContext == null)
+                        return NotFound("No database connection");
+                    var data = _dbContext.Accounts.Include(x => x.Entities).Include(x => x.Administrator)
+                        .Include(x => x.Plan).ThenInclude(x => x.Features).Include(x => x.Users)
+                        .FirstOrDefault(x => x.Id == id);
 
-                    if (model.Id == 0)
+                    if (data == null)
+                        return StatusCode((int) EServerError.BusinessError,
+                            new List<string> {"Object not found with ID " + id.ToString() + "."});
+
+                    AccountViewModel lAccountViewModel = new AccountViewModel();
+                    lAccountViewModel.Id = data.Id;
+                    lAccountViewModel.Status = data.Status.ToString();
+                    lAccountViewModel.Plan = new PlanViewModel
                     {
-                        var obj = new Entity
-                        {
-                            Name = model.Entity,
-                            CategoryId = Enum.Parse<ECategory>(model.Type),
-                            Date = DateTime.Today,
-                            //Alias = model.Alias,
-                            //FacebookUser = model.FacebookUser,
-                            //InstagranUser = model.InstagranUser,
-                            PictureUrl = model.ImageUrl,
-                            //SiteUrl = model.SiteUrl,
-                            //TweeterUser = model.TweeterUser,
-                            //YoutubeUser = model.YoutuberUser
-                        };
-                        _dbContext.Entities.Add(obj);
-                        account.Entities.Add(obj);
-                    }
-                    else
+                        Id = data.Plan.Id,
+                        Name = data.Plan.Name,
+                        Price = data.Plan.Price,
+                        Slug = data.Plan.Slug,
+                    };
+                    data.Plan.Features.ForEach(x => lAccountViewModel.Plan.Features.Add(new FeatureViewModel
                     {
-                        if (account.Entities == null)
-                            account.Entities = new List<Entity>();
+                        Description = x.Description
+                    }));
 
-                        if (_dbContext.Entities.Find((long) model.Id) == null)
-                            throw new Exception("Entity not found with ID: " + model.Id);
+                    data.SecondaryPlans.ForEach(x => lAccountViewModel.SecondaryPlans.Add(new SecondaryPlanViewModel
+                    {
+                        Account = lAccountViewModel,
+                        Id = x.Id,
+                        AllowedUsers = x.AllowedUsers,
+                        Name = x.Name,
+                        Price = x.Price,
+                        StartDate = x.StartDate
+                    }));
 
-                        if (account.Entities.All(x => x.Id != model.Id))
-                            account.Entities.Add(_dbContext.Entities.Find((long) model.Id));
-                    }
+                    data.Entities.ForEach(x => lAccountViewModel.Entities.Add(new EntityViewModel
+                    {
+                        Entity = x.Name,
+                        Id = x.Id,
+                        ImageUrl = x.PictureUrl,
+                        Type = x.Category
+                    }));
 
-                    _dbContext.Entry(account).State = EntityState.Modified;
-                    _dbContext.SaveChanges();
-                    return account.Entities;
+                    data.Users.ForEach(x => lAccountViewModel.Users.Add(new UserViewModel
+                    {
+                        AccountId = x.AccountId.Value,
+                        Email = x.Email,
+                        Id = x.Id.ToString(),
+                        Name = x.Name,
+                        Phone = x.PhoneNumber,
+                        Role = x.Account != null && x.Account.Administrator != null && x.Account.Administrator == x
+                            ? "ADMIN"
+                            : "USER",
+                        SurName = x.Surname,
+                    }));
+
+                    return Ok(lAccountViewModel);
                 }
                 catch (Exception ex)
                 {
-                    return StatusCode((int) EServerError.BusinessError, new List<string> {ex.Message});
+                    return BadRequest(ex.Message);
                 }
-            }
-            else
+            });
+        }
+
+        [HttpPost("{id}/entities")]
+        public IActionResult PostEntity([FromRoute] int id, [FromBody] EntityViewModel model)
+        {
+            return ValidateUser(() =>
             {
-                return StatusCode((int) EServerError.ModelIsNotValid, ModelState.GetErrors());
-            }
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        var account = _dbContext.Accounts.Include(x => x.Entities).FirstOrDefault(y => y.Id == id);
+                        if (account == null)
+                            throw new Exception("Account not found with ID: " + id);
+
+                        if (model.Id == 0)
+                        {
+                            var obj = new Entity
+                            {
+                                Name = model.Entity,
+                                CategoryId = Enum.Parse<ECategory>(model.Type),
+                                Date = DateTime.Today,
+                                //Alias = model.Alias,
+                                //FacebookUser = model.FacebookUser,
+                                //InstagranUser = model.InstagranUser,
+                                PictureUrl = model.ImageUrl,
+                                //SiteUrl = model.SiteUrl,
+                                //TweeterUser = model.TweeterUser,
+                                //YoutubeUser = model.YoutuberUser
+                            };
+                            _dbContext.Entities.Add(obj);
+                            account.Entities.Add(obj);
+                        }
+                        else
+                        {
+                            if (account.Entities == null)
+                                account.Entities = new List<Entity>();
+
+                            if (_dbContext.Entities.Find((long) model.Id) == null)
+                                throw new Exception("Entity not found with ID: " + model.Id);
+
+                            if (account.Entities.All(x => x.Id != model.Id))
+                                account.Entities.Add(_dbContext.Entities.Find((long) model.Id));
+                        }
+
+                        _dbContext.Entry(account).State = EntityState.Modified;
+                        _dbContext.SaveChanges();
+                        return Ok(account.Entities);
+                    }
+                    catch (Exception ex)
+                    {
+                        return StatusCode((int) EServerError.BusinessError, new List<string> {ex.Message});
+                    }
+                }
+                    return StatusCode((int) EServerError.ModelIsNotValid, ModelState.GetErrors());
+            });
         }
 
         [HttpDelete("{idaccount}/entities/{id}")]
-        public dynamic DeleteEntity([FromRoute] int idaccount, [FromRoute] long id)
+        public IActionResult DeleteEntity([FromRoute] int idaccount, [FromRoute] long id)
         {
-            try
+            return ValidateUser(() =>
             {
-                if (_dbContext == null)
-                    return NotFound("No database connection");
-                var data = _dbContext.Accounts.Include(x => x.Entities).FirstOrDefault(x => x.Id == idaccount);
+                try
+                {
+                    if (_dbContext == null)
+                        return NotFound("No database connection");
+                    var data = _dbContext.Accounts.Include(x => x.Entities).FirstOrDefault(x => x.Id == idaccount);
 
-                if (data == null)
-                    return StatusCode((int) EServerError.BusinessError,
-                        new List<string> {"Account not found with ID " + idaccount.ToString() + "."});
+                    if (data == null)
+                        return StatusCode((int) EServerError.BusinessError,
+                            new List<string> {"Account not found with ID " + idaccount.ToString() + "."});
 
-                var entity = data.Entities.FirstOrDefault(x => x.Id.Equals(id));
+                    var entity = data.Entities.FirstOrDefault(x => x.Id.Equals(id));
 
-                if (entity == null)
-                    return StatusCode((int) EServerError.BusinessError,
-                        new List<string> {"Entity not found with ID " + id.ToString() + "."});
+                    if (entity == null)
+                        return StatusCode((int) EServerError.BusinessError,
+                            new List<string> {"Entity not found with ID " + id.ToString() + "."});
 
-                data.Entities.Remove(entity);
-                _dbContext.Entry(data).State = EntityState.Modified;
-                _dbContext.SaveChanges();
+                    data.Entities.Remove(entity);
+                    _dbContext.Entry(data).State = EntityState.Modified;
+                    _dbContext.SaveChanges();
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            });
         }
 
         [HttpPost("{id}/image")]
@@ -284,7 +289,6 @@ namespace Action.Controllers
                 return BadRequest(ex.Message);
             }
 
-            //return Ok();// "https://cdn1.iconfinder.com/data/icons/social-messaging-productivity-1-1/128/gender-male2-512.png";
         }
 
         [HttpPost("{id}/users")]
@@ -326,13 +330,15 @@ namespace Action.Controllers
 
                 var userClaims = await _userManager.GetClaimsAsync(user);
                 var plan = _dbContext.Accounts.Find(user.AccountId);
+                var expiration = DateTime.UtcNow.AddDays(1);
                 var claims = new[]
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                     new Claim("accountId", user.AccountId.ToString()),
-                    new Claim("planId", plan.Id.ToString())
+                    new Claim("planId", plan.Id.ToString()),
+                    new Claim(".expires", expiration.Ticks.ToString())
                 }.Union(userClaims);
                 var symmetricSecurityKey =
                     new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configurationRoot["JwtSecurityToken:Key"]));
@@ -343,7 +349,7 @@ namespace Action.Controllers
                     _configurationRoot["JwtSecurityToken:Issuer"],
                     _configurationRoot["JwtSecurityToken:Audience"],
                     claims,
-                    expires: DateTime.UtcNow.AddDays(1),
+                    expires: expiration,
                     signingCredentials: signingCredentials
                 );
                 var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
@@ -365,93 +371,98 @@ namespace Action.Controllers
 
         //TODO Adicionado delete
         [HttpDelete("{idaccount}/users/{id}")]
-        public dynamic Delete([FromRoute] int idaccount, [FromRoute] string id)
+        public IActionResult Delete([FromRoute] int idaccount, [FromRoute] string id)
         {
-            try
-            {
-                if (_dbContext == null)
-                    return NotFound("No database connection");
-                var data = _dbContext.Accounts.Include(x => x.Users).FirstOrDefault(x => x.Id == idaccount);
+            return ValidateUser(()=>{
+                try
+                {
+                    if (_dbContext == null)
+                        return NotFound("No database connection");
+                    var data = _dbContext.Accounts.Include(x => x.Users).FirstOrDefault(x => x.Id == idaccount);
 
-                if (data == null)
-                    return StatusCode((int) EServerError.BusinessError,
-                        new List<string> {"Account not found with ID " + idaccount.ToString() + "."});
+                    if (data == null)
+                        return StatusCode((int) EServerError.BusinessError,
+                            new List<string> {"Account not found with ID " + idaccount.ToString() + "."});
 
-                var user = data.Users.FirstOrDefault(x => x.Id.Equals(id));
+                    var user = data.Users.FirstOrDefault(x => x.Id.Equals(id));
 
-                if (user == null)
-                    return StatusCode((int) EServerError.BusinessError,
-                        new List<string> {"User not found with ID " + id.ToString() + "."});
+                    if (user == null)
+                        return StatusCode((int) EServerError.BusinessError,
+                            new List<string> {"User not found with ID " + id.ToString() + "."});
 
-                if (user.Account != null && user.Account.Administrator == user)
-                    return StatusCode((int) EServerError.BusinessError,
-                        new List<string> {"Usuário Administrador não pode ser excluído."});
+                    if (user.Account != null && user.Account.Administrator == user)
+                        return StatusCode((int) EServerError.BusinessError,
+                            new List<string> {"Usuário Administrador não pode ser excluído."});
 
-                data.Users.Remove(user);
-                _dbContext.Entry(data).State = EntityState.Modified;
-                _dbContext.SaveChanges();
+                    data.Users.Remove(user);
+                    _dbContext.Entry(data).State = EntityState.Modified;
+                    _dbContext.SaveChanges();
 
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            });
         }
 
         //TODO: Adicionado SecondaryPlan
         [HttpPost("{id}/secondaryplans")]
-        public dynamic PostSecondaryPlans([FromRoute] int id, [FromBody] SecondaryPlanViewModel secondaryPlanView)
+        public IActionResult PostSecondaryPlans([FromRoute] int id, [FromBody] SecondaryPlanViewModel secondaryPlanView)
         {
-            try
+            return ValidateUser(() =>
             {
-                var account = _dbContext.Accounts.Include(x => x.SecondaryPlans).FirstOrDefault(y => y.Id == id);
-                if (account == null)
-                    throw new Exception("Account not found with ID: " + id);
-
-                var secondaryPlan = account.SecondaryPlans.FirstOrDefault(x => x.Id == secondaryPlanView.Id);
-                if (secondaryPlan != null)
-                    throw new Exception("SecondaryPlan already associated with the Account.");
-
-                SecondaryPlan newSecondaryPlan = new SecondaryPlan
+                try
                 {
-                    Account = account,
-                    AccountId = account.Id,
-                    AllowedUsers = secondaryPlanView.AllowedUsers,
-                    Name = secondaryPlanView.Name,
-                    Price = secondaryPlanView.Price,
-                    StartDate = secondaryPlanView.StartDate
-                };
+                    var account = _dbContext.Accounts.Include(x => x.SecondaryPlans).FirstOrDefault(y => y.Id == id);
+                    if (account == null)
+                        throw new Exception("Account not found with ID: " + id);
 
-                account.SecondaryPlans.Add(newSecondaryPlan);
-                _dbContext.Entry(account).State = EntityState.Modified;
-                _dbContext.SaveChanges();
+                    var secondaryPlan = account.SecondaryPlans.FirstOrDefault(x => x.Id == secondaryPlanView.Id);
+                    if (secondaryPlan != null)
+                        throw new Exception("SecondaryPlan already associated with the Account.");
 
-                return Ok(newSecondaryPlan);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode((int) EServerError.BusinessError, new List<string> {ex.Message});
-            }
+                    SecondaryPlan newSecondaryPlan = new SecondaryPlan
+                    {
+                        Account = account,
+                        AccountId = account.Id,
+                        AllowedUsers = secondaryPlanView.AllowedUsers,
+                        Name = secondaryPlanView.Name,
+                        Price = secondaryPlanView.Price,
+                        StartDate = secondaryPlanView.StartDate
+                    };
+
+                    account.SecondaryPlans.Add(newSecondaryPlan);
+                    _dbContext.Entry(account).State = EntityState.Modified;
+                    _dbContext.SaveChanges();
+
+                    return Ok(newSecondaryPlan);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode((int) EServerError.BusinessError, new List<string> {ex.Message});
+                }
+            });
         }
 
         [HttpPost("cancela/{id}")]
-        public dynamic PostCancela([FromRoute] int id)
+        public IActionResult PostCancela([FromRoute] int id)
         {
-            return Ok(new
+            return ValidateUser(() => Ok(new
             {
                 highPrice = true,
                 platformNotUseful = true,
                 doesntMatchMyNeeds = true,
                 unableToUseThePlatformEffectively = true,
                 message = "message message message message message "
-            });
+            }));
         }
 
         [HttpGet("{id}/payments")]
         public dynamic GetPayments([FromRoute] int id)
         {
-            return Ok(new[]
+            return ValidateUser(()=> Ok(new[]
             {
                 new
                 {
@@ -483,30 +494,7 @@ namespace Action.Controllers
                     expirationdate = "2017-11-06T00:00:00",
                     status = "PENDING" // PENDING | PAID
                 }
-            });
+            }));
         }
-    }
-
-    public class AddEntityViewModel
-    {
-        //TODO: Adicionado as Propriedades imageUrl e industryId
-        public int Id { get; set; }
-
-        [Required(ErrorMessage = "Nome não informado.")]
-        public string Name { get; set; }
-
-        public string Alias { get; set; }
-        public int CategoryId { get; set; }
-
-        [Required(ErrorMessage = "Categoria não informada.")]
-        public string Category { get; set; }
-
-        public string Date { get; set; }
-        public string FacebookUser { get; set; }
-        public string TweeterUser { get; set; }
-        public string InstagranUser { get; set; }
-        public string YoutuberUser { get; set; }
-        public string PictureUrl { get; set; }
-        public string SiteUrl { get; set; }
     }
 }

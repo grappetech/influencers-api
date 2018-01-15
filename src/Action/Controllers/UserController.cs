@@ -16,101 +16,104 @@ using Action.VewModels;
 
 namespace Action.Controllers
 {
-	[Route("api/users")]
-	[EnableCors("Default")]
-	public class UserController : Controller
-	{
-		private readonly ApplicationDbContext _dbContext;
-		private readonly HtmlEncoder _htmlEncoder;
-		private readonly UserManager<User> _manager;
+    [Route("api/users")]
+    [EnableCors("Default")]
+    public class UserController : BaseController
+    {
+        private readonly ApplicationDbContext _dbContext;
+        private readonly HtmlEncoder _htmlEncoder;
+        private readonly UserManager<User> _manager;
 
-		public UserController(HtmlEncoder htmlEncoder, UserManager<User> manager, ApplicationDbContext dbContext = null)
-		{
-			_dbContext = dbContext;
-			_htmlEncoder = htmlEncoder;
-			_manager = manager;
-		}
+        public UserController(HtmlEncoder htmlEncoder, UserManager<User> manager, ApplicationDbContext dbContext = null)
+        {
+            _dbContext = dbContext;
+            _htmlEncoder = htmlEncoder;
+            _manager = manager;
+        }
 
-		[HttpGet("me")]
-		public async Task<IActionResult> Get()
-		{
-			try
-			{
-				JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-				var param = new TokenValidationParameters
-				{
-					ValidIssuer = "http://nexo.ai",
-					ValidAudience = "https://api-act.mybluemix.net",
-					ValidateIssuerSigningKey = true,
-					IssuerSigningKey =
-							new SymmetricSecurityKey(Encoding.UTF8.GetBytes("kep2EpHUvA_eJAKaS$&G3-?E=#Efa5AX")),
-					ValidateLifetime = true
-				};
+        [HttpGet("me")]
+        public IActionResult Get()
+        {
+            return ValidateUser(() =>
+            {
+                try
+                {
+                    JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+                    var param = new TokenValidationParameters
+                    {
+                        ValidIssuer = "http://nexo.ai",
+                        ValidAudience = "https://api-act.mybluemix.net",
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey =
+                            new SymmetricSecurityKey(Encoding.UTF8.GetBytes("kep2EpHUvA_eJAKaS$&G3-?E=#Efa5AX")),
+                        ValidateLifetime = true
+                    };
 
-				SecurityToken stoken;
-				ClaimsPrincipal claim = handler.ValidateToken(HttpContext.Request.Headers.FirstOrDefault(x => x.Key.ToLower().Equals("authorization")).Value.ToString().Replace("bearer ", ""), param, out stoken);
-				var user = await _manager.FindByEmailAsync(claim.Claims.FirstOrDefault(x => x.Type.ToLower().Contains("nameidentifier")).Value);
+                    SecurityToken stoken;
+                    ClaimsPrincipal claim = handler.ValidateToken(
+                        HttpContext.Request.Headers.FirstOrDefault(x => x.Key.ToLower().Equals("authorization")).Value
+                            .ToString().Replace("bearer ", ""), param, out stoken);
+                    var user = _manager.FindByEmailAsync(claim.Claims
+                        .FirstOrDefault(x => x.Type.ToLower().Contains("nameidentifier"))?.Value).Result;
 
-				if (user != null)
-				{
-					UserViewModel lUserViewModel = new UserViewModel
-					{
-						AccountId = user.AccountId.Value,
-						Email = user.Email,
-						Id = user.Id,
-						Name = user.Name,
-						Phone = user.PhoneNumber,
-						Role = user.Account != null && user.Account.Administrator != null && user.Account.Administrator == user ? "ADMIN" : "USER",
-						SurName = user.Surname
-					};
-					return Ok(lUserViewModel);
-				}
-				else
-					return StatusCode((int)EServerError.BusinessError, new List<string> { "User not found." });
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex.Message);
-			}
-		}
+                    if (user != null)
+                    {
+                        UserViewModel lUserViewModel = new UserViewModel
+                        {
+                            AccountId = user.AccountId.Value,
+                            Email = user.Email,
+                            Id = user.Id,
+                            Name = user.Name,
+                            Phone = user.PhoneNumber,
+                            Role = user.Account != null && user.Account.Administrator != null &&
+                                   user.Account.Administrator == user
+                                ? "ADMIN"
+                                : "USER",
+                            SurName = user.Surname
+                        };
+                        return Ok(lUserViewModel);
+                    }
 
-		[HttpPut("{id}")]
-		public dynamic Put([FromRoute] string id, [FromBody] AddUserViewModel model)
-		{
-			try
-			{
-				if (_dbContext == null)
-					return NotFound("No database connection");
-				var data = _dbContext.Users.FirstOrDefault(x => x.Id.Equals(id));
+                    return StatusCode((int) EServerError.BusinessError, new List<string> {"User not found."});
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            });
+        }
 
-				if (data == null)
-					return StatusCode((int)EServerError.BusinessError, new List<string> { "User not found with ID " + id.ToString() + "." });
+        [HttpPut("{id}")]
+        public dynamic Put([FromRoute] string id, [FromBody] AddUserViewModel model)
+        {
+            return ValidateUser(() =>
+                {
+                    try
+                    {
+                        if (_dbContext == null)
+                            return NotFound("No database connection");
+                        var data = _dbContext.Users.FirstOrDefault(x => x.Id.Equals(id));
 
-				data.Email = model.email;
-				data.Name = model.name;
-				data.Surname = model.surname;
-				data.PhoneNumber = model.phone;
+                        if (data == null)
+                            return StatusCode((int) EServerError.BusinessError,
+                                new List<string> {"User not found with ID " + id.ToString() + "."});
 
-				_dbContext.Entry(data).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-				_dbContext.SaveChanges();
+                        data.Email = model.Email;
+                        data.Name = model.Name;
+                        data.Surname = model.Surname;
+                        data.PhoneNumber = model.Phone;
 
-				return Ok(model);
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex.Message);
-			}
-		}
-	}
+                        _dbContext.Entry(data).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                        _dbContext.SaveChanges();
 
-	public class AddUserViewModel
-	{
-		public string Id { get; set; }
-		public int accountId { get; set; }
-		public string role { get; set; }
-		public string email { get; set; }
-		public string name { get; set; }
-		public string surname { get; set; }
-		public string phone { get; set; }
-	}
+                        return Ok();
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(ex.Message);
+                    }
+                }
+            );
+        }
+    }
 }

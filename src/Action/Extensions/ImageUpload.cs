@@ -20,6 +20,8 @@ namespace Action.Extensions
 		
 		public static string GenerateImageRoute(ImageRequest model, HttpRequest pRequest)
 		{
+			if (string.IsNullOrWhiteSpace(model?.Base64Image) || string.IsNullOrWhiteSpace(model.ImageName))
+				return null;
 			var route = "";
 			if (pRequest.IsHttps)
 				route = "Https://";

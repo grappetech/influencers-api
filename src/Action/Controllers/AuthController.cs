@@ -165,14 +165,15 @@ namespace Action.Controllers
 				{
 					var plan = _dbContext.Accounts.Find(user.AccountId);
 					var userClaims = await _userManager.GetClaimsAsync(user);
-
+					var expiration = DateTime.UtcNow.AddMinutes(60);
 					var claims = new[]
 					{
 						new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
 						new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 						new Claim(JwtRegisteredClaimNames.Email, user.Email),
 						new Claim("accountId", user.AccountId.ToString()),
-						new Claim("planId", plan.Id.ToString())
+						new Claim("planId", plan.Id.ToString()),
+						new Claim(".expires", expiration.Ticks.ToString())
 					}.Union(userClaims);
 
 					var symmetricSecurityKey =
@@ -184,7 +185,7 @@ namespace Action.Controllers
 						_configurationRoot["JwtSecurityToken:Issuer"],
 						_configurationRoot["JwtSecurityToken:Audience"],
 						claims,
-						expires: DateTime.UtcNow.AddMinutes(60),
+						expires: expiration,
 						signingCredentials: signingCredentials
 					);
 					return Ok(new
@@ -216,13 +217,15 @@ namespace Action.Controllers
 				{
 					var userClaims = await _userManager.GetClaimsAsync(user);
 					var plan = _dbContext.Accounts.Find(user.AccountId);
+					var expiration = DateTime.UtcNow.AddDays(1);
 					var claims = new[]
 					{
 						new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
 						new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 						new Claim(JwtRegisteredClaimNames.Email, user.Email),
 						new Claim("accountId", user.AccountId.ToString()),
-						new Claim("planId", plan.Id.ToString())
+						new Claim("planId", plan.Id.ToString()),
+						new Claim(".expires", expiration.Ticks.ToString())
 					}.Union(userClaims);
 
 
@@ -235,7 +238,7 @@ namespace Action.Controllers
 						_configurationRoot["JwtSecurityToken:Issuer"],
 						_configurationRoot["JwtSecurityToken:Audience"],
 						claims,
-						expires: DateTime.UtcNow.AddDays(1),
+						expires: expiration,
 						signingCredentials: signingCredentials
 					);
 					var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
