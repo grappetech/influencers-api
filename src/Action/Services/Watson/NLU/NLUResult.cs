@@ -16,7 +16,7 @@ namespace Action.Services.Watson.NLU
         //}
 
         [Key]
-        public long Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
         public Guid ScrapedPageId { get; set; }
 
@@ -40,7 +40,6 @@ namespace Action.Services.Watson.NLU
         public static NLUResult Parse(AnalysisResults pResult)
         {
             var lNLUResult = new NLUResult();
-
             if (pResult.Emotion != null)
                 lNLUResult.Emotion = new Emotion
                 {
