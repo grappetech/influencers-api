@@ -169,7 +169,8 @@ namespace Action.Controllers
                         return StatusCode((int) EServerError.BusinessError, new List<string> {ex.Message});
                     }
                 }
-                    return StatusCode((int) EServerError.ModelIsNotValid, ModelState.GetErrors());
+
+                return StatusCode((int) EServerError.ModelIsNotValid, ModelState.GetErrors());
             });
         }
 
@@ -208,7 +209,7 @@ namespace Action.Controllers
         }
 
         [HttpPost("{id}/image")]
-        public async Task<IActionResult> Post([FromRoute] int id, [FromForm]IFormFile file)
+        public async Task<IActionResult> Post([FromRoute] int id, [FromForm] IFormFile file)
         {
             try
             {
@@ -219,15 +220,10 @@ namespace Action.Controllers
 
                 if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images")))
                     Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images"));
-                
+
                 var path = Path.Combine(
                     Directory.GetCurrentDirectory(), "wwwroot/images",
                     fileId + file.FileName.GetFileExtension());
-
-                using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
 
 
                 if (file == null || file.FileName.Equals(""))
@@ -245,8 +241,13 @@ namespace Action.Controllers
                 if (data.Plan != null && data.Plan.TypePlan != ETypePlan.Agency)
                     return StatusCode((int) EServerError.BusinessError,
                         new List<string> {"Imagem só é permitida para Agência."});
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    data.ImageUrl = ImageUpload.GenerateFileRoute(fileId + file.FileName.GetFileExtension(), stream,
+                        Request, _dbContext);
+                }
 
-                data.ImageUrl = ImageUpload.GenerateFileRoute(fileId + file.FileName.GetFileExtension(), Request);
                 _dbContext.Entry(data).State = EntityState.Modified;
                 _dbContext.SaveChanges();
 
@@ -258,39 +259,15 @@ namespace Action.Controllers
             }
         }
 
-        [HttpPost("{id}/images")]
-        public dynamic PostImage([FromRoute] int id, [FromBody] ImageRequest file)
+        [HttpGet("image/{filename}")]
+        public async  Task<IActionResult> GetImage([FromRoute] string filename)
         {
-            try
-            {
-                if (file == null || file.ImageName.Equals(""))
-                    return Content("file not selected");
 
-                if (_dbContext == null)
-                    return NotFound("No database connection");
-                var data = _dbContext.Accounts.FirstOrDefault(x => x.Id == id);
-
-                if (data == null)
-                    return StatusCode((int) EServerError.BusinessError,
-                        new List<string> {"Account not found with ID " + id.ToString() + "."});
-
-                if (data.Plan != null && data.Plan.TypePlan != ETypePlan.Agency)
-                    return StatusCode((int) EServerError.BusinessError,
-                        new List<string> {"Imagem só é permitida para Agência."});
-
-                data.ImageUrl = ImageUpload.GenerateImageRoute(file, Request);
-                _dbContext.Entry(data).State = EntityState.Modified;
-                _dbContext.SaveChanges();
-
-                return Ok(new {ImageURL = data.ImageUrl});
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
+            var img = await _dbContext.Images.FirstOrDefaultAsync( x => x.ImageName.Equals(filename));
+            var memory = new MemoryStream(Convert.FromBase64String(img.Base64Image)) {Position = 0};
+            return File(memory, filename.GetMimeType(), filename);
         }
-
+        
         [HttpPost("{id}/users")]
         public async Task<IActionResult> PostUsers([FromRoute] int id, [FromBody] RequireAuthViewModel requireAuthView)
         {
@@ -373,7 +350,8 @@ namespace Action.Controllers
         [HttpDelete("{idaccount}/users/{id}")]
         public IActionResult Delete([FromRoute] int idaccount, [FromRoute] string id)
         {
-            return ValidateUser(()=>{
+            return ValidateUser(() =>
+            {
                 try
                 {
                     if (_dbContext == null)
@@ -462,7 +440,7 @@ namespace Action.Controllers
         [HttpGet("{id}/payments")]
         public dynamic GetPayments([FromRoute] int id)
         {
-            return ValidateUser(()=> Ok(new[]
+            return ValidateUser(() => Ok(new[]
             {
                 new
                 {

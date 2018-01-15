@@ -21,7 +21,7 @@ using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace Action.Controllers
 {
-    [Route("api/social-state")]
+    [Route("api/social-states")]
 
     [EnableCors("Default")]
     [AllowAnonymous]

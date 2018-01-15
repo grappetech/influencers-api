@@ -5,18 +5,31 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Action.Models;
+using IBM.WatsonDeveloperCloud.Http.Extensions;
 
 namespace Action.Extensions
 {
 	public static class ImageUpload
 	{
-		public static string GenerateFileRoute(string filename, HttpRequest request)
+		public static string GenerateFileRoute(string filename, Stream stream, HttpRequest request, ApplicationDbContext context)
 		{
+			stream.Position = 0;
+			var bytes = stream.ReadAllBytes();
+			var img = new ImageRepo
+			{
+				Id = new Guid(filename.Split('.')[0]),
+				Base64Image = Convert.ToBase64String(bytes),
+				ImageName = filename
+			};
+			context.Images.Add(img);
+			context.SaveChanges();
 			var route = "";
 			route = request.IsHttps ? "Https://" : "Http://";
 			route += $"{request.Host}/api/entities/image/{ filename }";
 			return route;
 		}
+		
 		
 		public static string GenerateImageRoute(ImageRequest model, HttpRequest pRequest)
 		{
