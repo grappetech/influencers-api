@@ -33,7 +33,7 @@ namespace Action.Models
 		public DbSet<Industry> Industries { get; set; }
 		public DbSet<SecondaryPlan> SecondaryPlans { get; set; }
 		public DbSet<ImageRepo> Images { get; set; }
-		public DbSet<Relation> Relations { get; set; }
+		public DbSet<Relation> Relation { get; set; }
 		public DbSet<RelationType> RelationTypes { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
