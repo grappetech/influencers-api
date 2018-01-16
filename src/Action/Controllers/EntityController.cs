@@ -251,5 +251,38 @@ namespace Action.Controllers
 				return BadRequest(ex.Message);
 			}
 		}
+
+		[HttpGet("{id}/values")]
+		public dynamic GetValues([FromRoute]long id, [FromQuery] DateTime from, [FromQuery] DateTime to)
+		{
+			try
+			{
+				var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
+
+				var pagesId = scrapdPages.Select(x => x.Id).ToList();
+
+				var Personalities = _dbContext.Personalities
+						.Include(x => x.Values)
+						.Where(x => x.EntityId == id && pagesId.Contains(x.ScrapedPageId))
+						.ToList();
+
+				var Personality = Personalities
+						.SelectMany(x => x.Values.Select(c => new { c.Name, c.Percentile }))
+						.GroupBy(x => x.Name).Select(c => new
+						{
+							name = c.Key,
+							percentile = c.Average(p => p.Percentile),
+							description = ""
+						});
+
+				var result = Personality.Select(x => new { x.name, x.percentile, x.description });
+
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
 	}
 }
