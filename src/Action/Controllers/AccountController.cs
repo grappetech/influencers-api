@@ -260,14 +260,13 @@ namespace Action.Controllers
         }
 
         [HttpGet("image/{filename}")]
-        public async  Task<IActionResult> GetImage([FromRoute] string filename)
+        public async Task<IActionResult> GetImage([FromRoute] string filename)
         {
-
-            var img = await _dbContext.Images.FirstOrDefaultAsync( x => x.ImageName.Equals(filename));
+            var img = await _dbContext.Images.FirstOrDefaultAsync(x => x.ImageName.Equals(filename));
             var memory = new MemoryStream(Convert.FromBase64String(img.Base64Image)) {Position = 0};
             return File(memory, filename.GetMimeType(), filename);
         }
-        
+
         [HttpPost("{id}/users")]
         public async Task<IActionResult> PostUsers([FromRoute] int id, [FromBody] RequireAuthViewModel requireAuthView)
         {
@@ -301,9 +300,11 @@ namespace Action.Controllers
                     PlanId = data.PlanId,
                     AccountId = data.Id
                 };
-                data.Users.Add(user);
-                _dbContext.Entry(data).State = EntityState.Modified;
-                _dbContext.SaveChanges();
+                var result = await _userManager.CreateAsync(user, Randomize.NewPassword(8));
+
+                if (!result.Succeeded)
+                    throw new Exception("Falha ao criar usuário.\n" +
+                                        result.Errors.Select(x => x.Description).StringJoin(", "));
 
                 var userClaims = await _userManager.GetClaimsAsync(user);
                 var plan = _dbContext.Accounts.Find(user.AccountId);
