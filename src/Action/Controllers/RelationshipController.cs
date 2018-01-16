@@ -26,7 +26,22 @@ namespace Action.Controllers
         [HttpGet("")]
         public IActionResult Get([FromRoute] int id)
         {
-            return ValidateUser(() => { return Ok(); });
+            return ValidateUser(() =>
+            {
+                try
+                {
+                    if (_dbContext == null)
+                        return NotFound("No database connection");
+                    
+                    var items = _dbContext.RelationTypes.OrderBy(x => x.Name).ToList();
+                    return Ok(items);
+
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            });
         }
     }
 }
