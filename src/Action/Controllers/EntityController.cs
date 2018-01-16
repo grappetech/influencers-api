@@ -284,5 +284,98 @@ namespace Action.Controllers
 				return BadRequest(ex.Message);
 			}
 		}
+
+		[HttpGet("{id}/tones")]
+		public dynamic GetTones([FromRoute]long id, [FromQuery] DateTime from, [FromQuery] DateTime to)
+		{
+			try
+			{
+				var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
+
+				var pagesId = scrapdPages.Select(x => x.Id).ToList();
+
+				var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId == id).Select(x => new
+				{
+					scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
+					x.SetenceTones,
+					scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
+					Mentions = x.SetenceTones.Select(z => new
+					{
+						z.Id,
+						z.Text,
+						tone = GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
+						{
+							t.Score,
+							id = t.ToneId,
+							name = t.ToneName
+						}))
+					})
+				});
+
+				var stones = tones.SelectMany(x => x.SetenceTones).Select(x => new
+				{
+					x.Text,
+					tones = x.ToneCategories.SelectMany(y => y.Tones).Select(z => new
+					{
+						z.Score,
+						Id = z.ToneId,
+						Name = z.ToneName
+					})
+				});
+
+				var resultTones = new List<ToneItem>();
+
+				foreach (var item in stones)
+				{
+					ToneItem tom = new ToneItem();
+
+					foreach (var item2 in item.tones)
+					{
+						if (item2.Score > tom.Score)
+						{
+							tom.Score = item2.Score.Value;
+							tom.Id = item2.Id;
+							tom.Name = item2.Name;
+						}
+					}
+					if (tom.Score > 0)
+						resultTones.Add(tom);
+				}
+
+				var result = resultTones.GroupBy(x => x.Id).Select(x => new
+				{
+					x.Key,
+					avg = x.Average(y => y.Score)
+				}).Select(x => new
+				{
+					score = x.avg,
+					id = x.Key,
+					name = resultTones.FirstOrDefault(y => y.Id.Equals(x.Key)).Name
+				});
+
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		private ToneItem GetMaxTone(IEnumerable<dynamic> enumerable)
+		{
+			ToneItem tom = new ToneItem();
+			foreach (var item2 in enumerable)
+			{
+				if ((double)item2.Score > tom.Score)
+				{
+					tom.Score = (double)item2.Score;
+					tom.Id = Convert.ToString(item2.id);
+					tom.Name = Convert.ToString(item2.name);
+				}
+			}
+			if (tom.Score > 0)
+				return tom;
+			return null;
+		}
 	}
 }
