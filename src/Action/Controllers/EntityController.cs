@@ -242,7 +242,7 @@ namespace Action.Controllers
 								.ToList()
 						});
 
-				var result = Personality.Select(x => new { name = x.name, percentile = x.percentile, details = x.details });
+				var result = Personality.Select(x => new { x.name, x.percentile, x.details });
 
 				return Ok(result);
 			}
@@ -276,6 +276,151 @@ namespace Action.Controllers
 						});
 
 				var result = Personality.Select(x => new { x.name, x.percentile, x.description });
+
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpGet("{id}/tones")]
+		public dynamic GetTones([FromRoute]long id, [FromQuery] DateTime from, [FromQuery] DateTime to)
+		{
+			try
+			{
+				var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
+
+				var pagesId = scrapdPages.Select(x => x.Id).ToList();
+
+				var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId == id).Select(x => new
+				{
+					scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
+					x.SetenceTones,
+					scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
+					Mentions = x.SetenceTones.Select(z => new
+					{
+						z.Id,
+						z.Text,
+						tone = GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
+						{
+							t.Score,
+							id = t.ToneId,
+							name = t.ToneName
+						}))
+					})
+				});
+
+				var stones = tones.SelectMany(x => x.SetenceTones).Select(x => new
+				{
+					x.Text,
+					tones = x.ToneCategories.SelectMany(y => y.Tones).Select(z => new
+					{
+						z.Score,
+						Id = z.ToneId,
+						Name = z.ToneName
+					})
+				});
+
+				var resultTones = new List<ToneItem>();
+
+				foreach (var item in stones)
+				{
+					ToneItem tom = new ToneItem();
+
+					foreach (var item2 in item.tones)
+					{
+						if (item2.Score > tom.Score)
+						{
+							tom.Score = item2.Score.Value;
+							tom.Id = item2.Id;
+							tom.Name = item2.Name;
+						}
+					}
+					if (tom.Score > 0)
+						resultTones.Add(tom);
+				}
+
+				var result = resultTones.GroupBy(x => x.Id).Select(x => new
+				{
+					x.Key,
+					avg = x.Average(y => y.Score)
+				}).Select(x => new
+				{
+					score = x.avg,
+					id = x.Key,
+					name = resultTones.FirstOrDefault(y => y.Id.Equals(x.Key)).Name
+				});
+
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		private ToneItem GetMaxTone(IEnumerable<dynamic> enumerable)
+		{
+			ToneItem tom = new ToneItem();
+			foreach (var item2 in enumerable)
+			{
+				if ((double)item2.Score > tom.Score)
+				{
+					tom.Score = (double)item2.Score;
+					tom.Id = Convert.ToString(item2.id);
+					tom.Name =  Convert.ToString(item2.name);
+				}
+			}
+			if (tom.Score > 0)
+				return tom;
+			return null;
+		}
+
+		[HttpGet("{id}/mentions")]
+		public IActionResult GetMentions([FromRoute]long id, [FromQuery] DateTime from, [FromQuery] DateTime to, [FromQuery]string word, [FromQuery] int relationshipFactor, [FromQuery] string type)
+		{
+			try
+			{
+				var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
+
+				var pagesId = scrapdPages.Select(x => x.Id).ToList();
+				
+				var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId == id)
+					.Select(x => new
+				{
+					scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
+					scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
+					Mentions = x.SetenceTones.Select(z => new
+					{
+						z.Id,
+						z.Text,
+						tone =  GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
+						{
+							t.Score,
+							id = t.ToneId,
+							name = t.ToneName
+						}))
+					})
+				});
+
+				var result = tones.SelectMany(x => x.Mentions.Select(y => new
+				{
+					id = y.Id,
+					text = y.Text,
+					toneId = y.tone.Id,
+					url = x.Url,
+					type = y.tone.ToneType.ToString(),
+					date = x.Date
+				}));
+
+				if (word != null && !word.Equals(""))
+					result = result.Where(x => x.text.Contains(word));
+				if (type != null && !type.Equals(""))
+					result = result.Where(x => x.type.Equals(type));
+				if (relationshipFactor > 0)
+				{ }
 
 				return Ok(result);
 			}
