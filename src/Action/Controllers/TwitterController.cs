@@ -43,71 +43,72 @@ namespace Action.Controllers
 
 		private TwitterResultViewModel Mock()
 		{
+			Random random = new Random(Randomize.Next());
 			return new TwitterResultViewModel
 			{
-				Followers = 12355,
-				Retweets = 32215,
-				Engagement = 0.423,
-				Likes = 125652,
+				Followers = random.Next(123456, 300000),
+				Retweets = random.Next(123456, 300000),
+				Engagement = Math.Round(random.NextDouble(), 4),
+				Likes = random.Next(123456, 300000),
 				AgeRanges = new AgeRangesViewModel
 				{
-					Age18_24 = 0.4706,
-					Age25_31 = 0.4690,
-					Age32_38 = 0.4562,
-					Age39_45 = 0.4221,
-					Age46_52 = 0.3921,
-					Age53_59 = 0.3562,
-					Age60 = 0.3103
+					Age18_24 = Math.Round(random.NextDouble(), 4),
+					Age25_31 = Math.Round(random.NextDouble(), 4),
+					Age32_38 = Math.Round(random.NextDouble(), 4),
+					Age39_45 = Math.Round(random.NextDouble(), 4),
+					Age46_52 = Math.Round(random.NextDouble(), 4),
+					Age53_59 = Math.Round(random.NextDouble(), 4),
+					Age60 = Math.Round(random.NextDouble(), 4),
 				},
 				Stats = new[]
 				{
 					new SocialStatViewModel
 					{
 						Month = DateTime.Today.AddMonths(-5).ToString("MM-yyyy"),
-						Followers = 98,
-						Retweets = 104,
-						Engagement = 0.432,
-						Likes = 120
+						Followers = random.Next(100, 300),
+						Retweets = random.Next(100, 300),
+						Engagement = Math.Round(random.NextDouble(), 4),
+						Likes = random.Next(100, 300)
 					},
 					new SocialStatViewModel
 					{
 						Month = DateTime.Today.AddMonths(-4).ToString("MM-yyyy"),
-						Followers = 102,
-						Retweets = 106,
-						Engagement = 0.440,
-						Likes = 126
+						Followers = random.Next(100, 300),
+						Retweets = random.Next(100, 300),
+						Engagement = Math.Round(random.NextDouble(), 4),
+						Likes = random.Next(100, 300)
 					},
 					new SocialStatViewModel
 					{
 						Month = DateTime.Today.AddMonths(-3).ToString("MM-yyyy"),
-						Followers = 110,
-						Retweets = 108,
-						Engagement = 0.480,
-						Likes = 135
+						Followers = random.Next(100, 300),
+						Retweets = random.Next(100, 300),
+						Engagement = Math.Round(random.NextDouble(), 4),
+						Likes = random.Next(100, 300)
 					},
 					new SocialStatViewModel
 					{
 						Month = DateTime.Today.AddMonths(-2).ToString("MM-yyyy"),
-						Followers = 113,
-						Retweets = 110,
-						Engagement = 0.501,
-						Likes = 145
+						Followers = random.Next(100, 300),
+						Retweets = random.Next(100, 300),
+						Engagement = Math.Round(random.NextDouble(), 4),
+						Likes = random.Next(100, 300)
 					},
 					new SocialStatViewModel
 					{
 						Month = DateTime.Today.AddMonths(-1).ToString("MM-yyyy"),
-						Followers = 115,
-						Retweets = 116,
-						Engagement = 0.521,
-						Likes = 124
+						Followers = random.Next(100, 300),
+						Retweets = random.Next(100, 300),
+						Engagement = Math.Round(random.NextDouble(), 4),
+						Likes = random.Next(100, 300)
 					},
 					new SocialStatViewModel
 					{
 						Month = DateTime.Today.ToString("MM-yyyy"),
-						Followers = 123,
-						Retweets = 128,
-						Engagement = 0.540,
-						Likes = 125
+						Followers = random.Next(100, 300),
+						Retweets = random.Next(100, 300),
+						Engagement = Math.Round(random.NextDouble(), 4),
+						Likes = random.Next(100, 300)
 					}
 				}.ToList()
 			};

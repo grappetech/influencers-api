@@ -44,117 +44,118 @@ namespace Action.Controllers
 
 		private List<StateSocialResultViewModel> Mock()
 		{
+			Random random = new Random(Randomize.Next());
 			return new[]
 			{
 				new StateSocialResultViewModel
 				{
 					Name = "Acre",
-					Score = 0.6952,
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Alagoas",
-					Score = 0.5698
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Amapá",
-					Score = 0.4695
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Amazonas",
-					Score = 0.5829
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Bahia",
-					Score = 0.4569
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Ceará",
-					Score = 0.5425
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Distrito Federal",
-					Score = 0.5201
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Espírito Santo",
-					Score = 0.4692
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Goiás",
-					Score = 0.4859
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Maranhão",
-					Score = 0.4955
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Mato Grosso",
-					Score = 0.5102
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Mato Grosso do Sul",
-					Score = 0.5220
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Minas Gerais",
-					Score = 0.4459
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Pará",
-					Score = 0.4752
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Paraíba",
-					Score = 0.4658
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Paraná",
-					Score = 0.4985
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Pernambuco",
-					Score = 0.5210
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Piauí",
-					Score = 0.4852
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Rio de Janeiro",
-					Score = 0.5236
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Rio Grande do Norte",
-					Score = 0.4985
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Rio Grande do Sul",
-					Score = 0.4458
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Rondônia",
-					Score = 0.5236
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
@@ -164,22 +165,22 @@ namespace Action.Controllers
 				new StateSocialResultViewModel
 				{
 					Name = "Santa Catarina",
-					Score = 0.4985
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "São Paulo",
-					Score = 0.5125
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Sergipe",
-					Score = 0.4859
+					Score = Math.Round(random.NextDouble(), 4),
 				},
 				new StateSocialResultViewModel
 				{
 					Name = "Tocantins",
-					Score = 0.4952
+					Score = Math.Round(random.NextDouble(), 4),
 				}
 			}.ToList();
 		}

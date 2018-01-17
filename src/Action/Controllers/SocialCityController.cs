@@ -48,11 +48,11 @@ namespace Action.Controllers
 			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_cities.json"));
 			var cities = JsonConvert.DeserializeObject<CidadeMock>(json);
 
+			Random random = new Random(Randomize.Next());
 			return (cities.cidades).Select(cidade => new CitySocialResultViewModel
 			{
 				Name = cidade,
-				//Score = cidade.Equals("São Paulo") ? Randomize.Next() : 0,
-				Score = Math.Round(Convert.ToDouble(Randomize.Next()) / Convert.ToDouble(1000000000) - 1, 4),
+				Score = Math.Round(random.NextDouble(), 4),
 				State = "SP"
 			}).OrderByDescending(x => x.Score).ToList();
 		}
