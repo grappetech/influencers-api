@@ -22,45 +22,46 @@ using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace Action.Controllers
 {
-    [Route("api/social-cities")]
+	[Route("api/social-cities")]
 
-    [EnableCors("Default")]
-    [AllowAnonymous]
-    public class SocialCityController : BaseController
-    {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly HtmlEncoder _htmlEncoder;
-        
-        public SocialCityController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
-        {
-            _dbContext = dbContext;
-            _htmlEncoder = htmlEncoder;
-        }
-        
-        [HttpGet("entities/{id}")]
-        public IActionResult Get([FromRoute] int id)
-        {
-            return ValidateUser(()=>Ok(Mock()));
-        }
+	[EnableCors("Default")]
+	[AllowAnonymous]
+	public class SocialCityController : BaseController
+	{
+		private readonly ApplicationDbContext _dbContext;
+		private readonly HtmlEncoder _htmlEncoder;
 
-        private List<CitySocialResultViewModel> Mock()
-        {
-            var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_cities.json"));
-            var cities = JsonConvert.DeserializeObject<CidadeMock>(json);
+		public SocialCityController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
+		{
+			_dbContext = dbContext;
+			_htmlEncoder = htmlEncoder;
+		}
 
-            return (cities.cidades).Select(cidade => new CitySocialResultViewModel
-            {
-                Name = cidade,
-                Score = cidade.Equals("São Paulo") ? Randomize.Next() : 0,
-                State = "SP"
-            }).OrderByDescending(x=>x.Score).ToList();
-        }
-    }
-    
-    internal class CidadeMock
-    {
-        public string sigla { get; set; }
-        public string nome { get; set; }
-        public List<string> cidades { get; set; }
-    }
+		[HttpGet("entities/{id}")]
+		public IActionResult Get([FromRoute] int id)
+		{
+			return ValidateUser(() => Ok(Mock()));
+		}
+
+		private List<CitySocialResultViewModel> Mock()
+		{
+			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_cities.json"));
+			var cities = JsonConvert.DeserializeObject<CidadeMock>(json);
+
+			return (cities.cidades).Select(cidade => new CitySocialResultViewModel
+			{
+				Name = cidade,
+				//Score = cidade.Equals("São Paulo") ? Randomize.Next() : 0,
+				Score = Math.Round(Convert.ToDouble(Randomize.Next()) / Convert.ToDouble(1000000000) - 1, 4),
+				State = "SP"
+			}).OrderByDescending(x => x.Score).ToList();
+		}
+	}
+
+	internal class CidadeMock
+	{
+		public string sigla { get; set; }
+		public string nome { get; set; }
+		public List<string> cidades { get; set; }
+	}
 }

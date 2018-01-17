@@ -21,140 +21,167 @@ using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace Action.Controllers
 {
-    [Route("api/social-states")]
+	[Route("api/social-states")]
 
-    [EnableCors("Default")]
-    [AllowAnonymous]
-    public class SocialStateController : BaseController
-    {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly HtmlEncoder _htmlEncoder;
-        
-        public SocialStateController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
-        {
-            _dbContext = dbContext;
-            _htmlEncoder = htmlEncoder;
-        }
-        
-        [HttpGet("entities/{id}")]
-        public IActionResult Get([FromRoute] int id)
-        {
-            return ValidateUser(()=>Ok(Mock()));
-        }
+	[EnableCors("Default")]
+	[AllowAnonymous]
+	public class SocialStateController : BaseController
+	{
+		private readonly ApplicationDbContext _dbContext;
+		private readonly HtmlEncoder _htmlEncoder;
 
-        private List<StateSocialResultViewModel> Mock()
-        {
-            return new[]
-            {
-                new StateSocialResultViewModel
-                {
-                    Name = "Acre"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Alagoas"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Amapá"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Amazonas"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Bahia"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Ceará"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Distrito Federal"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Espírito Santo"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Goiás"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Maranhão"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Mato Grosso"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Mato Grosso do Sul"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Minas Gerais"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Pará"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Paraíba"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Paraná"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Pernambuco"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Piauí"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Rio de Janeiro"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Rio Grande do Norte"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Rio Grande do Sul"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Rondônia"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Roraima"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Santa Catarina"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "São Paulo"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Sergipe"
-                },
-                new StateSocialResultViewModel
-                {
-                    Name = "Tocantins"
-                }
-            }.ToList();
-        }
-    }
+		public SocialStateController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
+		{
+			_dbContext = dbContext;
+			_htmlEncoder = htmlEncoder;
+		}
+
+		[HttpGet("entities/{id}")]
+		public IActionResult Get([FromRoute] int id)
+		{
+			return ValidateUser(() => Ok(Mock()));
+		}
+
+		private List<StateSocialResultViewModel> Mock()
+		{
+			return new[]
+			{
+				new StateSocialResultViewModel
+				{
+					Name = "Acre",
+					Score = 0.6952,
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Alagoas",
+					Score = 0.5698
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Amapá",
+					Score = 0.4695
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Amazonas",
+					Score = 0.5829
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Bahia",
+					Score = 0.4569
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Ceará",
+					Score = 0.5425
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Distrito Federal",
+					Score = 0.5201
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Espírito Santo",
+					Score = 0.4692
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Goiás",
+					Score = 0.4859
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Maranhão",
+					Score = 0.4955
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Mato Grosso",
+					Score = 0.5102
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Mato Grosso do Sul",
+					Score = 0.5220
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Minas Gerais",
+					Score = 0.4459
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Pará",
+					Score = 0.4752
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Paraíba",
+					Score = 0.4658
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Paraná",
+					Score = 0.4985
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Pernambuco",
+					Score = 0.5210
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Piauí",
+					Score = 0.4852
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Rio de Janeiro",
+					Score = 0.5236
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Rio Grande do Norte",
+					Score = 0.4985
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Rio Grande do Sul",
+					Score = 0.4458
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Rondônia",
+					Score = 0.5236
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Roraima",
+					Score = 0.5102
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Santa Catarina",
+					Score = 0.4985
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "São Paulo",
+					Score = 0.5125
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Sergipe",
+					Score = 0.4859
+				},
+				new StateSocialResultViewModel
+				{
+					Name = "Tocantins",
+					Score = 0.4952
+				}
+			}.ToList();
+		}
+	}
 }
