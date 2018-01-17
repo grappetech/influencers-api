@@ -92,7 +92,8 @@ namespace Action.Controllers
 						ActivationDate = DateTime.UtcNow,
 						AdministratorId = user.Id,
 						PlanId = model.PlanId,
-						Name = string.Join(user.Name, "_", user.Surname)
+						Name = string.Join(user.Name, "_", user.Surname),
+						CompanyName = model.CompanyName ?? "",
 					};
 					account.Users.Add(user);
 					_dbContext.Accounts.Add(account);
@@ -512,6 +513,6 @@ namespace Action.Controllers
   }
 ]"));
 		}
-		
+
 	}
 }

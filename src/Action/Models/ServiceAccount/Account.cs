@@ -11,6 +11,7 @@ namespace Action.Models.ServiceAccount
 		public DateTime ActivationDate { get; set; }
 		public EAccountStatus Status { get; set; } = EAccountStatus.Active;
 		public String Name { get; set; }
+		public String CompanyName { get; set; }
 		public Plan Plan { get; set; }
 		public int? PlanId { get; set; }
 		public User Administrator { get; set; }
