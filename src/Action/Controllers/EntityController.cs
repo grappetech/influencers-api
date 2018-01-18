@@ -370,7 +370,7 @@ namespace Action.Controllers
 				{
 					tom.Score = (double)item2.Score;
 					tom.Id = Convert.ToString(item2.id);
-					tom.Name =  Convert.ToString(item2.name);
+					tom.Name = Convert.ToString(item2.name);
 				}
 			}
 			if (tom.Score > 0)
@@ -383,51 +383,176 @@ namespace Action.Controllers
 		{
 			try
 			{
-				var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
+				return Ok(this.MockMentions());
 
-				var pagesId = scrapdPages.Select(x => x.Id).ToList();
-				
-				var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId == id)
-					.Select(x => new
-				{
-					scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
-					scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
-					Mentions = x.SetenceTones.Select(z => new
-					{
-						z.Id,
-						z.Text,
-						tone =  GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
-						{
-							t.Score,
-							id = t.ToneId,
-							name = t.ToneName
-						}))
-					})
-				});
+				//var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
 
-				var result = tones.SelectMany(x => x.Mentions.Select(y => new
-				{
-					id = y.Id,
-					text = y.Text,
-					toneId = y.tone.Id,
-					url = x.Url,
-					type = y.tone.ToneType.ToString(),
-					date = x.Date
-				}));
+				//var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
-				if (word != null && !word.Equals(""))
-					result = result.Where(x => x.text.Contains(word));
-				if (type != null && !type.Equals(""))
-					result = result.Where(x => x.type.Equals(type));
-				if (relationshipFactor > 0)
-				{ }
+				//var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId == id)
+				//	.Select(x => new
+				//	{
+				//		scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
+				//		scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
+				//		Mentions = x.SetenceTones.Select(z => new
+				//		{
+				//			z.Id,
+				//			z.Text,
+				//			tone = GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
+				//			{
+				//				t.Score,
+				//				id = t.ToneId,
+				//				name = t.ToneName
+				//			}))
+				//		})
+				//	});
 
-				return Ok(result);
+				//var result = tones.SelectMany(x => x.Mentions.Select(y => new
+				//{
+				//	id = y.Id,
+				//	text = y.Text,
+				//	toneId = y.tone.Id,
+				//	url = x.Url,
+				//	type = y.tone.ToneType.ToString(),
+				//	date = x.Date
+				//}));
+
+				//if (word != null && !word.Equals(""))
+				//	result = result.Where(x => x.text.Contains(word));
+				//if (type != null && !type.Equals(""))
+				//	result = result.Where(x => x.type.Equals(type));
+				//if (relationshipFactor > 0)
+				//{ }
+
+				//return Ok(result);
 			}
 			catch (Exception ex)
 			{
 				return BadRequest(ex.Message);
 			}
+		}
+
+		[HttpGet("{id}/feeling")]
+		public IActionResult GetFeeling([FromRoute]long id, [FromQuery] DateTime from, [FromQuery] DateTime to)
+		{
+			try
+			{
+				return Ok(this.MockFeeling());
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		[HttpGet("{id}/words")]
+		public IActionResult GetWords([FromRoute]long id, [FromQuery] DateTime from, [FromQuery] DateTime to)
+		{
+			try
+			{
+				return Ok(this.MockWords());
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
+		}
+
+		private List<Object> MockMentions()
+		{
+			return new List<object>
+			{
+				new
+				{
+					id = Guid.NewGuid(),
+					text = "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
+					toneId = "joy",
+					url = "https://app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
+					type = "positive",
+					date = new DateTime(2017, 12, 31)
+				},
+				new
+				{
+					id = Guid.NewGuid(),
+					text = "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
+					toneId = "joy",
+					url = "https://app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
+					type = "positive",
+					date = new DateTime(2017, 12, 30)
+				}
+				,
+				new
+				{
+					id = Guid.NewGuid(),
+					text = "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
+					toneId = "joy",
+					url = "https://app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
+					type = "negative",
+					date = new DateTime(2017, 12, 31)
+				}
+				,
+				new
+				{
+					id = Guid.NewGuid(),
+					text = "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
+					toneId = "joy",
+					url = "https://app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
+					type = "neutro",
+					date = new DateTime(2017, 12, 30)
+				}
+				,
+				new
+				{
+					id = Guid.NewGuid(),
+					text = "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
+					toneId = "joy",
+					url = "https://app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
+					type = "neutro",
+					date = new DateTime(2017, 12, 30)
+				}
+			};
+		}
+
+		private Object MockFeeling()
+		{
+			Random random = new Random(Randomize.Next());
+
+			return new
+			{
+				positive = Math.Round(random.NextDouble(), 4),
+				negative = Math.Round(random.NextDouble(), 4),
+				neutro = Math.Round(random.NextDouble(), 4),
+				mentions = random.Next(20, 150),
+				sources = random.Next(100, 300)
+			};
+		}
+
+		private List<Object> MockWords()
+		{
+			return new List<object>
+			{
+				new
+				{
+					id = Guid.NewGuid(),
+					text = "Altar",
+					weight = 1234,
+					type = "positive",
+				},
+				new
+				{
+					id = Guid.NewGuid(),
+					text = "Tuesday",
+					weight = 2,
+					type = "neutral",
+				},
+				new
+				{
+					id = Guid.NewGuid(),
+					text = "relationship",
+					weight = 33,
+					type = "negative",
+				}
+			};
 		}
 	}
 }
