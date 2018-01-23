@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace Action.Controllers
@@ -527,34 +528,20 @@ namespace Action.Controllers
 			};
 		}
 
-		private List<Object> MockWords()
+		private List<WordMock> MockWords()
 		{
-			Random random = new Random(Randomize.Next());
+			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_words_result.json"));
+			var words = JsonConvert.DeserializeObject<List<WordMock>>(json);
 
-			return new List<object>
-			{
-				new
-				{
-					id = Guid.NewGuid(),
-					text = "Altar",
-					weight = random.Next(20, 40),
-					type = "positive",
-				},
-				new
-				{
-					id = Guid.NewGuid(),
-					text = "Tuesday",
-					weight = random.Next(20, 40),
-					type = "neutral",
-				},
-				new
-				{
-					id = Guid.NewGuid(),
-					text = "relationship",
-					weight = random.Next(20, 40),
-					type = "negative",
-				}
-			};
+			return words;
 		}
+	}
+
+	internal class WordMock
+	{
+		public string id { get; set; }
+		public string text { get; set; }
+		public int weight { get; set; }
+		public string type { get; set; }
 	}
 }

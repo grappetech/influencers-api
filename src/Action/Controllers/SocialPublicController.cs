@@ -22,33 +22,33 @@ using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace Action.Controllers
 {
-    [Route("api/social-general-public")]
+	[Route("api/social-general-public")]
 
-    [EnableCors("Default")]
-    [AllowAnonymous]
-    public class SocialPublicController : BaseController
-    {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly HtmlEncoder _htmlEncoder;
-        
-        public SocialPublicController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
-        {
-            _dbContext = dbContext;
-            _htmlEncoder = htmlEncoder;
-        }
-        
-        [HttpGet("entities/{id}")]
-        public IActionResult Get([FromRoute] int id)
-        {
-            return ValidateUser(()=>Ok(Mock()));
-        }
+	[EnableCors("Default")]
+	[AllowAnonymous]
+	public class SocialPublicController : BaseController
+	{
+		private readonly ApplicationDbContext _dbContext;
+		private readonly HtmlEncoder _htmlEncoder;
 
-        private SocialPublicViewModel Mock()
-        {
-            return new SocialPublicViewModel
-            {
-               AgeRanges = new AgeRangesViewModel()
-            };
-        }
-    }
+		public SocialPublicController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
+		{
+			_dbContext = dbContext;
+			_htmlEncoder = htmlEncoder;
+		}
+
+		[HttpGet("entities/{id}")]
+		public IActionResult Get([FromRoute] int id)
+		{
+			return ValidateUser(() => Ok(Mock()));
+		}
+
+		private SocialPublicViewModel Mock()
+		{
+			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_social_general_public.json"));
+			var socialPublic = JsonConvert.DeserializeObject<SocialPublicViewModel>(json);
+
+			return socialPublic;
+		}
+	}
 }
