@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace Action.Controllers
@@ -43,75 +44,8 @@ namespace Action.Controllers
 
 		private TwitterResultViewModel Mock()
 		{
-			Random random = new Random(Randomize.Next());
-			return new TwitterResultViewModel
-			{
-				Followers = random.Next(123456, 300000),
-				Retweets = random.Next(123456, 300000),
-				Engagement = Math.Round(random.NextDouble(), 4),
-				Likes = random.Next(123456, 300000),
-				AgeRanges = new AgeRangesViewModel
-				{
-					Age18_24 = Math.Round(random.NextDouble(), 4),
-					Age25_31 = Math.Round(random.NextDouble(), 4),
-					Age32_38 = Math.Round(random.NextDouble(), 4),
-					Age39_45 = Math.Round(random.NextDouble(), 4),
-					Age46_52 = Math.Round(random.NextDouble(), 4),
-					Age53_59 = Math.Round(random.NextDouble(), 4),
-					Age60 = Math.Round(random.NextDouble(), 4),
-				},
-				Stats = new[]
-				{
-					new SocialStatViewModel
-					{
-						Month = DateTime.Today.AddMonths(-5).ToString("MM-yyyy"),
-						Followers = random.Next(100, 300),
-						Retweets = random.Next(100, 300),
-						Engagement = Math.Round(random.NextDouble(), 4),
-						Likes = random.Next(100, 300)
-					},
-					new SocialStatViewModel
-					{
-						Month = DateTime.Today.AddMonths(-4).ToString("MM-yyyy"),
-						Followers = random.Next(100, 300),
-						Retweets = random.Next(100, 300),
-						Engagement = Math.Round(random.NextDouble(), 4),
-						Likes = random.Next(100, 300)
-					},
-					new SocialStatViewModel
-					{
-						Month = DateTime.Today.AddMonths(-3).ToString("MM-yyyy"),
-						Followers = random.Next(100, 300),
-						Retweets = random.Next(100, 300),
-						Engagement = Math.Round(random.NextDouble(), 4),
-						Likes = random.Next(100, 300)
-					},
-					new SocialStatViewModel
-					{
-						Month = DateTime.Today.AddMonths(-2).ToString("MM-yyyy"),
-						Followers = random.Next(100, 300),
-						Retweets = random.Next(100, 300),
-						Engagement = Math.Round(random.NextDouble(), 4),
-						Likes = random.Next(100, 300)
-					},
-					new SocialStatViewModel
-					{
-						Month = DateTime.Today.AddMonths(-1).ToString("MM-yyyy"),
-						Followers = random.Next(100, 300),
-						Retweets = random.Next(100, 300),
-						Engagement = Math.Round(random.NextDouble(), 4),
-						Likes = random.Next(100, 300)
-					},
-					new SocialStatViewModel
-					{
-						Month = DateTime.Today.ToString("MM-yyyy"),
-						Followers = random.Next(100, 300),
-						Retweets = random.Next(100, 300),
-						Engagement = Math.Round(random.NextDouble(), 4),
-						Likes = random.Next(100, 300)
-					}
-				}.ToList()
-			};
+			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_twitter_result.json"));
+			return JsonConvert.DeserializeObject<TwitterResultViewModel>(json);
 		}
 	}
 }

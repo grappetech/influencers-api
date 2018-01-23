@@ -459,59 +459,10 @@ namespace Action.Controllers
 			}
 		}
 
-		private List<Object> MockMentions()
+		private List<MentionMock> MockMentions()
 		{
-			return new List<object>
-			{
-				new
-				{
-					id = Guid.NewGuid(),
-					text = "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
-					toneId = "joy",
-					url = "https://app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
-					type = "positive",
-					date = new DateTime(2017, 12, 31)
-				},
-				new
-				{
-					id = Guid.NewGuid(),
-					text = "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
-					toneId = "joy",
-					url = "https://app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
-					type = "positive",
-					date = new DateTime(2017, 12, 30)
-				}
-				,
-				new
-				{
-					id = Guid.NewGuid(),
-					text = "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
-					toneId = "joy",
-					url = "https://app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
-					type = "negative",
-					date = new DateTime(2017, 12, 31)
-				}
-				,
-				new
-				{
-					id = Guid.NewGuid(),
-					text = "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
-					toneId = "joy",
-					url = "https://app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
-					type = "neutro",
-					date = new DateTime(2017, 12, 30)
-				}
-				,
-				new
-				{
-					id = Guid.NewGuid(),
-					text = "And Munik Nunes went up to the altar, on Tuesday night (3), in the Pequeno Grande Church, in the central region of Fortaleza.",
-					toneId = "joy",
-					url = "https://app.zeplin.io/project/59e65cce0aaf66ac77cd5bae/screen/59e902da6b03291016bd7756",
-					type = "neutro",
-					date = new DateTime(2017, 12, 30)
-				}
-			};
+			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_mentions_result.json"));
+			return JsonConvert.DeserializeObject<List<MentionMock>>(json);
 		}
 
 		private Object MockFeeling()
@@ -543,5 +494,15 @@ namespace Action.Controllers
 		public string text { get; set; }
 		public int weight { get; set; }
 		public string type { get; set; }
+	}
+
+	internal class MentionMock
+	{
+		public string id { get; set; }
+		public string text { get; set; }
+		public string toneId { get; set; }
+		public string url { get; set; }
+		public string type { get; set; }
+		public DateTime date { get; set; }
 	}
 }

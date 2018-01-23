@@ -1,0 +1,59 @@
+﻿{
+"Followers": 270480,
+"Likes": 275990,
+"Engagement": 0.0984,
+"ageRanges": {
+  "age18_24": 0.7207,
+  "age25_31": 0.6833,
+  "age32_38": 0.0098,
+  "age39_45": 0.0269,
+  "age46_52": 0.0927,
+  "age53_59": 0.1744,
+  "age60": 0.194
+},
+"stats": [
+	{
+	"month": "08-2017",
+	"followers": 222,
+	"retweets": 224,
+	"likes": 178,
+	"engagement": 0.156
+	},
+	{
+	"month": "09-2017",
+	"followers": 139,
+	"retweets": 250,
+	"likes": 251,
+	"engagement": 0.2101
+	},
+	{
+	"month": "10-2017",
+	"followers": 226,
+	"retweets": 116,
+	"likes": 217,
+	"engagement": 0.5341
+	},
+	{
+	"month": "11-2017",
+	"followers": 253,
+	"retweets": 271,
+	"likes": 296,
+	"engagement": 0.6006
+	},
+	{
+	"month": "12-2017",
+	"followers": 149,
+	"retweets": 189,
+	"likes": 170,
+	"engagement": 0.8393
+	},
+	{
+	"month": "01-2018",
+	"followers": 218,
+	"retweets": 225,
+	"likes": 134,
+	"engagement": 0.9794
+	}
+  ]
+}
+

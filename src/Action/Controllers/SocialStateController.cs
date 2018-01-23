@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json;
 using MediaTypeHeaderValue = System.Net.Http.Headers.MediaTypeHeaderValue;
 
 namespace Action.Controllers
@@ -44,145 +45,8 @@ namespace Action.Controllers
 
 		private List<StateSocialResultViewModel> Mock()
 		{
-			Random random = new Random(Randomize.Next());
-			return new[]
-			{
-				new StateSocialResultViewModel
-				{
-					Name = "Acre",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Alagoas",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Amapá",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Amazonas",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Bahia",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Ceará",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Distrito Federal",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Espírito Santo",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Goiás",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Maranhão",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Mato Grosso",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Mato Grosso do Sul",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Minas Gerais",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Pará",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Paraíba",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Paraná",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Pernambuco",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Piauí",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Rio de Janeiro",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Rio Grande do Norte",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Rio Grande do Sul",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Rondônia",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Roraima",
-					Score = 0.5102
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Santa Catarina",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "São Paulo",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Sergipe",
-					Score = Math.Round(random.NextDouble(), 4),
-				},
-				new StateSocialResultViewModel
-				{
-					Name = "Tocantins",
-					Score = Math.Round(random.NextDouble(), 4),
-				}
-			}.ToList();
+			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_social_state_result.json"));
+			return JsonConvert.DeserializeObject<List<StateSocialResultViewModel>>(json);
 		}
 	}
 }
