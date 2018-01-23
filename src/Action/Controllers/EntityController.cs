@@ -529,27 +529,29 @@ namespace Action.Controllers
 
 		private List<Object> MockWords()
 		{
+			Random random = new Random(Randomize.Next());
+
 			return new List<object>
 			{
 				new
 				{
 					id = Guid.NewGuid(),
 					text = "Altar",
-					weight = 1234,
+					weight = random.Next(20, 40),
 					type = "positive",
 				},
 				new
 				{
 					id = Guid.NewGuid(),
 					text = "Tuesday",
-					weight = 2,
+					weight = random.Next(20, 40),
 					type = "neutral",
 				},
 				new
 				{
 					id = Guid.NewGuid(),
 					text = "relationship",
-					weight = 33,
+					weight = random.Next(20, 40),
 					type = "negative",
 				}
 			};
