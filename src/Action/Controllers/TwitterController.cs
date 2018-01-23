@@ -36,16 +36,32 @@ namespace Action.Controllers
 			_dbContext = dbContext;
 			_htmlEncoder = htmlEncoder;
 		}
+
 		[HttpGet("entities/{id}")]
 		public IActionResult Get([FromRoute] int id)
 		{
-			return ValidateUser(() => Ok(Mock()));
+			try
+			{
+				return ValidateUser(() => Ok(Mock(id)));
+			}
+			catch (Exception ex)
+			{
+				return StatusCode((int)EServerError.BusinessError, new List<string> { ex.Message });
+			}
 		}
 
-		private TwitterResultViewModel Mock()
+		private TwitterResultViewModel Mock(int id)
 		{
-			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_twitter_result.json"));
-			return JsonConvert.DeserializeObject<TwitterResultViewModel>(json);
+			try
+			{
+				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_twitter_result_" + id.ToString() + ".json"));
+				return JsonConvert.DeserializeObject<TwitterResultViewModel>(json);
+			}
+			catch
+			{
+				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_twitter_result.json"));
+				return JsonConvert.DeserializeObject<TwitterResultViewModel>(json);
+			}
 		}
 	}
 }

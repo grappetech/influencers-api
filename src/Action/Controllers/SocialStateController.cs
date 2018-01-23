@@ -40,13 +40,28 @@ namespace Action.Controllers
 		[HttpGet("entities/{id}")]
 		public IActionResult Get([FromRoute] int id)
 		{
-			return ValidateUser(() => Ok(Mock()));
+			try
+			{
+				return ValidateUser(() => Ok(Mock(id)));
+			}
+			catch (Exception ex)
+			{
+				return StatusCode((int)EServerError.BusinessError, new List<string> { ex.Message });
+			}
 		}
 
-		private List<StateSocialResultViewModel> Mock()
+		private List<StateSocialResultViewModel> Mock(int id)
 		{
-			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_social_state_result.json"));
-			return JsonConvert.DeserializeObject<List<StateSocialResultViewModel>>(json);
+			try
+			{
+				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_social_state_result_" + id.ToString() + ".json"));
+				return JsonConvert.DeserializeObject<List<StateSocialResultViewModel>>(json);
+			}
+			catch
+			{
+				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_social_state_result.json"));
+				return JsonConvert.DeserializeObject<List<StateSocialResultViewModel>>(json);
+			}
 		}
 	}
 }

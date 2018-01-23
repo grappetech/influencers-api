@@ -40,4 +40,5 @@
     <Folder Include="MachineLearn" />
     <Folder Include="Filters\" />
   </ItemGroup>
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 </Project>

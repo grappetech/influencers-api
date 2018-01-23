@@ -40,13 +40,28 @@ namespace Action.Controllers
 		[HttpGet("entities/{id}")]
 		public IActionResult Get([FromRoute] int id)
 		{
-			return ValidateUser(() => Ok(Mock()));
+			try
+			{
+				return ValidateUser(() => Ok(Mock(id)));
+			}
+			catch (Exception ex)
+			{
+				return StatusCode((int)EServerError.BusinessError, new List<string> { ex.Message });
+			}
 		}
 
-		private InstagramResultViewModel Mock()
+		private InstagramResultViewModel Mock(int id)
 		{
-			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_instagram_result.json"));
-			return JsonConvert.DeserializeObject<InstagramResultViewModel>(json);
+			try
+			{
+				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_instagram_result_" + id.ToString() + ".json"));
+				return JsonConvert.DeserializeObject<InstagramResultViewModel>(json);
+			}
+			catch
+			{
+				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_instagram_result.json"));
+				return JsonConvert.DeserializeObject<InstagramResultViewModel>(json);
+			}
 		}
 	}
 }

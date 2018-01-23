@@ -384,7 +384,7 @@ namespace Action.Controllers
 		{
 			try
 			{
-				return Ok(this.MockMentions());
+				return Ok(this.MockMentions(id));
 
 				//var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
 
@@ -429,7 +429,7 @@ namespace Action.Controllers
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
+				return StatusCode((int)EServerError.BusinessError, new List<string> { ex.Message });
 			}
 		}
 
@@ -451,18 +451,26 @@ namespace Action.Controllers
 		{
 			try
 			{
-				return Ok(this.MockWords());
+				return Ok(this.MockWords(id));
 			}
 			catch (Exception ex)
 			{
-				return BadRequest(ex.Message);
+				return StatusCode((int)EServerError.BusinessError, new List<string> { ex.Message });
 			}
 		}
 
-		private List<MentionMock> MockMentions()
+		private List<MentionMock> MockMentions(long id)
 		{
-			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_mentions_result.json"));
-			return JsonConvert.DeserializeObject<List<MentionMock>>(json);
+			try
+			{
+				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_mentions_result_" + id.ToString() + ".json"));
+				return JsonConvert.DeserializeObject<List<MentionMock>>(json);
+			}
+			catch
+			{
+				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_mentions_result.json"));
+				return JsonConvert.DeserializeObject<List<MentionMock>>(json);
+			}
 		}
 
 		private Object MockFeeling()
@@ -479,12 +487,18 @@ namespace Action.Controllers
 			};
 		}
 
-		private List<WordMock> MockWords()
+		private List<WordMock> MockWords(long id)
 		{
-			var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_words_result.json"));
-			var words = JsonConvert.DeserializeObject<List<WordMock>>(json);
-
-			return words;
+			try
+			{
+				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_words_result_" + id.ToString() + ".json"));
+				return JsonConvert.DeserializeObject<List<WordMock>>(json);
+			}
+			catch
+			{
+				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_words_result.json"));
+				return JsonConvert.DeserializeObject<List<WordMock>>(json);
+			}
 		}
 	}
 
