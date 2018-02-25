@@ -118,6 +118,28 @@ namespace Action.Controllers
 			});
 		}
 
+		[HttpGet("{id}/payments")]
+		public IActionResult GetPayments([FromRoute] long id)
+		{
+			return ValidateUser(() =>
+			{
+				var result = new List<PaymentHistoryViewModel>();
+				result.Add(new PaymentHistoryViewModel
+				{
+					Id	= Guid.NewGuid().ToString(),
+					ExpirationDSaDateTime = DateTime.Now.AddMonths(1).Date,
+					PaymentDate = DateTime.Today.Date,
+					PaymentDueDate = DateTime.Today.AddDays(-5),
+					PaymentIdentifier = Guid.NewGuid().ToString(),
+					PaymentType = "CREDIT CARD",
+					PlanId = 1,
+					SecondaryPlanId = 1
+					
+				});
+				return Ok(result);
+			});
+		}
+
 		[HttpPost("{id}/entities")]
 		public IActionResult PostEntity([FromRoute] int id, [FromBody] EntityViewModel model)
 		{

@@ -12,9 +12,10 @@ using System;
 namespace Action.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180225215214_States")]
+    partial class States
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,7 +74,7 @@ namespace Action.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<int>("StateId");
+                    b.Property<int?>("StateId");
 
                     b.HasKey("Id");
 
@@ -1226,10 +1227,9 @@ namespace Action.Migrations
 
             modelBuilder.Entity("Action.Models.City", b =>
                 {
-                    b.HasOne("Action.Models.State", "State")
+                    b.HasOne("Action.Models.State")
                         .WithMany("Cities")
-                        .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("StateId");
                 });
 
             modelBuilder.Entity("Action.Models.Plans.Features", b =>

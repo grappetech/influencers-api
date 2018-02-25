@@ -42,7 +42,7 @@ namespace Action.Services.Watson.ToneAnalyze
                 Password = "ASQzybjUHEbl",
                 VersionDate = "2017-08-01"
             };
-            var result = service.Tone(new ToneInput {Text = content});
+            var result = service.Tone(new ToneInput{ Text = content},"text/plain");
             var tone = ToneResult.Parse(result);
             if (tone != null)
             {

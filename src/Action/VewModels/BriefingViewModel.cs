@@ -1,17 +1,8 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Action.Models.Watson;
-
-namespace Action.Models
+﻿namespace Action.VewModels
 {
-    public class Briefing
+    public class BriefingViewModel
     {
-        
-        [Key]
         public long Id { get; set; }
-        public string Brand { get; set; }
-        public Entity Owner { get; set; }
-        public long EntityId { get; set; }
         public string Name { get; set; }
         public string AgeRange { get; set; }
         public string Gender { get; set; }
@@ -23,7 +14,6 @@ namespace Action.Models
         public string Description { get; set; }
         public string Factor { get; set; }
         public string Entity { get; set; }
-        public string Analysis { get; set; }
         public decimal Strength { get; set; }
         public string DocumentUrl { get; set; }
     }

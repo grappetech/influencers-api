@@ -12,9 +12,10 @@ using System;
 namespace Action.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180127195743_BriefingDocument")]
+    partial class BriefingDocument
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,36 +65,6 @@ namespace Action.Migrations
                     b.HasIndex("EntityId");
 
                     b.ToTable("Briefings");
-                });
-
-            modelBuilder.Entity("Action.Models.City", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Name");
-
-                    b.Property<int>("StateId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StateId");
-
-                    b.ToTable("Cities");
-                });
-
-            modelBuilder.Entity("Action.Models.Country", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Code");
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Countries");
                 });
 
             modelBuilder.Entity("Action.Models.ImageRepo", b =>
@@ -299,26 +270,6 @@ namespace Action.Migrations
                     b.HasIndex("PlanId");
 
                     b.ToTable("Accounts");
-                });
-
-            modelBuilder.Entity("Action.Models.State", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Code")
-                        .HasMaxLength(2);
-
-                    b.Property<int?>("CountryId");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(180);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CountryId");
-
-                    b.ToTable("States");
                 });
 
             modelBuilder.Entity("Action.Models.User", b =>
@@ -1224,14 +1175,6 @@ namespace Action.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Action.Models.City", b =>
-                {
-                    b.HasOne("Action.Models.State", "State")
-                        .WithMany("Cities")
-                        .HasForeignKey("StateId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
             modelBuilder.Entity("Action.Models.Plans.Features", b =>
                 {
                     b.HasOne("Action.Models.Plans.Plan")
@@ -1262,13 +1205,6 @@ namespace Action.Migrations
                     b.HasOne("Action.Models.Plans.Plan", "Plan")
                         .WithMany()
                         .HasForeignKey("PlanId");
-                });
-
-            modelBuilder.Entity("Action.Models.State", b =>
-                {
-                    b.HasOne("Action.Models.Country", "Country")
-                        .WithMany("States")
-                        .HasForeignKey("CountryId");
                 });
 
             modelBuilder.Entity("Action.Models.User", b =>

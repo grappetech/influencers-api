@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Action.Models.Watson
@@ -18,5 +19,6 @@ namespace Action.Models.Watson
         public string YoutubeUser { get; set; }
         public string PictureUrl { get; set; }
         public string SiteUrl { get; set; }
+        public ICollection<Briefing> Briefings { get; set; } = new List<Briefing>();
     }
 }

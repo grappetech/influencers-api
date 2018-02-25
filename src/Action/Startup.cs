@@ -3,7 +3,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Action.Filters;
 using Action.Models;
 using Action.Services.Scrap;
 using Action.Services.Scrap.Repositories;
@@ -51,7 +50,7 @@ namespace Action
 
             services.AddSingleton<IFileProvider>(
                 new PhysicalFileProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")));
+                    Path.Combine(Directory.GetCurrentDirectory(), "App_Data")));
             
             // add database context
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -123,10 +122,6 @@ namespace Action
             loggerFactory.AddDebug();
 
             app.UseAuthentication();
-            app.UseHangfireDashboard("/tasks", new DashboardOptions
-            {
-                Authorization = new[] {new DashboardAuthorizeFilter()}
-            });
             app.UseHangfireServer();
             app.UseCors("Default");
             app.UseMvc(routes => { });

@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using IBM.WatsonDeveloperCloud.LanguageTranslator.v2;
+using IBM.WatsonDeveloperCloud.LanguageTranslator.v2.Model;
 
 namespace Action.Services.Watson.LanguageTranslator
 {
@@ -24,7 +26,10 @@ namespace Action.Services.Watson.LanguageTranslator
             var service = new LanguageTranslatorService();
             service.Password = "y0bEmI63FMhF";
             service.UserName = "1093b643-b149-4a8a-9da5-b80359fc9519";
-            return service.Translate("pt-BR", "en-US", text).Translations.FirstOrDefault()?.Translation;
+            return service.Translate(new TranslateRequest {Source = "pt-BR", Target = "en-US", Text = new List<string>
+            {
+                text   
+            }}).Translations.FirstOrDefault()?.TranslationOutput;
         }
     }
 }

@@ -35,7 +35,10 @@ namespace Action.Models
 		public DbSet<ImageRepo> Images { get; set; }
 		public DbSet<Relation> Relation { get; set; }
 		public DbSet<RelationType> RelationTypes { get; set; }
-
+		public DbSet<Country> Countries { get; set; }
+		public DbSet<State> States { get; set; }
+		public DbSet<City> Cities { get; set; }
+		
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			builder.Entity<ImageRepo>()
@@ -44,6 +47,13 @@ namespace Action.Models
 
 			builder.Entity<Account>()
 				.HasMany(x => x.Users);
+
+
+			builder.Entity<Country>()
+				.HasMany(x => x.States);
+
+			builder.Entity<State>()
+				.HasMany(x => x.Cities);
 
 			builder.Entity<Account>()
 				.HasOne(x => x.Plan)
@@ -76,10 +86,29 @@ namespace Action.Models
 				.WithMany(x => x.Users)
 				.HasForeignKey(x => x.AccountId);
 
+			builder.Entity<Briefing>()
+				.Property(x => x.Analysis)
+				.HasMaxLength(int.MaxValue);
+
+			builder.Entity<Briefing>()
+				.HasOne(x => x.Owner)
+				.WithMany(x=>x.Briefings)
+				.HasForeignKey(x => x.EntityId);
+
 			builder.Entity<SecondaryPlan>()
 				.HasOne(x => x.Account)
 				.WithMany(x => x.SecondaryPlans)
 				.HasForeignKey(x => x.AccountId);
+
+			builder.Entity<City>()
+				.HasOne(x => x.State)
+				.WithMany(x => x.Cities)
+				.HasForeignKey(x => x.StateId);
+			
+			builder.Entity<State>()
+				.HasMany(x => x.Cities)
+				.WithOne(x => x.State)
+				.HasForeignKey(x => x.StateId);
 
 			base.OnModelCreating(builder);
 		}

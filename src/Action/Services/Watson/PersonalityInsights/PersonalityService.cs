@@ -56,10 +56,10 @@ namespace Action.Services.Watson.PersonalityInsights
             {
                 UserName = "48f4249d-5d39-4921-83bd-1149590de5fe",
                 Password = "2Mz1lyPKLPQk",
-                VersionDate = "2016-10-20"
+                VersionDate = "2017-10-13"
             };
 
-            ContentListContainer contentListContainer = new ContentListContainer()
+            Content contentListContainer = new Content()
             {
                 ContentItems = new List<ContentItem>()
                 {
@@ -72,9 +72,7 @@ namespace Action.Services.Watson.PersonalityInsights
                 }
             };
 
-            var result = service.Profile("text/plain", "application/json",
-                contentListContainer,
-                rawScores: true, consumptionPreferences: true, csvHeaders: true);
+            var result = service.Profile(contentListContainer, "text/plain", "application/json", rawScores: true, consumptionPreferences: true, csvHeaders: true);
 
             var personality = PersonalityResult.Parse(result);
             return personality;

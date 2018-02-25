@@ -8,7 +8,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Action.Extensions;
-using Action.Filters;
 using Action.Models;
 using Action.Models.ServiceAccount;
 using Action.Services.SMTP;
@@ -150,7 +149,6 @@ namespace Action.Controllers
 			return BadRequest(result.Errors);
 		}
 
-		[ValidateForm]
 		[AllowAnonymous]
 		[HttpPost("login")]
 		[Route("token")]
@@ -193,6 +191,7 @@ namespace Action.Controllers
 					{
 						planId = plan.PlanId,
 						user = model.Email,
+						administrator = (bool?)(plan.Administrator?.Id  == user.Id) ?? false,
 						token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
 						expiration = jwtSecurityToken.ValidTo
 					});
