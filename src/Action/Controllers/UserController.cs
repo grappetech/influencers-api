@@ -65,6 +65,7 @@ namespace Action.Controllers
                             Id = user.Id,
                             Name = user.Name,
                             Phone = user.PhoneNumber,
+                            Administrator = (bool?)(user.Account?.Administrator == user) ?? false,
                             Role = user.Account != null && user.Account.Administrator != null &&
                                    user.Account.Administrator == user
                                 ? "ADMIN"
