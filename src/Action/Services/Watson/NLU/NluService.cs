@@ -72,11 +72,11 @@ namespace Action.Services.Watson.NLU
                 {
                     Entities = new EntitiesOptions
                     {
-                        Model = "10:d92acd8c-b623-4b3b-9802-a64068d95315"
+                        Model = "10:eb36f28a-7a16-46d0-92c8-65bdf0b2bffb"
                     },
                     Relations = new RelationsOptions
                     {
-                        Model = "10:d92acd8c-b623-4b3b-9802-a64068d95315"
+                        Model = "10:eb36f28a-7a16-46d0-92c8-65bdf0b2bffb"
                     },
                     Keywords = new KeywordsOptions()
                 },

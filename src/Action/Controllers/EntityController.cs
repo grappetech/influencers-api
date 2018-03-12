@@ -451,6 +451,22 @@ namespace Action.Controllers
             return null;
         }
 
+        
+        [HttpGet("{id}/relations")]
+        public IActionResult GetRelations([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to,
+            [FromQuery] string word, [FromQuery] int relationshipFactor, [FromQuery] string type)
+        {
+            try
+            {
+                return Ok(MockRelations(id));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int) EServerError.BusinessError, new List<string> {ex.Message});
+            }
+        }
+        
+        
         [HttpGet("{id}/mentions")]
         public IActionResult GetMentions([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to,
             [FromQuery] string word, [FromQuery] int relationshipFactor, [FromQuery] string type)
@@ -562,6 +578,25 @@ namespace Action.Controllers
             };
         }
 
+
+        private List<RelationsEntities> MockRelations(long id)
+        {
+            Random random = new Random(Randomize.Next());
+            var list = MockWords(id);
+            var results = new List<RelationsEntities>();
+            list.ForEach(x =>
+            {
+                results.Add(new RelationsEntities
+                {
+                    Id = x.id,
+                    Name = x.text,
+                    Score = random.Next(5, 80)/100,
+                    Mentions = MockMentions(id)
+                });
+            });
+            return results;
+        }
+
         private List<WordMock> MockWords(long id)
         {
             try
@@ -603,12 +638,21 @@ namespace Action.Controllers
         public string type { get; set; }
     }
 
+
+    internal class RelationsEntities
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public decimal Score { get; set; }
+        public List<MentionMock> Mentions { get; set; } 
+    }
+
     internal class MentionMock
     {
         public string id { get; set; }
+        public string url { get; set; }
         public string text { get; set; }
         public string toneId { get; set; }
-        public string url { get; set; }
         public string type { get; set; }
         public DateTime date { get; set; }
     }

@@ -1,4 +1,7 @@
-﻿namespace Action.VewModels
+﻿using System;
+using Action.Models;
+
+namespace Action.VewModels
 {
     public class BriefingViewModel
     {
@@ -16,5 +19,7 @@
         public string Entity { get; set; }
         public decimal Strength { get; set; }
         public string DocumentUrl { get; set; }
+        public EStatus? Status { get; set; }
+        public DateTime? Date { get; set; }
     }
 }

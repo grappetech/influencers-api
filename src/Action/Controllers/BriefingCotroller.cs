@@ -11,13 +11,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
+using Newtonsoft.Json;
 
 namespace Action.Controllers
 {
     [Route("api/briefings/entities")]
-
     [EnableCors("Default")]
     [AllowAnonymous]
     public class BriefingCotroller : BaseController
@@ -30,8 +31,8 @@ namespace Action.Controllers
             _dbContext = dbContext;
             _htmlEncoder = htmlEncoder;
         }
-                     
-        
+
+
         [HttpGet("{entityId}")]
         public IActionResult Get([FromRoute] long entityId)
         {
@@ -54,8 +55,10 @@ namespace Action.Controllers
                                 Description = d.Description,
                                 City = d.City,
                                 DocumentUrl = d.DocumentUrl,
+                                Date = d.Date,
                                 Factor = d.Factor,
                                 Gender = d.Gender,
+                                Status = d.Status ?? EStatus.Initial,
                                 Name = d.Name,
                                 Personality = d.Personality,
                                 State = d.State,
@@ -68,12 +71,12 @@ namespace Action.Controllers
                 catch (Exception ex)
                 {
                     return BadRequest(ex.Message);
-                }   
+                }
             });
         }
-        
+
         [HttpGet("{entityId}/{id}")]
-        public IActionResult GetById([FromRoute]long entityId, [FromRoute]long id)
+        public IActionResult GetById([FromRoute] long entityId, [FromRoute] long id)
         {
             return ValidateUser(() =>
             {
@@ -92,10 +95,12 @@ namespace Action.Controllers
                                 Entity = d.Name,
                                 AgeRange = d.AgeRange,
                                 Description = d.Description,
+                                Date = d.Date,
                                 City = d.City,
                                 DocumentUrl = d.DocumentUrl,
                                 Factor = d.Factor,
                                 Gender = d.Gender,
+                                Status = d.Status ?? EStatus.Initial,
                                 Name = d.Name,
                                 Personality = d.Personality,
                                 State = d.State,
@@ -108,18 +113,18 @@ namespace Action.Controllers
                 catch (Exception ex)
                 {
                     return BadRequest(ex.Message);
-                }   
+                }
             });
         }
-        
+
         [HttpPost("{entityId}")]
-        public IActionResult Post([FromRoute]int entityId,[FromBody] BriefingViewModel model)
+        public IActionResult Post([FromRoute] int entityId, [FromBody] BriefingViewModel model)
         {
             if (ModelState.IsValid)
                 return ValidateUser(() =>
                 {
-                    if(model.Strength <=0)
-                    model.Strength =  (decimal)(model.Description.Length / 1200.0);
+                    if (model.Strength <= 0)
+                        model.Strength = (decimal) (model.Description.Length / 1200.0);
                     try
                     {
                         var briefing = new Briefing
@@ -128,12 +133,14 @@ namespace Action.Controllers
                             Analysis = string.Empty,
                             Brand = string.Empty,
                             City = string.Empty,
+                            Date = model.Date ?? DateTime.Today,
                             Description = model.Description,
                             DocumentUrl = model.DocumentUrl,
                             Entity = model.Entity,
                             EntityId = entityId,
                             Factor = model.Factor,
                             Gender = model.Gender,
+                            Status = model.Status ?? EStatus.Initial,
                             Name = model.Name,
                             Personality = model.Personality,
                             State = model.State,
@@ -153,7 +160,7 @@ namespace Action.Controllers
                 });
             return ValidateUser(() => BadRequest(new {Message = "Modelo inválido."}));
         }
-        
+
         [HttpPost("{entityId}/upload")]
         public async Task<IActionResult> Post([FromRoute] int entityId, [FromForm] IFormFile file)
         {
@@ -193,9 +200,9 @@ namespace Action.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
-        [HttpGet("{entityId}/{id}/recomendation")]
-        public IActionResult GetRecomendations([FromRoute]long entityId, [FromRoute]long id)
+
+        [HttpGet("{id}/{entityId}/recomendation")]
+        public IActionResult GetRecomendations([FromRoute] long entityId, [FromRoute] long id)
         {
             return ValidateUser(() =>
             {
@@ -203,8 +210,9 @@ namespace Action.Controllers
                 {
                     if (_dbContext == null)
                         return NotFound("No database connection");
+                    var briefing = _dbContext.Briefings.AsNoTracking().FirstOrDefault(x=>x.Id == id);
                     var data = _dbContext.Entities.Where(x => x.Id != entityId).Take(8).ToList();
-var random = new Random(Randomize.Next());
+                    var random = new Random(Randomize.Next());
                     List<EntityRecomendationViewModel> entities = new List<EntityRecomendationViewModel>();
                     if (data.Count > 0)
                         foreach (var d in data)
@@ -214,15 +222,108 @@ var random = new Random(Randomize.Next());
                                 Entity = d.Name,
                                 ImageUrl = d.PictureUrl,
                                 Type = d.Category,
-                                Score = random.Next(50,100)/100 
+                                Score = random.Next(50, 100) / 100
                             });
-                    return Ok(entities.FirstOrDefault());
+                    return Ok(new
+                    {
+                        EntityId = entityId,
+                        BriefingId = id,
+                        Briefing = briefing,
+                        BriefingDate = briefing.Date,
+                        Status = briefing.Status ?? EStatus.Processed,
+                        Recomendations = entities
+                    });
                 }
                 catch (Exception ex)
                 {
                     return BadRequest(ex.Message);
-                }   
+                }
+            });
+        }
+
+        [HttpPost("{entityId}/{id}")]
+        public IActionResult SaveRecomendation([FromRoute] int entityId, [FromRoute] int id,
+            [FromBody] SaveRecomendationViewModel model)
+        {
+            return ValidateUser(() =>
+            {
+                try
+                {
+                    if (_dbContext == null)
+                        return NotFound("No database connection");
+                    var data = _dbContext.Briefings.FirstOrDefault(x => x.Id == id);
+                    data.ConnectedEntityId = model.Id;
+                    data.Report = model.Result;
+                    data.Status = EStatus.Final;
+                    _dbContext.Entry(data).State = EntityState.Modified;
+                    _dbContext.SaveChanges();
+                    return Ok(new {Message = "Recomendação salva com sucesso."});
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            });
+        }
+        
+        [HttpPost("{entityId}/{id}/report")]
+        public IActionResult SavePreRecomendation([FromRoute] int entityId, [FromRoute] int id,
+            [FromBody] SaveRecomendationViewModel model)
+        {
+            return ValidateUser(() =>
+            {
+                try
+                {
+                    if (_dbContext == null)
+                        return NotFound("No database connection");
+                    var data = _dbContext.Briefings.FirstOrDefault(x => x.Id == id);
+                    data.ConnectedEntityId = model.Id;
+                    data.Report2 = model.Result;
+                    _dbContext.Entry(data).State = EntityState.Modified;
+                    _dbContext.SaveChanges();
+                    return Ok(new {Message = "Recomendação salva com sucesso."});
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            });
+        }
+
+        [HttpPost("{entityId}/{id}")]
+        public IActionResult GetRecomendation([FromRoute] int entityId, [FromRoute] int id,
+            [FromBody] SaveRecomendationViewModel model)
+        {
+            return ValidateUser(() =>
+            {
+                  if (_dbContext == null)
+                        return NotFound("No database connection");
+                    var data = _dbContext.Briefings
+                        .Include(x => x.ConnectedEntity)
+                        .Include(x => x.Owner)
+                        .FirstOrDefault(x => x.Id == id);
+                    data.ConnectedEntityId = model.Id;
+                    return Ok(new { Id = id, Result = data.Report});
+               
+            });
+        }
+        
+        [HttpGet("{entityId}/{id}/report")]
+        public IActionResult GetRecomendationReport([FromRoute] int entityId, [FromRoute] int id,
+            [FromBody] SaveRecomendationViewModel model)
+        {
+            return ValidateUser(() =>
+            {
+                if (_dbContext == null)
+                        return NotFound("No database connection");
+                    var data = _dbContext.Briefings
+                        .Include(x => x.ConnectedEntity)
+                        .Include(x => x.Owner)
+                        .FirstOrDefault(x => x.Id == id);
+                    return Ok(new { Id = id, Result = data.Report2});
+              
             });
         }
     }
+    
 }

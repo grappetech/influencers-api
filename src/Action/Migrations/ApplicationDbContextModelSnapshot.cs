@@ -35,6 +35,12 @@ namespace Action.Migrations
 
                     b.Property<string>("City");
 
+                    b.Property<int?>("ConnectedEntityId");
+
+                    b.Property<long?>("ConnectedEntityId1");
+
+                    b.Property<DateTime?>("Date");
+
                     b.Property<string>("Description");
 
                     b.Property<string>("DocumentUrl");
@@ -51,7 +57,13 @@ namespace Action.Migrations
 
                     b.Property<string>("Personality");
 
+                    b.Property<string>("Report");
+
+                    b.Property<string>("Report2");
+
                     b.Property<string>("State");
+
+                    b.Property<int?>("Status");
 
                     b.Property<decimal>("Strength");
 
@@ -60,6 +72,8 @@ namespace Action.Migrations
                     b.Property<string>("Value");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ConnectedEntityId1");
 
                     b.HasIndex("EntityId");
 
@@ -247,6 +261,26 @@ namespace Action.Migrations
                     b.HasIndex("ScrapSourceId");
 
                     b.ToTable("ScrapedPages");
+                });
+
+            modelBuilder.Entity("Action.Models.Scrap.ScrapQueue", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("Completed");
+
+                    b.Property<DateTime?>("EndDateTime");
+
+                    b.Property<DateTime>("EnqueueDateTime");
+
+                    b.Property<DateTime?>("StartDateTime");
+
+                    b.Property<string>("Url");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ScrapQueue");
                 });
 
             modelBuilder.Entity("Action.Models.Scrap.ScrapSource", b =>
@@ -1218,6 +1252,10 @@ namespace Action.Migrations
 
             modelBuilder.Entity("Action.Models.Briefing", b =>
                 {
+                    b.HasOne("Action.Models.Watson.Entity", "ConnectedEntity")
+                        .WithMany()
+                        .HasForeignKey("ConnectedEntityId1");
+
                     b.HasOne("Action.Models.Watson.Entity", "Owner")
                         .WithMany("Briefings")
                         .HasForeignKey("EntityId")

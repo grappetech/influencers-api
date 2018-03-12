@@ -17,6 +17,7 @@ namespace Action.Services.Scrap.Repositories
 
 		public DbSet<ScrapedPage> ScrapedPages { get; set; }
 		public DbSet<ScrapSource> ScrapSources { get; set; }
+		public DbSet<ScrapQueue> ScrapQueue { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{

@@ -26,5 +26,11 @@ namespace Action.Models
         public string Analysis { get; set; }
         public decimal Strength { get; set; }
         public string DocumentUrl { get; set; }
+        public int? ConnectedEntityId { get; set; }
+        public Entity ConnectedEntity { get; set; }
+        public string Report { get; set; }
+        public string Report2 { get; set; }
+        public EStatus? Status { get; set; }
+        public DateTime? Date { get; set; } = DateTime.Today;
     }
 }

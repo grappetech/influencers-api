@@ -38,6 +38,7 @@ namespace Action.Models
 		public DbSet<Country> Countries { get; set; }
 		public DbSet<State> States { get; set; }
 		public DbSet<City> Cities { get; set; }
+		public DbSet<ScrapQueue> ScrapQueue { get; set; }
 		
 		protected override void OnModelCreating(ModelBuilder builder)
 		{

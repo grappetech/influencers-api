@@ -16,8 +16,9 @@ namespace Action.Services.Scrap
         public void StartScraper()
         {
             var lLista = new List<ScrapedPage>();
-            
-            var items = new ScrapperContext().ScrapSources.Where(x => x.PageStatus == EPageStatus.Enabled).ToList().AsParallel();
+
+            var items = new ScrapperContext().ScrapSources.Where(x => x.PageStatus == EPageStatus.Enabled).ToList()
+                .AsParallel();
             Parallel.ForEach(items, item =>
             {
                 using (var ctx = new ScrapperContext())
@@ -46,6 +47,51 @@ namespace Action.Services.Scrap
                     }
                 }
             });
+        }
+
+        public void StartScraperV2()
+        {
+            var date = DateTime.UtcNow.Date;
+            using (var ctx = new ScrapperContext())
+            {
+                var queue = ctx.ScrapQueue.Where(x => !x.Completed).AsNoTracking().ToList();
+                if (queue.Count() == 0)
+                {
+                    using (var appctx = new ApplicationDbContext(new DbContextOptions<ApplicationDbContext>()))
+                    {
+                        Parallel.Invoke(
+                            () =>
+                            {
+                                foreach (var page in ctx.ScrapSources.Where(p => p.Url.ToLower().Contains("{{entity}}"))
+                                    .AsNoTracking().ToList())
+                                {
+                                    foreach (var entity in appctx.Entities)
+                                    {
+                                        ctx.ScrapQueue.Add(new ScrapQueue
+                                        {
+                                            Url = page.Url.ToLower().Replace("{{entity}}", entity.Name),
+                                            EnqueueDateTime = DateTime.UtcNow
+                                        });
+                                    }
+                                }
+                            },
+                            () =>
+                            {
+                                foreach (var page in ctx.ScrapSources
+                                    .Where(p => !p.Url.ToLower().Contains("{{entity}}")).AsNoTracking().ToList())
+                                {
+                                    ctx.ScrapQueue.Add(new ScrapQueue
+                                    {
+                                        Url = page.Url.ToLower(),
+                                        EnqueueDateTime = DateTime.UtcNow
+                                    });
+                                }
+                            }
+                        );
+                        ctx.SaveChanges();
+                    }
+                }
+            }
         }
     }
 }
