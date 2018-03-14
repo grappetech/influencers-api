@@ -25,7 +25,7 @@ namespace System
                 var senha = BitConverter.ToString(new SHA512CryptoServiceProvider()
                         .ComputeHash(Encoding.Default.GetBytes(Next().ToString())))
                     .Replace("-", string.Empty);
-                return senha.Substring(0, length);
+                return "Act@" + senha.Substring(0, length);
             }
             catch
             {

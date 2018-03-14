@@ -13,6 +13,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Action.VewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Action.Controllers
 {
@@ -53,8 +54,9 @@ namespace Action.Controllers
                     ClaimsPrincipal claim = handler.ValidateToken(
                         HttpContext.Request.Headers.FirstOrDefault(x => x.Key.ToLower().Equals("authorization")).Value
                             .ToString().Replace("bearer ", ""), param, out stoken);
-                    var user = _manager.FindByEmailAsync(claim.Claims
-                        .FirstOrDefault(x => x.Type.ToLower().Contains("nameidentifier"))?.Value).Result;
+                    var mail = claim.Claims
+                        .FirstOrDefault(x => x.Type.ToLower().Contains("nameidentifier"))?.Value;
+                    var user = _dbContext.Users.Include(x=>x.Account).ThenInclude(x=>x.Administrator).FirstOrDefault(u=>u.Email == mail);
 
                     if (user != null)
                     {
