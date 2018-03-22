@@ -11,7 +11,7 @@ using Action.Services.Scrap.Logging;
 using Action.Services.Scrap.Parsers;
 using Action.Services.Scrap.Repositories;
 
-namespace Action.Services.Scrap
+namespace Action.Services.Scrap.Core
 {
     /// <summary>
     ///     Main Scraper class.

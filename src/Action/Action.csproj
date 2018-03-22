@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <DebugType>portable</DebugType>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-      <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
+    <PublishWithAspNetCoreTargetManifest>false</PublishWithAspNetCoreTargetManifest>
     <AssemblyName>Action</AssemblyName>
     <OutputType>Exe</OutputType>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -12,34 +12,37 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Hangfire" Version="1.6.17" />
-      <PackageReference Include="Hangfire.MemoryStorage" Version="1.5.2"/>
-      <PackageReference Include="IBM.WatsonDeveloperCloud.Conversation.v1" Version="1.3.1"/>
-      <PackageReference Include="IBM.WatsonDeveloperCloud.Discovery.v1" Version="1.3.1"/>
-      <PackageReference Include="IBM.WatsonDeveloperCloud.LanguageTranslator.v2" Version="1.3.1"/>
-      <PackageReference Include="IBM.WatsonDeveloperCloud.NaturalLanguageUnderstanding.v1" Version="1.3.1"/>
-      <PackageReference Include="IBM.WatsonDeveloperCloud.PersonalityInsights.v3" Version="1.3.1"/>
-      <PackageReference Include="IBM.WatsonDeveloperCloud.SpeechToText.v1" Version="1.3.1"/>
-      <PackageReference Include="IBM.WatsonDeveloperCloud.TextToSpeech.v1" Version="1.3.1"/>
-      <PackageReference Include="IBM.WatsonDeveloperCloud.ToneAnalyzer.v3" Version="1.3.1"/>
-      <PackageReference Include="IBM.WatsonDeveloperCloud.VisualRecognition.v3" Version="1.3.1"/>
-      <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="1.1.15"/>
+    <PackageReference Include="Hangfire.MemoryStorage" Version="1.5.2"/>
+    <PackageReference Include="IBM.WatsonDeveloperCloud.Conversation.v1" Version="2.1.0"/>
+    <PackageReference Include="IBM.WatsonDeveloperCloud.Discovery.v1" Version="2.1.0"/>
+    <PackageReference Include="IBM.WatsonDeveloperCloud.LanguageTranslator.v2" Version="2.1.0"/>
+    <PackageReference Include="IBM.WatsonDeveloperCloud.NaturalLanguageUnderstanding.v1" Version="2.1.0"/>
+    <PackageReference Include="IBM.WatsonDeveloperCloud.PersonalityInsights.v3" Version="2.1.0"/>
+    <PackageReference Include="IBM.WatsonDeveloperCloud.SpeechToText.v1" Version="2.1.0"/>
+    <PackageReference Include="IBM.WatsonDeveloperCloud.TextToSpeech.v1" Version="2.1.0"/>
+    <PackageReference Include="IBM.WatsonDeveloperCloud.ToneAnalyzer.v3" Version="2.1.0"/>
+    <PackageReference Include="IBM.WatsonDeveloperCloud.VisualRecognition.v3" Version="2.1.0"/>
+    <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="1.1.15"/>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.0.0" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1"/>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
-      <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2"/>
-      <PackageReference Include="Newtonsoft.Json" Version="10.0.3"/>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2"/>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3"/>
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.0" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.0"/>
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.0"/>
   </ItemGroup>
   <ItemGroup>
-      <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2"/>
-      <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1"/>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2"/>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1"/>
   </ItemGroup>
-    <ProjectExtensions>
-        <VisualStudio>
-            <UserProperties/>
-        </VisualStudio>
-    </ProjectExtensions>
+  <ItemGroup>
+    <Folder Include="Services\AutoMapper"/>
+  </ItemGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties/>
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

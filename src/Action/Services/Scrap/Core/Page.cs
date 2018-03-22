@@ -1,4 +1,4 @@
-﻿namespace Action.Services.Scrap
+﻿namespace Action.Services.Scrap.Core
 {
     /// <summary>
     ///     Page class

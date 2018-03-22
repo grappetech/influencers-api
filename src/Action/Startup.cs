@@ -4,12 +4,15 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Action.Models;
+//using Action.Services.AutoMapper;
 using Action.Services.Scrap;
+using Action.Services.Scrap.Core;
 using Action.Services.Scrap.Repositories;
 using Action.Services.SMTP;
 using Action.Services.Watson.NLU;
 using Action.Services.Watson.PersonalityInsights;
 using Action.Services.Watson.ToneAnalyze;
+//using AutoMapper;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -110,11 +113,15 @@ namespace Action
                 Configuration["SmtpConfiguration:Password"],
                 Configuration["SmtpConfiguration:Sender"],
                 Convert.ToBoolean(Configuration["SmtpConfiguration:IsSSL"]));
-            
-            
+
+
+           // services.AddAutoMapper(typeof(Startup));
+           
             //Enables TaskManager
-            services.AddHangfire(x => x.UseStorage(new MemoryStorage()));
+            //services.AddHangfire(x => x.UseStorage(new MemoryStorage()));
         }
+
+       
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
@@ -122,7 +129,7 @@ namespace Action
             loggerFactory.AddDebug();
 
             app.UseAuthentication();
-            app.UseHangfireServer();
+           // app.UseHangfireServer();
             app.UseCors("Default");
             app.UseMvc(routes => { });
 
@@ -133,7 +140,7 @@ namespace Action
 
             EnsureDatabaseCreated(dbContext);
             NotifyApplicationSupport();
-            StartScraper();
+           // StartScraper();
         }
 
         private void NotifyApplicationSupport()

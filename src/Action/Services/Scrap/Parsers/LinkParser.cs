@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Action.Services.Scrap.Core;
 
 namespace Action.Services.Scrap.Parsers
 {

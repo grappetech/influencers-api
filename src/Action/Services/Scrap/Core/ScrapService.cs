@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Action.Models;
 using Action.Models.Scrap;
-using Action.Models.Watson;
 using Action.Services.Scrap.Repositories;
 using Action.Services.Watson.LanguageTranslator;
 using Microsoft.EntityFrameworkCore;
 
-namespace Action.Services.Scrap
+namespace Action.Services.Scrap.Core
 {
     public class ScrapService
     {

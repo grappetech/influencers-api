@@ -8,43 +8,48 @@ using Microsoft.AspNetCore.Cors;
 using Action.Models;
 using System.Text.Encodings.Web;
 using Action.VewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Action.Controllers
 {
-	[Route("api/[controller]")]
-	[EnableCors("Default")]
-	public class SecondaryPlansController : Controller
-	{
-		private readonly ApplicationDbContext _dbContext;
-		private readonly HtmlEncoder _htmlEncoder;
+    [Route("api/[controller]")]
+    [EnableCors("Default")]
+    public class SecondaryPlansController : Controller
+    {
+        private readonly ApplicationDbContext _dbContext;
+        private readonly HtmlEncoder _htmlEncoder;
 
-		public SecondaryPlansController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
-		{
-			_dbContext = dbContext;
-			_htmlEncoder = htmlEncoder;
-		}
+        public SecondaryPlansController(HtmlEncoder htmlEncoder, ApplicationDbContext dbContext = null)
+        {
+            _dbContext = dbContext;
+            _htmlEncoder = htmlEncoder;
+        }
 
-		[HttpGet]
-		public dynamic Get()
-		{
-			try
-			{
-				if (_dbContext == null)
-					return NotFound("No database connection");
-				var data = _dbContext.SecondaryPlans.ToList();
+        [HttpGet("{accountId}")]
+        public dynamic Get([FromRoute] int accountId)
+        {
+            try
+            {
+                if (_dbContext == null)
+                    return NotFound("No database connection");
+                var data = _dbContext.SecondaryPlans.ToList();
+                var inuse = _dbContext.Accounts.Include(x => x.SecondaryPlans).FirstOrDefault(x => x.Id == accountId)
+                    .SecondaryPlans.Select(x => x.Id).ToList();
 
-				return Ok(data.Select(x => new {
-					x.Id,
-					x.AllowedUsers,
-					x.Name,
-					x.Price,
-					x.StartDate
-				}));
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex.Message);
-			}
-		}
-	}
+                return Ok(data.Select(x => new
+                {
+                    x.Id,
+                    x.AllowedUsers,
+                    x.Name,
+                    x.Price,
+                    x.StartDate,
+                    Included = inuse.Any(c => c == x.Id)
+                }));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+    }
 }

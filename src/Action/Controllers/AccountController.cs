@@ -22,6 +22,8 @@ using Microsoft.Extensions.Configuration;
 using Action.Services.SMTP;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using System.Net;
+using Hangfire.Annotations;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Action.Controllers
@@ -118,7 +120,7 @@ namespace Action.Controllers
 			});
 		}
 
-		[HttpGet("{id}/payments")]
+		/*[HttpGet("{id}/payments")]
 		public IActionResult GetPayments([FromRoute] long id)
 		{
 			return ValidateUser(() =>
@@ -138,7 +140,7 @@ namespace Action.Controllers
 				});
 				return Ok(result);
 			});
-		}
+		}*/
 
 		[HttpPost("{id}/entities")]
 		public IActionResult PostEntity([FromRoute] int id, [FromBody] EntityViewModel model)
@@ -448,8 +450,9 @@ namespace Action.Controllers
 			});
 		}
 
-		[HttpPost("cancela/{id}")]
-		public IActionResult PostCancela([FromRoute] int id)
+
+		[HttpGet("cancela/{id}")]
+		public IActionResult GetCancela([FromRoute] int id)
 		{
 			return ValidateUser(() => Ok(new
 			{
@@ -458,45 +461,58 @@ namespace Action.Controllers
 				doesntMatchMyNeeds = true,
 				unableToUseThePlatformEffectively = true,
 				message = "message message message message message "
-			}));
+			})); 
+		}
+
+		[HttpPost("cancela/{id}")]
+		public IActionResult PostCancela([FromRoute] int id)
+		{
+			return ValidateUser(() => Ok());
 		}
 
 		[HttpGet("{id}/payments")]
-		public dynamic GetPayments([FromRoute] int id)
+		public IActionResult GetPayments([FromRoute] int id)
 		{
-			return ValidateUser(() => Ok(new[]
+			try
 			{
-				new
+				return ValidateUser(() => Ok(new[]
 				{
-					id = 123456,
-					plan = new
+					new
 					{
-						id = 2,
-						name = "MARCA",
-						slug = "marca",
-						features = new[]
+						id = 123456,
+						plan = new
 						{
-							new {description = "Monitore a relevância digital da sua marca ou de seu produto"},
-							new {description = "Cadastre até 3 usuários para o monitoramento"},
-							new {description = "Encontre as celebridades perfeitas para as suas campanhas"}
+							id = 2,
+							name = "MARCA",
+							slug = "marca",
+							features = new[]
+							{
+								new {description = "Monitore a relevância digital da sua marca ou de seu produto"},
+								new {description = "Cadastre até 3 usuários para o monitoramento"},
+								new {description = "Encontre as celebridades perfeitas para as suas campanhas"}
+							},
+							price = 2000
 						},
-						price = 2000
-					},
-					secondaryPlans = new[]
-					{
-						new
+						secondaryPlans = new[]
 						{
-							id = "123456",
-							allowedUsers = 3,
-							name = "3 usuários adicionais",
-							price = "12345",
-							startDate = "2017-11-06T00:00:00"
-						}
-					},
-					expirationdate = "2017-11-06T00:00:00",
-					status = "PENDING" // PENDING | PAID
-                }
-			}));
+							new
+							{
+								id = "123456",
+								allowedUsers = 3,
+								name = "3 usuários adicionais",
+								price = "12345",
+								startDate = "2017-11-06T00:00:00"
+							}
+						},
+						expirationdate = "2017-11-06T00:00:00",
+						status = "PAID" // PENDING | PAID
+					}
+				}));
+			}
+			catch (Exception ex)
+			{
+				return BadRequest(ex.Message);
+			}
 		}
 	}
 }

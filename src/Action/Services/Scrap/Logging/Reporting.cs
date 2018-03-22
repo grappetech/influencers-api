@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Action.Services.Scrap.Core;
 using Action.Services.Scrap.Interfaces;
 
 namespace Action.Services.Scrap.Logging
