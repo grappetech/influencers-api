@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Action.Models;
 using Action.Models.Core;
 //using Action.Services.AutoMapper;
@@ -143,15 +144,16 @@ namespace Action
 
             using (var server = new BackgroundJobServer(lOptions, lMemoryStorage))
             {
-                JobStorage.Current = new MemoryStorage();
+                /*JobStorage.Current = new MemoryStorage();
                 
                 RecurringJob.AddOrUpdate(
-                    () => new ScrapService().StartScraperV2(dbContext),
+                    () => */
+                new ScrapService().StartScraperV2(dbContext);/*,
                     Cron.Daily());
                 
-                RecurringJob.AddOrUpdate(()=>
-                ApplicationTaskScheduler.ProccessDataExtraction(dbContext), 
-                    Cron.Daily());
+                RecurringJob.AddOrUpdate(()=>*/
+                Task.Run(async ()=> await ApplicationTaskScheduler.ProccessDataExtraction(dbContext));/*, 
+                    Cron.Daily());*/
             }
         }
     }
