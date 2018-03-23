@@ -35,7 +35,7 @@ namespace Action.Services.Watson.V2.TaskScheduler
         {
             var wltCredential = credentials.FirstOrDefault(x => x.Service == EWatsonServices.WatsonLanguageTranslator);
             var psiCredential = credentials.FirstOrDefault(x => x.Service == EWatsonServices.WatsonPersonalityInsights);
-            Parallel.ForEach(scrapedPages.AsParallel(), async page =>
+            scrapedPages.ForEach(async page =>
             {
                 page.Translated = await new LanguageTranslatorService().ProccessTranslation(page.Text, "pt", "en",
                     wltCredential.UserName, wltCredential.Password);
@@ -46,7 +46,7 @@ namespace Action.Services.Watson.V2.TaskScheduler
 
             var personalities = new List<PersonalityResult>();
             
-            Parallel.ForEach(scrapedPages.AsParallel(), async page =>
+            scrapedPages.ForEach(async page =>
             {
                 var analysis = await new PersonalityInsightsService().ProccessText(page.Translated,
                     psiCredential.UserName, psiCredential.Password, psiCredential.Version);

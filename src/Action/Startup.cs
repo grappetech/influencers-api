@@ -148,7 +148,8 @@ namespace Action
                 
                 RecurringJob.AddOrUpdate(
                     () => */
-                new ScrapService().StartScraperV2(dbContext);/*,
+                new ScrapService().StartScraperV2(dbContext);
+                /*,
                     Cron.Daily());
                 
                 RecurringJob.AddOrUpdate(()=>*/
