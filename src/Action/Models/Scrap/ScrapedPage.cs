@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
 using System.Text;
 using Action.Extensions;
+using Action.Models.Core;
 using Microsoft.AspNetCore.WebUtilities;
 
 namespace Action.Models.Scrap
@@ -15,10 +15,6 @@ namespace Action.Models.Scrap
         [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
 
-        [ForeignKey(nameof(ScrapSourceId))]
-        public ScrapSource ScrapSource { get; set; }
-
-        public int? ScrapSourceId { get; set; } = null;
         public DateTime Date { get; set; } = DateTime.UtcNow;
         public string Url { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Action.Models.Core;
 using Action.Models.Plans;
 using Action.Models.Watson;
 

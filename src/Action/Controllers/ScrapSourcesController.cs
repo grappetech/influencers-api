@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text.Encodings.Web;
 using Action.Models;
+using Action.Models.Core;
 using Action.Models.Scrap;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -85,17 +86,6 @@ namespace Action.Controllers
 			_dbContext.ScrapSources.Remove(item);
 			_dbContext.SaveChanges();
 			return model;
-		}
-
-		[HttpGet("pages/{id}")]
-		public IEnumerable<ScrapedPage> GetPages(int id)
-		{
-			if (_dbContext == null)
-			{
-				return null;
-			}
-			var item = _dbContext.ScrapedPages.Where(x => x.ScrapSourceId == id);
-			return item.ToList();
 		}
 	}
 }

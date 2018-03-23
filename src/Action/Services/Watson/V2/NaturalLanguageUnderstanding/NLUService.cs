@@ -6,9 +6,9 @@ namespace Action.Services.Watson.V2.NaturalLanguageUnderstanding
 {
     public class NLUService
     {
-        public Task ProccessUrl(string url, string username, string password, string modelId, string version = "2017-02-27")
+        public async Task<AnalysisResults> ProccessUrl(string url, string username, string password, string modelId, string version = "2017-02-27")
         {
-            return Task.Run( () =>
+            return await Task<AnalysisResults>.Run( () =>
             {
                 NaturalLanguageUnderstandingService svc =
                     new NaturalLanguageUnderstandingService(username, password, version);

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Action.Services.SMTP
+﻿namespace Action.Services.SMTP
 {
     public class SmtpConfiguration
     {

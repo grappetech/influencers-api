@@ -1,5 +1,5 @@
 ﻿using System;
-using Action.Models;
+using Action.Models.Core;
 
 namespace Action.VewModels
 {

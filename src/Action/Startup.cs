@@ -1,31 +1,27 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
-using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using Action.Models;
+using Action.Models.Core;
 //using Action.Services.AutoMapper;
-using Action.Services.Scrap;
 using Action.Services.Scrap.Core;
-using Action.Services.Scrap.Repositories;
 using Action.Services.SMTP;
-using Action.Services.Watson.NLU;
-using Action.Services.Watson.PersonalityInsights;
-using Action.Services.Watson.ToneAnalyze;
+using Action.Services.Watson.V2.TaskScheduler;
 //using AutoMapper;
 using Hangfire;
 using Hangfire.MemoryStorage;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using ScrapperV2 = Action.Services.Scrap.V2.Scrapper;
 
 namespace Action
 {
@@ -60,26 +56,14 @@ namespace Action
                 options.UseMySql(Configuration.GetConnectionString("DataConnection"),
                     opt => opt.MigrationsAssembly("Action")));
 
-            //ScrapperContext.ConnectionString = Configuration.GetConnectionString("DataConnection");
-            NluService.Instance.AppContext = new ApplicationDbContext(
-                new DbContextOptionsBuilder<ApplicationDbContext>().UseMySql(
-                    Configuration.GetConnectionString("DataConnection"),
-                    opt => opt.MigrationsAssembly("Action")).Options);
-            
-            //ScrapperContext.ConnectionString = Configuration.GetConnectionString("DataConnection");
-            PersonalityService.Instance.AppContext = new ApplicationDbContext(
-                new DbContextOptionsBuilder<ApplicationDbContext>().UseMySql(
-                    Configuration.GetConnectionString("DataConnection"),
-                    opt => opt.MigrationsAssembly("Action")).Options);
-            
-            //ScrapperContext.ConnectionString = Configuration.GetConnectionString("DataConnection");
-            ToneService.Instance.AppContext = new ApplicationDbContext(
-                new DbContextOptionsBuilder<ApplicationDbContext>().UseMySql(
-                    Configuration.GetConnectionString("DataConnection"),
-                    opt => opt.MigrationsAssembly("Action")).Options);
-
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.OutputFormatters.Clear();
+                options.OutputFormatters.Add(new JsonOutputFormatter(new JsonSerializerSettings(){
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                }, ArrayPool<char>.Shared));
+            });
             services.AddCors(o => o.AddPolicy("Default", builder =>
             {
                 builder.AllowAnyOrigin()
@@ -118,7 +102,7 @@ namespace Action
            // services.AddAutoMapper(typeof(Startup));
            
             //Enables TaskManager
-            //services.AddHangfire(x => x.UseStorage(new MemoryStorage()));
+            services.AddHangfire(x => x.UseStorage(new MemoryStorage()));
         }
 
        
@@ -129,7 +113,7 @@ namespace Action
             loggerFactory.AddDebug();
 
             app.UseAuthentication();
-           // app.UseHangfireServer();
+            app.UseHangfireServer();
             app.UseCors("Default");
             app.UseMvc(routes => { });
 
@@ -140,7 +124,6 @@ namespace Action
 
             EnsureDatabaseCreated(dbContext);
             NotifyApplicationSupport();
-           // StartScraper();
         }
 
         private void NotifyApplicationSupport()
@@ -150,9 +133,10 @@ namespace Action
 
         private void EnsureDatabaseCreated(ApplicationDbContext dbContext)
         {
+           StartScraper(dbContext);
         }
 
-        private void StartScraper()
+        private void StartScraper(ApplicationDbContext dbContext)
         {
             var lMemoryStorage = new MemoryStorage();
             var lOptions = new BackgroundJobServerOptions();
@@ -160,13 +144,14 @@ namespace Action
             using (var server = new BackgroundJobServer(lOptions, lMemoryStorage))
             {
                 JobStorage.Current = new MemoryStorage();
-                RecurringJob.AddOrUpdate(
-                    () => new ScrapService().StartScraper(),
-                    Cron.MinuteInterval(60));
                 
                 RecurringJob.AddOrUpdate(
-                    () => NluService.StartExtraction(),
-                    Cron.MinuteInterval(120));
+                    () => new ScrapService().StartScraperV2(dbContext),
+                    Cron.Daily());
+                
+                RecurringJob.AddOrUpdate(()=>
+                ApplicationTaskScheduler.ProccessDataExtraction(dbContext), 
+                    Cron.Daily());
             }
         }
     }

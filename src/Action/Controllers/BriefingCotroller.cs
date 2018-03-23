@@ -6,15 +6,13 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Action.Extensions;
 using Action.Models;
+using Action.Models.Core;
 using Action.VewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGeneration.Contracts.Messaging;
-using Newtonsoft.Json;
 
 namespace Action.Controllers
 {
@@ -42,7 +40,11 @@ namespace Action.Controllers
                 {
                     if (_dbContext == null)
                         return NotFound("No database connection");
-                    var data = _dbContext.Briefings.Where(x => x.EntityId == entityId).ToList();
+                    var data = _dbContext.Entities
+                        .Include(x=>x.Briefings)
+                        .Where(x=>x.Id == entityId)
+                        .SelectMany(x=>x.Briefings)
+                        .ToList();
 
                     List<BriefingViewModel> briefings = new List<BriefingViewModel>();
                     if (data.Count > 0)
@@ -84,7 +86,9 @@ namespace Action.Controllers
                 {
                     if (_dbContext == null)
                         return NotFound("No database connection");
-                    var data = _dbContext.Briefings.Where(x => x.EntityId == entityId).ToList();
+                    var data = _dbContext.Entities.Where(x => x.Id == entityId)
+                       .SelectMany(x=>x.Briefings)
+                        .ToList();
 
                     List<BriefingViewModel> briefings = new List<BriefingViewModel>();
                     if (data.Count > 0)
@@ -136,8 +140,6 @@ namespace Action.Controllers
                             Date = model.Date ?? DateTime.Today,
                             Description = model.Description,
                             DocumentUrl = model.DocumentUrl,
-                            Entity = model.Entity,
-                            EntityId = entityId,
                             Factor = model.Factor,
                             Gender = model.Gender,
                             Status = model.Status ?? EStatus.Initial,
@@ -300,7 +302,6 @@ namespace Action.Controllers
                         return NotFound("No database connection");
                     var data = _dbContext.Briefings
                         .Include(x => x.ConnectedEntity)
-                        .Include(x => x.Owner)
                         .FirstOrDefault(x => x.Id == id);
                     data.ConnectedEntityId = model.Id;
                     return Ok(new { Id = id, Result = data.Report});
@@ -318,7 +319,6 @@ namespace Action.Controllers
                         return NotFound("No database connection");
                     var data = _dbContext.Briefings
                         .Include(x => x.ConnectedEntity)
-                        .Include(x => x.Owner)
                         .FirstOrDefault(x => x.Id == id);
                     return Ok(new { Id = id, Result = data.Report2});
               

@@ -1,7 +1,5 @@
 ﻿using System;
-using Action.Services.Watson.ToneAnalyze;
 //using AutoMapper;
-using IBM.WatsonDeveloperCloud.ToneAnalyzer.v3.Model;
 
 namespace Action.Services.AutoMapper
 {

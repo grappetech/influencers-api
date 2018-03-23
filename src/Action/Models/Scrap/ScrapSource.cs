@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Action.Models.Core;
 
 namespace Action.Models.Scrap
 {

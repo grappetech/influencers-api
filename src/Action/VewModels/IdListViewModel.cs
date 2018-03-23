@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication;
-
-namespace Action.VewModels
+﻿namespace Action.VewModels
 {
     public class IdListViewModel<T>
     {

@@ -4,10 +4,8 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using Action.Models;
 using Action.Models.Watson;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Internal.System.Collections.Sequences;
 using Microsoft.EntityFrameworkCore;
 using Action.Extensions;
 using Action.VewModels;
@@ -22,9 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Action.Services.SMTP;
 using Microsoft.AspNetCore.Http;
 using System.IO;
-using System.Net;
-using Hangfire.Annotations;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Action.Models.Core;
 
 namespace Action.Controllers
 {

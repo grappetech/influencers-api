@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Immutable;
+using Action.Models.Core;
 using Action.Models.Plans;
 using Action.Models.Scrap;
 using Action.Models.ServiceAccount;
-using Action.Services.Watson.NLU;
-using Action.Services.Watson.PersonalityInsights;
-using Action.Services.Watson.ToneAnalyze;
+using Action.Models.Watson;
+using Action.Models.Watson.NLU;
+using Action.Models.Watson.PersonalityInsights;
+using Action.Models.Watson.ToneAnalyze;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Entity = Action.Models.Watson.Entity;
@@ -39,9 +40,14 @@ namespace Action.Models
 		public DbSet<State> States { get; set; }
 		public DbSet<City> Cities { get; set; }
 		public DbSet<ScrapQueue> ScrapQueue { get; set; }
+		public DbSet<WatsonCredentials> WatsonCredentials { get; set; }
 		
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
+			builder.Entity<WatsonCredentials>()
+				.HasKey(x => x.Service);
+				
+			
 			builder.Entity<ImageRepo>()
 				.Property(x => x.Base64Image)
 				.HasMaxLength(Int32.MaxValue);
@@ -50,11 +56,7 @@ namespace Action.Models
 				.HasMany(x => x.Users);
 
 
-			builder.Entity<Country>()
-				.HasMany(x => x.States);
-
-			builder.Entity<State>()
-				.HasMany(x => x.Cities);
+			builder.Entity<State>();
 
 			builder.Entity<Account>()
 				.HasOne(x => x.Plan)
@@ -72,11 +74,6 @@ namespace Action.Models
 			builder.Entity<Plan>()
 				.HasMany(x => x.Features);
 
-			builder.Entity<ScrapedPage>()
-				.HasOne(x => x.ScrapSource)
-				.WithMany()
-				.HasForeignKey(x => x.ScrapSourceId);
-
 			builder.Entity<User>()
 				.HasOne(x => x.Plan)
 				.WithMany()
@@ -91,10 +88,8 @@ namespace Action.Models
 				.Property(x => x.Analysis)
 				.HasMaxLength(int.MaxValue);
 
-			builder.Entity<Briefing>()
-				.HasOne(x => x.Owner)
-				.WithMany(x=>x.Briefings)
-				.HasForeignKey(x => x.EntityId);
+			builder.Entity<Entity>()
+				.HasMany(x => x.Briefings);
 
 			builder.Entity<SecondaryPlan>()
 				.HasOne(x => x.Account)
@@ -103,13 +98,9 @@ namespace Action.Models
 
 			builder.Entity<City>()
 				.HasOne(x => x.State)
-				.WithMany(x => x.Cities)
+				.WithMany()
 				.HasForeignKey(x => x.StateId);
 			
-			builder.Entity<State>()
-				.HasMany(x => x.Cities)
-				.WithOne(x => x.State)
-				.HasForeignKey(x => x.StateId);
 
 			base.OnModelCreating(builder);
 		}

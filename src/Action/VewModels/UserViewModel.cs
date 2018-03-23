@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Action.VewModels
+﻿namespace Action.VewModels
 {
 	public class UserViewModel
 	{

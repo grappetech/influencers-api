@@ -1,8 +1,5 @@
 ﻿using System;
-using Action.Services.Watson.NLU;
 //using AutoMapper;
-using IBM.WatsonDeveloperCloud.NaturalLanguageUnderstanding.v1.Model;
-using Author = Action.Services.Watson.NLU.Author;
 using MetadataAuthor = IBM.WatsonDeveloperCloud.NaturalLanguageUnderstanding.v1.Model.Author;
 
 namespace Action.Services.AutoMapper

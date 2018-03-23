@@ -1,11 +1,9 @@
 ﻿using Action.VewModels;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Action.Models;
+using Action.Models.Core;
 using IBM.WatsonDeveloperCloud.Http.Extensions;
 
 namespace Action.Extensions

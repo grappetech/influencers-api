@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Action.VewModels
+﻿namespace Action.VewModels
 {
     public class SaveRecomendationViewModel
     {
