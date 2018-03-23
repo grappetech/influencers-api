@@ -43,5 +43,3 @@ namespace Action.Services.Scrap.Core
         }
     }
 }
-
-}
