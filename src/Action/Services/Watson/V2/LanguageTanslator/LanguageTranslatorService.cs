@@ -15,7 +15,7 @@ namespace Action.Services.Watson.V2.LanguageTanslator
             return await Task.Run(() =>
             {
                 var svc = new WatsonLanguageTranslatorService(username, password);
-                return svc.Translate(new TranslateRequest
+                var result = svc.Translate(new TranslateRequest
                     {
                         Source = source,
                         Target = target,
@@ -24,6 +24,7 @@ namespace Action.Services.Watson.V2.LanguageTanslator
                     .Translations
                     .Select(x=>x.TranslationOutput)
                     .Join(Environment.NewLine);
+                return result;
             });
         }
     }

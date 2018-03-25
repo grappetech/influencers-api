@@ -8,7 +8,7 @@ using Action.Models.Core;
 //using Action.Services.AutoMapper;
 using Action.Services.Scrap.Core;
 using Action.Services.SMTP;
-using Action.Services.Watson.V2.TaskScheduler;
+using Action.Services.TaskScheduler;
 //using AutoMapper;
 using Hangfire;
 using Hangfire.MemoryStorage;
@@ -148,7 +148,7 @@ namespace Action
                 
                 RecurringJob.AddOrUpdate(
                     () => */
-                new ScrapService().StartScraperV2(dbContext);
+                //new ScrapService().StartScraperV2(dbContext);
                 /*,
                     Cron.Daily());
                 
