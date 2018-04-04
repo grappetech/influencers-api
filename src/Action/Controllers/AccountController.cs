@@ -456,7 +456,7 @@ namespace Action.Controllers
 				platformNotUseful = true,
 				doesntMatchMyNeeds = true,
 				unableToUseThePlatformEffectively = true,
-				message = "message message message message message "
+				message = "Logo você receberá um e-mail confirmando o cancelamento de sua conta."
 			})); 
 		}
 

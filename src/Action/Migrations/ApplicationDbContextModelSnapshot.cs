@@ -311,6 +311,27 @@ namespace Action.Migrations
                     b.ToTable("SecondaryPlans");
                 });
 
+            modelBuilder.Entity("Action.Models.Scrap.BrickedSource", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("Step")
+                        .HasMaxLength(200);
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(400);
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(400);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BrickedSources");
+                });
+
             modelBuilder.Entity("Action.Models.Scrap.EntityMentions", b =>
                 {
                     b.Property<long>("Id")
@@ -656,6 +677,8 @@ namespace Action.Migrations
 
                     b.Property<Guid?>("DisambiguationId");
 
+                    b.Property<long?>("EntityId");
+
                     b.Property<Guid?>("NLUResultId");
 
                     b.Property<float?>("Relevance");
@@ -667,6 +690,8 @@ namespace Action.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DisambiguationId");
+
+                    b.HasIndex("EntityId");
 
                     b.HasIndex("NLUResultId");
 
@@ -1126,9 +1151,7 @@ namespace Action.Migrations
 
                     b.Property<Guid?>("DocumentToneId");
 
-                    b.Property<long>("EntityId");
-
-                    b.Property<int>("ScrapSourceId");
+                    b.Property<Guid>("NluEntityId");
 
                     b.Property<Guid>("ScrapedPageId");
 
@@ -1393,6 +1416,10 @@ namespace Action.Migrations
                     b.HasOne("Action.Models.Watson.NLU.Disambiguation", "Disambiguation")
                         .WithMany()
                         .HasForeignKey("DisambiguationId");
+
+                    b.HasOne("Action.Models.Watson.Entity")
+                        .WithMany("RelatedEntities")
+                        .HasForeignKey("EntityId");
 
                     b.HasOne("Action.Models.Watson.NLU.NLUResult")
                         .WithMany("Entity")

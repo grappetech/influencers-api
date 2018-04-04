@@ -119,6 +119,7 @@ namespace Action.Controllers
 		[HttpGet("tone/{entity}")]
 		public dynamic GetTone([FromRoute]int entity, [FromQuery] DateTime from, [FromQuery] DateTime to)
 		{
+			return Ok();/*
 			try
 			{
 				var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
@@ -211,7 +212,7 @@ namespace Action.Controllers
 			catch (Exception ex)
 			{
 				return BadRequest(ex.Message);
-			}
+			}*/
 		}
 
 		private ToneItem GetMaxTone(IEnumerable<dynamic> enumerable)

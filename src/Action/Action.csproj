@@ -38,11 +38,7 @@
       <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1"/>
   </ItemGroup>
   <ItemGroup>
-      <Folder Include="Migrations"/>
       <Folder Include="Services\AutoMapper"/>
-  </ItemGroup>
-    <ItemGroup>
-        <Compile Remove="Services\Watson\NLU\NluService.cs"/>
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>

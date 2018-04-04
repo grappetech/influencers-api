@@ -54,7 +54,7 @@ namespace Action.Extensions
         public static string RemoveIllegalChars(this string str)
         {
             string fallbackStr = "";
-            Encoding enc = Encoding.GetEncoding(Encoding.ASCII.CodePage,
+            Encoding enc = Encoding.GetEncoding(Encoding.UTF8.CodePage,
                 new EncoderReplacementFallback(fallbackStr),
                 new DecoderReplacementFallback(fallbackStr));
             Regex rgx = new Regex(@"(?i)[^0-9a-záéíóúàèìòùâêîôûãõç\s]");

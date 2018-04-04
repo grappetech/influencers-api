@@ -11,9 +11,9 @@ namespace Action.Models.Watson.ToneAnalyze
         public DocumentTone DocumentTone { get; set; }
 
         public List<SentencesTone> SetenceTones { get; set; } = new List<SentencesTone>();
-        public long EntityId { get; set; }
+        public Guid NluEntityId { get; set; }
         public Guid ScrapedPageId { get; set; }
-        public int ScrapSourceId { get; set; }
+        public long? EntityId {  get; set; }
 
         public static ToneResult Parse(ToneAnalysis pResult)
         {

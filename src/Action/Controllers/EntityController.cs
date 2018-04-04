@@ -216,25 +216,7 @@ namespace Action.Controllers
         public dynamic GetPersonality([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to)
         {
             long lid = id;
-            switch (id)
-            {
-                case 1:
-                    lid = 1192;
-                    break;
-                case 6609:
-                    lid = 1192;
-                    break;
-                case 3768:
-                    lid = 1178;
-                    break;
-                case 6602:
-                    lid = 247;
-                    break;
-                default:
-                    lid = id;
-                    break;
-            }
-
+            
             try
             {
                 var scrapdPages = _dbContext.ScrapedPages.Where(x =>
@@ -275,24 +257,6 @@ namespace Action.Controllers
         {
             
             long lid = id;
-            switch (id)
-            {
-                case 1:
-                    lid = 1192;
-                    break;
-                case 6609:
-                    lid = 1192;
-                    break;
-                case 3768:
-                    lid = 1178;
-                    break;
-                case 6602:
-                    lid = 247;
-                    break;
-                default:
-                    lid = id;
-                    break;
-            }
             
             try
             {
@@ -328,30 +292,7 @@ namespace Action.Controllers
         [HttpGet("{id}/tones")]
         public dynamic GetTones([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to)
         {
-            
-            
-            
-
             long lid = id;
-            switch (id)
-            {
-                case 1:
-                    lid = 1206;
-                    break;
-                case 6609:
-                    lid = 1206;
-                    break;
-                case 3768:
-                    lid = 212;
-                    break;
-                case 6602:
-                    lid = 226;
-                    break;
-                default:
-                    lid = id;
-                    break;
-            }
-            
             try
             {
                 var scrapdPages = _dbContext.ScrapedPages.Where(x =>
@@ -359,7 +300,7 @@ namespace Action.Controllers
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
-                var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId == lid).Select(
+                var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId)&& x.EntityId.HasValue && x.EntityId.Value == lid).Select(
                     x => new
                     {
                         scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
@@ -469,48 +410,46 @@ namespace Action.Controllers
         {
             try
             {
-                return Ok(this.MockMentions(id));
+               var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
 
-                //var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
+                var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
-                //var pagesId = scrapdPages.Select(x => x.Id).ToList();
+                var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId == id)
+                	.Select(x => new
+                	{
+                		scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
+                		scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
+                		Mentions = x.SetenceTones.Select(z => new
+                		{
+                			z.Id,
+                			z.Text,
+                			tone = GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
+                			{
+                				t.Score,
+                				id = t.ToneId,
+                				name = t.ToneName
+                			}))
+                		})
+                	});
 
-                //var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId == id)
-                //	.Select(x => new
-                //	{
-                //		scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
-                //		scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
-                //		Mentions = x.SetenceTones.Select(z => new
-                //		{
-                //			z.Id,
-                //			z.Text,
-                //			tone = GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
-                //			{
-                //				t.Score,
-                //				id = t.ToneId,
-                //				name = t.ToneName
-                //			}))
-                //		})
-                //	});
+                var result = tones.SelectMany(x => x.Mentions.Select(y => new
+                {
+                	id = y.Id,
+                	text = y.Text,
+                	toneId = y.tone.Id,
+                	url = x.Url,
+                	type = y.tone.ToneType.ToString(),
+                	date = x.Date
+                }));
 
-                //var result = tones.SelectMany(x => x.Mentions.Select(y => new
-                //{
-                //	id = y.Id,
-                //	text = y.Text,
-                //	toneId = y.tone.Id,
-                //	url = x.Url,
-                //	type = y.tone.ToneType.ToString(),
-                //	date = x.Date
-                //}));
+                if (word != null && !word.Equals(""))
+                	result = result.Where(x => x.text.Contains(word));
+                if (type != null && !type.Equals(""))
+                	result = result.Where(x => x.type.Equals(type));
+                if (relationshipFactor > 0)
+                { }
 
-                //if (word != null && !word.Equals(""))
-                //	result = result.Where(x => x.text.Contains(word));
-                //if (type != null && !type.Equals(""))
-                //	result = result.Where(x => x.type.Equals(type));
-                //if (relationshipFactor > 0)
-                //{ }
-
-                //return Ok(result);
+                return Ok(result);
             }
             catch (Exception ex)
             {

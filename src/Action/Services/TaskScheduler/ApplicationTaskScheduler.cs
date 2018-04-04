@@ -10,10 +10,12 @@ using Action.Models.Scrap;
 using Action.Models.Watson;
 using Action.Models.Watson.NLU;
 using Action.Models.Watson.PersonalityInsights;
+using Action.Models.Watson.ToneAnalyze;
 using Action.Services.Scrap.V2;
 using Action.Services.Watson.V2.LanguageTanslator;
 using Action.Services.Watson.V2.NaturalLanguageUnderstanding;
 using Action.Services.Watson.V2.PersonalityInsights;
+using Action.Services.Watson.V2.ToneAnalyzer;
 using IBM.WatsonDeveloperCloud.NaturalLanguageUnderstanding.v1.Model;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +36,10 @@ namespace Action.Services.TaskScheduler
                 credentials.FirstOrDefault(x => x.Service == EWatsonServices.WatsonPersonalityInsights);
             var wnluc =
                 credentials.FirstOrDefault(x => x.Service == EWatsonServices.WatsonNaturalLanguageUnderstanding);
+            var wta =
+                credentials.FirstOrDefault(x => x.Service == EWatsonServices.WatsonToneAnalyzer);
+
+
             Debugger.Log(0, "SCP", "Credenciais definidas." + Environment.NewLine);
 
             #endregion
@@ -62,7 +68,6 @@ namespace Action.Services.TaskScheduler
             Debugger.Log(0, "SCP", "Inicianado Enriquecimento de Dados." + Environment.NewLine);
             foreach (var item in links)
             {
-                
                 try
                 {
                     #region Enhance Page Content
@@ -72,7 +77,7 @@ namespace Action.Services.TaskScheduler
                     AnalysisResults nluAnalysis = null;
                     try
                     {
-                         nluAnalysis =  nluSvc
+                        nluAnalysis = nluSvc
                             .ProccessUrl(item.Href, wnluc.UserName, wnluc.Password, wnluc.Model, wnluc.Version).Result;
                         result = NLUResult.Parse(nluAnalysis);
                     }
@@ -82,7 +87,7 @@ namespace Action.Services.TaskScheduler
                     }
 
 
-                    if (result == null) return;
+                    if (result == null) continue;
                     Debugger.Log(0, "SCP", "Enriquecendo o site " + item.Text + Environment.NewLine);
 
                     var scrappedPage = new ScrapedPage
@@ -90,10 +95,11 @@ namespace Action.Services.TaskScheduler
                         Date = DateTime.Today,
                         Id = Guid.NewGuid(),
                         Status = EDataExtractionStatus.Finalized,
-                        Text = nluAnalysis.AnalyzedText.RemoveIllegalChars()
+                        Text = nluAnalysis.AnalyzedText.RemoveIllegalChars(),
+                        Url = item.Href
                     };
 
-                    scrappedPage.Translated =  new LanguageTranslatorService()
+                    scrappedPage.Translated = new LanguageTranslatorService()
                         .ProccessTranslation(scrappedPage.Text, "pt", "en", wltc.UserName, wltc.Password)
                         .GetAwaiter()
                         .GetResult().RemoveIllegalChars();
@@ -106,10 +112,37 @@ namespace Action.Services.TaskScheduler
 
                     #endregion
 
+                    #region ExtractTone
+
+                    foreach (var entity in result.Entity)
+                    {
+                        var sentences = result.Relations.Select(x => x.sentence);
+                        foreach (var sentence in sentences)
+                        {
+                            var translatedSentence =  new LanguageTranslatorService()
+                                .ProccessTranslation(sentence, "pt", "en", wltc.UserName, wltc.Password)
+                                .GetAwaiter()
+                                .GetResult().RemoveIllegalChars();
+                            
+                            var toneResult = new ToneAnalyzerService()
+                                .ProccessToneAnalisys(translatedSentence, "en", wta.UserName, wta.Password, wta.Version)
+                                .GetAwaiter()
+                                .GetResult();
+                            if(toneResult == null) continue;
+                            
+                            var tone = ToneResult.Parse(toneResult);
+                            tone.NluEntityId = entity.Id;
+                            tone.ScrapedPageId = result.ScrapedPageId;
+                            dbContext.Tones.Add(tone);
+                        }
+                    }
+
+                    #endregion
+
                     #region Extract Personality
 
                     Debugger.Log(0, "SCP", "Extraindo Personalidade." + Environment.NewLine);
-                    var profile =  new PersonalityInsightsService()
+                    var profile = new PersonalityInsightsService()
                         .ProccessText(scrappedPage.Translated, wpic.UserName, wpic.Password, wpic.Version)
                         .GetAwaiter()
                         .GetResult();
@@ -133,6 +166,7 @@ namespace Action.Services.TaskScheduler
                     Debugger.Log(0, "ERR-SCP", ex.Message + Environment.NewLine);
                 }
             }
+
             Debugger.Log(0, "SCP", "Enriquecimento Finalizado." + Environment.NewLine);
         }
     }
