@@ -153,8 +153,8 @@ namespace Action
                     Cron.Daily());
                 
                 RecurringJob.AddOrUpdate(()=>*/
-                Task.Run( ()=>  ApplicationTaskScheduler.ProccessDataExtraction(dbContext));/*, 
-                    Cron.Daily());*/
+              //  Task.Run( ()=>  ApplicationTaskScheduler.ProccessDataExtraction(dbContext));/*, 
+               //     Cron.Daily());*/
             }
         }
     }

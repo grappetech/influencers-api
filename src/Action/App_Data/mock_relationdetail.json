@@ -1,28 +1,2 @@
 {
-  "relations": [
-    {
-      "type": "Vida Pessoal",
-      "text": "São Paulo",
-      "sentence": "Lorem ipsum dolor São Paulo sit amet.",
-      "url": "http://lorem.ipsum.dolor.moda.sit.amet/lorem2"
-    },
-    {
-      "type": "Vida Pessoal",
-      "text": "São Paulo",
-      "sentence": "Lorem ipsum dolor São Paulo sit amet.",
-      "url": "http://lorem.ipsum.dolor.moda.sit.amet/lorem2"
-    },
-    {
-      "type": "Vida Pessoal",
-      "text": "São Paulo",
-      "sentence": "Lorem ipsum dolor São Paulo sit amet.",
-      "url": "http://lorem.ipsum.dolor.moda.sit.amet/lorem2"
-    },
-    {
-      "type": "Vida Pessoal",
-      "text": "São Paulo",
-      "sentence": "Lorem ipsum dolor São Paulo sit amet.",
-      "url": "http://lorem.ipsum.dolor.moda.sit.amet/lorem2"
-    }
-  ]
 }

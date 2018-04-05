@@ -1,28 +1,2 @@
 {
-  "tones": [
-    {
-      "entity": "Renault",
-      "text": "Lorem ipsum dolor Renault sit amet",
-      "url": "http://lorem.ipsum.dolor.moda.sit.amet/lorem",
-      "date": "2017-11-06T00:00:00",
-      "tone": "positivo",
-      "mentions": 20
-    },
-    {
-      "entity": "Renault",
-      "text": "Lorem ipsum dolor Renault sit amet.",
-      "url": "http://lorem.ipsum.dolor.moda.sit.amet/lorem2",
-      "date": "2017-11-06T00:00:00",
-      "tone": "negativo",
-      "mentions": 10
-    },
-    {
-      "entity": "Renault",
-      "text": "Lorem ipsum dolor Renault sit amet.",
-      "url": "http://lorem.ipsum.dolor.moda.sit.amet/lorem3",
-      "date": "2017-11-06T00:00:00",
-      "tone": "positivo",
-      "mentions": 30
-    }
-  ]  
 }

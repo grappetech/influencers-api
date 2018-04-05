@@ -1,19 +1,2 @@
 {
-  "public": 
-    {
-	  "agerange":{
-		"agerange":"18_24",
-		"score":0.75
-	  },
-	  "gener":[
-	    {
-		  "sex":"male",
-		  "percentile":0.70
-		},
-		{
-		  "sex":"female",
-		  "percentile":0.30
-		}
-	  ]
-    }
 }

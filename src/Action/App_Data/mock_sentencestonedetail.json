@@ -1,16 +1,2 @@
 {
-  "sentences_tone": [
-    {
-      "tone": "alegria",
-      "score": "0.57"
-    },
-    {
-      "tone": "Hesitante",
-      "score": "0.78"
-    },
-    {
-      "tone": "Confiante",
-      "score": "0.97"
-    }
-  ]
 }
