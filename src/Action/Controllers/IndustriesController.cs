@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using Action.Models;
 using System.Text.Encodings.Web;
+using Action.VewModels;
 
 namespace Action.Controllers
 {
@@ -28,7 +29,7 @@ namespace Action.Controllers
 				if (_dbContext == null)
 					return NotFound("No database connection");
 
-				var data = _dbContext.Industries.ToList();
+				var data = _dbContext.Industries.ToList().Select(i=>new IndustryViewModel{Id = i.Id, Name = i.Name});
 
 				return data.ToList();
 			}
