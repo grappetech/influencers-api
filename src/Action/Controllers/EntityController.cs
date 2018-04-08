@@ -120,7 +120,7 @@ namespace Action.Controllers
                 _dbContext.Entry(data).State = EntityState.Modified;
                 _dbContext.SaveChanges();
 
-                return Ok(new {ImageURL = data.PictureUrl});
+                return Ok(new {imageUrl = data.PictureUrl});
             }
             catch (Exception ex)
             {
