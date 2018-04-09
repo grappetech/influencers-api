@@ -42,16 +42,7 @@ namespace Action.Controllers
 
 		private InstagramResultViewModel Mock(int id)
 		{
-			try
-			{
-				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_instagram_result_" + id.ToString() + ".json"));
-				return JsonConvert.DeserializeObject<InstagramResultViewModel>(json);
-			}
-			catch
-			{
-				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_instagram_result.json"));
-				return JsonConvert.DeserializeObject<InstagramResultViewModel>(json);
-			}
+			return new InstagramResultViewModel();
 		}
 	}
 }

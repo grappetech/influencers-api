@@ -34,12 +34,12 @@ namespace Action.Controllers
 
                 return Ok(data.Select(x => new
                 {
-                    x.Id,
-                    x.AllowedUsers,
-                    x.Name,
-                    x.Price,
-                    x.StartDate,
-                    Included = inuse.Any(c => c == x.Id)
+                   id= x.Id,
+                   allowedUsers = x.AllowedUsers,
+                    name = x.Name,
+                    price =x.Price,
+                    startDate =x.StartDate,
+                    included = inuse.Any(c => c == x.Id)
                 }));
             }
             catch (Exception ex)

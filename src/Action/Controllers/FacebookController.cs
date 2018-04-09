@@ -42,16 +42,7 @@ namespace Action.Controllers
 
 		private FacebookResultViewModel Mock(int id)
 		{
-			try
-			{
-				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_facebook_result_" + id.ToString() + ".json"));
-				return JsonConvert.DeserializeObject<FacebookResultViewModel>(json);
-			}
-			catch
-			{
-				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_facebook_result.json"));
-				return JsonConvert.DeserializeObject<FacebookResultViewModel>(json);
-			}
+				return new FacebookResultViewModel();
 		}
 	}
 }

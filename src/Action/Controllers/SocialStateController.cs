@@ -42,16 +42,7 @@ namespace Action.Controllers
 
 		private List<StateSocialResultViewModel> Mock(int id)
 		{
-			try
-			{
-				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_social_state_result_" + id.ToString() + ".json"));
-				return JsonConvert.DeserializeObject<List<StateSocialResultViewModel>>(json);
-			}
-			catch
-			{
-				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_social_state_result.json"));
-				return JsonConvert.DeserializeObject<List<StateSocialResultViewModel>>(json);
-			}
+			return new List<StateSocialResultViewModel>();
 		}
 	}
 }

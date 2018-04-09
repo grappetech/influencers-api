@@ -134,7 +134,10 @@ namespace Action
 
         private void EnsureDatabaseCreated(ApplicationDbContext dbContext)
         {
-           StartScraper(dbContext);
+            
+            
+            
+           //StartScraper(dbContext);
         }
 
         private void StartScraper(ApplicationDbContext dbContext)

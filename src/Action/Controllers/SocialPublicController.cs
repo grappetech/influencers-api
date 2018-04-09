@@ -42,16 +42,7 @@ namespace Action.Controllers
 
 		private SocialPublicViewModel Mock(int id)
 		{
-			try
-			{
-				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_social_general_public_" + id.ToString() + ".json"));
-				return JsonConvert.DeserializeObject<SocialPublicViewModel>(json);
-			}
-			catch
-			{
-				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_social_general_public.json"));
-				return JsonConvert.DeserializeObject<SocialPublicViewModel>(json);
-			}
+			return new SocialPublicViewModel();
 		}
 	}
 }

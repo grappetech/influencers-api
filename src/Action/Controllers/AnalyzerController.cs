@@ -66,7 +66,7 @@ namespace Action.Controllers
 					.Include(x => x.Values).Where(x => x.EntityId == entity).ToList();
 
 				var Needs = Personalities.SelectMany(x => x.Needs.Select(c => new { c.Name, c.Percentile }))
-					.GroupBy(x => x.Name).Select(c => new { Name = c.Key, Percentile = c.Average(p => p.Percentile) });
+					.GroupBy(x => x.Name).Select(c => new { name = c.Key, percentile = c.Average(p => p.Percentile) });
 
 				var Personality = Personalities
 					.SelectMany(x => x.Personality.Select(c => new { c.Name, c.Percentile, c.Details }))
@@ -76,12 +76,12 @@ namespace Action.Controllers
 						percentile = c.Average(p => p.Percentile),
 						details = c.SelectMany(d => d.Details)
 							.GroupBy(e => e.Name)
-							.Select(f => new { Name = f.Key, Percentile = f.Average(g => g.Percentile) })
+							.Select(f => new { name = f.Key, percentile = f.Average(g => g.Percentile) })
 							.ToList()
 					});
 
 				var Values = Personalities.SelectMany(x => x.Values.Select(c => new { c.Name, c.Percentile }))
-					.GroupBy(x => x.Name).Select(c => new { Name = c.Key, Percentile = c.Average(p => p.Percentile), Description = "" });
+					.GroupBy(x => x.Name).Select(c => new { name = c.Key, percentile = c.Average(p => p.Percentile), description = "" });
 
 				//var result = new
 				//{
@@ -94,8 +94,9 @@ namespace Action.Controllers
 
 				var result = new
 				{
-					Personality,
-					Values
+					
+					persolaity = Personality,
+					values = Values
 				};
 
 				return Ok(result);

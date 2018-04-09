@@ -42,16 +42,7 @@ namespace Action.Controllers
 
 		private TwitterResultViewModel Mock(int id)
 		{
-			try
-			{
-				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_twitter_result_" + id.ToString() + ".json"));
-				return JsonConvert.DeserializeObject<TwitterResultViewModel>(json);
-			}
-			catch
-			{
-				var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data", "mock_twitter_result.json"));
-				return JsonConvert.DeserializeObject<TwitterResultViewModel>(json);
-			}
+			return new TwitterResultViewModel();
 		}
 	}
 }

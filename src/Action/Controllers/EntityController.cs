@@ -523,10 +523,10 @@ namespace Action.Controllers
             {
                 results.Add(new RelationsEntities
                 {
-                    Id = x.id,
-                    Name = x.text,
-                    Score = random.Next(5, 80)/100,
-                    Mentions = MockMentions(id)
+                    id = x.id,
+                    name = x.text,
+                    score = random.Next(5, 80)/100,
+                    mentions = MockMentions(id)
                 });
             });
             return results;
@@ -576,10 +576,10 @@ namespace Action.Controllers
 
     internal class RelationsEntities
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public decimal Score { get; set; }
-        public List<MentionMock> Mentions { get; set; } 
+        public string id { get; set; }
+        public string name { get; set; }
+        public decimal score { get; set; }
+        public List<MentionMock> mentions { get; set; } 
     }
 
     internal class MentionMock
