@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace Action.VewModels
 {
@@ -7,6 +8,7 @@ namespace Action.VewModels
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
+        [JsonProperty("email")]
         public string Email { get; set; }
 
         [Required]
@@ -14,6 +16,7 @@ namespace Action.VewModels
             MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
+        [JsonProperty("password")]
         public string Password { get; set; }
     }
 }
