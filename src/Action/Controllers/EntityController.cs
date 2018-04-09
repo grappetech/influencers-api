@@ -525,7 +525,7 @@ namespace Action.Controllers
                 {
                     id = x.id,
                     name = x.text,
-                    score = random.Next(5, 80)/100,
+                    score = x.weight > 0 ?x.weight : random.Next(5, 80)/100,
                     mentions = MockMentions(id)
                 });
             });
@@ -534,34 +534,12 @@ namespace Action.Controllers
 
         private List<WordMock> MockWords(long id)
         {
-            try
-            {
-                var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data",
-                    "mock_words_result_" + id.ToString() + ".json"));
-                return JsonConvert.DeserializeObject<List<WordMock>>(json);
-            }
-            catch
-            {
-                var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data",
-                    "mock_words_result.json"));
-                return JsonConvert.DeserializeObject<List<WordMock>>(json);
-            }
+            return new List<WordMock>();
         }
 
         private dynamic MockPersonality(int id)
         {
-            try
-            {
-                var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data",
-                    "mock_words_result_" + id.ToString() + ".json"));
-                return JsonConvert.DeserializeObject<List<WordMock>>(json);
-            }
-            catch
-            {
-                var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data",
-                    "mock_words_result.json"));
-                return JsonConvert.DeserializeObject<List<WordMock>>(json);
-            }
+            return new List<WordMock>();
         }
     }
 

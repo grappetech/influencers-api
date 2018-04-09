@@ -120,7 +120,7 @@ namespace Action.Controllers
 		[HttpGet("tone/{entity}")]
 		public dynamic GetTone([FromRoute]int entity, [FromQuery] DateTime from, [FromQuery] DateTime to)
 		{
-			return Ok();/*
+			//return Ok();
 			try
 			{
 				var scrapdPages = _dbContext.ScrapedPages.Where(x => x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
@@ -134,11 +134,11 @@ namespace Action.Controllers
 					scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
 					Mentions = x.SetenceTones.Select(z => new
 					{
-						z.Id,
-						z.Text,
+						id =z.Id,
+						text =z.Text,
 						tone = GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
 						{
-							t.Score,
+							score =t.Score,
 							id = t.ToneId,
 							name = t.ToneName
 						}))
@@ -147,12 +147,12 @@ namespace Action.Controllers
 
 				var stones = tones.SelectMany(x => x.SetenceTones).Select(x => new
 				{
-					x.Text,
+					text =x.Text,
 					tones = x.ToneCategories.SelectMany(y => y.Tones).Select(z => new
 					{
-						z.Score,
-						Id = z.ToneId,
-						Name = z.ToneName
+						score = z.Score,
+						id = z.ToneId,
+						name = z.ToneName
 					})
 				});
 
@@ -165,11 +165,11 @@ namespace Action.Controllers
 
 					foreach (var item2 in item.tones)
 					{
-						if (item2.Score > tom.Score)
+						if (item2.score > tom.Score)
 						{
-							tom.Score = item2.Score.Value;
-							tom.Id = item2.Id;
-							tom.Name = item2.Name;
+							tom.Score = item2.score.Value;
+							tom.Id = item2.id;
+							tom.Name = item2.name;
 						}
 					}
 					if (tom.Score > 0)
@@ -201,8 +201,8 @@ namespace Action.Controllers
 
 					mentions = tones.SelectMany(x => x.Mentions.Select(y => new
 					{
-						id = y.Id,
-						text = y.Text,
+						id = y.id,
+						text = y.text,
 						toneId = y.tone.Id,
 						url = x.Url,
 						type = y.tone.ToneType.ToString(),
@@ -213,7 +213,8 @@ namespace Action.Controllers
 			catch (Exception ex)
 			{
 				return BadRequest(ex.Message);
-			}*/
+			}
+	//*/
 		}
 
 		private ToneItem GetMaxTone(IEnumerable<dynamic> enumerable)
