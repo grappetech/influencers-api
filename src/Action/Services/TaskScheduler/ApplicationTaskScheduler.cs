@@ -225,6 +225,9 @@ namespace Action.Services.TaskScheduler
                             piResult.EntityId = ent.Value;
                             piResult.ScrapedPageId = pg.Id;
                             dbContext.Personalities.Add(piResult);
+                            var pagina = dbContext.ScrapedPages.Find(pg.Id);
+                            pagina.Status = EDataExtractionStatus.Finalized;
+                            dbContext.Entry(pagina).State = EntityState.Modified;
                             dbContext.SaveChanges();
                         }
                     });
