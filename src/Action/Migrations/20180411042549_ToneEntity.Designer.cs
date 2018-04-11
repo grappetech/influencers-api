@@ -14,9 +14,10 @@ using System;
 namespace Action.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180411042549_ToneEntity")]
+    partial class ToneEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1419,7 +1420,7 @@ namespace Action.Migrations
                         .WithMany()
                         .HasForeignKey("DisambiguationId");
 
-                    b.HasOne("Action.Models.Watson.Entity", "CoreEntity")
+                    b.HasOne("Action.Models.Watson.Entity")
                         .WithMany("RelatedEntities")
                         .HasForeignKey("EntityId");
 

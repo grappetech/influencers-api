@@ -68,6 +68,11 @@ namespace Action.Models
 			builder.Entity<Entity>()
 				.HasMany(x => x.Briefings);
 
+            builder.Entity<Entity>()
+                   .HasMany(x => x.RelatedEntities)
+                   .WithOne(x=>x.CoreEntity)
+                   .HasForeignKey(x=>x.EntityId);
+
 			builder.Entity<SecondaryPlan>()
 				.HasOne(x => x.Account)
 				.WithMany(x => x.SecondaryPlans)

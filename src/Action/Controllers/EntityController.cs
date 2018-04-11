@@ -300,7 +300,7 @@ namespace Action.Controllers
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
-                var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId)&& x.EntityId.HasValue && x.EntityId.Value == lid).Select(
+                var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId.HasValue && x.EntityId.Value == lid).Select(
                     x => new
                     {
                         scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,

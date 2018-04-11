@@ -169,5 +169,75 @@ namespace Action.Services.TaskScheduler
 
             Debugger.Log(0, "SCP", "Enriquecimento Finalizado." + Environment.NewLine);
         }
+
+
+        public static void ExtractPersonality(ApplicationDbContext dbContext){
+
+            #region Set Watson Services Credentials
+    
+            Debugger.Log(0, "SCP", "Buscando Credenciais." + Environment.NewLine);
+            var credentials = dbContext.WatsonCredentials.AsNoTracking().ToList();
+            var wpic =
+                credentials.FirstOrDefault(x => x.Service == EWatsonServices.WatsonPersonalityInsights);
+
+
+            Debugger.Log(0, "SCP", "Credenciais definidas." + Environment.NewLine);
+
+            #endregion
+            #region Extract Personality
+            try{
+                var entities = new Dictionary<Guid, List<long?>>();
+
+                var result = dbContext.NluResults
+                                      .Include(x => x.Entity)
+                                      .AsNoTracking()
+                                      .ToList();
+
+                result.ForEach(r =>
+                {
+                    var itm =r.Entity
+                              .Select(x => x.EntityId)
+                              .ToList();
+                    entities.Add(r.ScrapedPageId, itm.Where(x => x.HasValue).ToList());
+                });
+
+
+                foreach (var page in entities)
+                {
+
+                    var pg = dbContext.ScrapedPages
+                                      .AsNoTracking()
+                                      .FirstOrDefault(x => x.Id == page.Key && x.Status == EDataExtractionStatus.InProcces);
+
+                    if (pg == null) continue;
+                    page.Value.ForEach(ent =>
+                    {
+                        Debugger.Log(0, "SCP", "Extraindo Personalidade." + Environment.NewLine);
+                        var profile = new PersonalityInsightsService()
+                            .ProccessText(pg.Translated, wpic.UserName, wpic.Password, wpic.Version)
+                            .GetAwaiter()
+                            .GetResult();
+
+                        var piResult = PersonalityResult.Parse(profile);
+
+                        if (piResult != null)
+                        {
+                            piResult.EntityId = ent.Value;
+                            piResult.ScrapedPageId = pg.Id;
+                            dbContext.Personalities.Add(piResult);
+                            dbContext.SaveChanges();
+                        }
+                    });
+                }
+                Debugger.Log(0, "SCP", "Extração de Personalidade Concluída." + Environment.NewLine);
+
+#endregion
+
+            }
+            catch (Exception ex)
+            {
+                Debugger.Log(0, "ERR-SCP", ex.Message + Environment.NewLine);
+            }
+        }
     }
 }

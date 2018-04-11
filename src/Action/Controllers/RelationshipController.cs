@@ -2,9 +2,11 @@
 using System.Linq;
 using System.Text.Encodings.Web;
 using Action.Models;
+using Action.VewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Action.Controllers
 {
@@ -32,7 +34,14 @@ namespace Action.Controllers
                     if (_dbContext == null)
                         return NotFound("No database connection");
                     
-                    var items = _dbContext.RelationTypes.OrderBy(x => x.Name).ToList();
+                    var items = _dbContext.RelationTypes
+                                          .AsNoTracking()
+                                          .OrderBy(x => x.Name)
+                                          .Select(cw=>new RelationTypeViewModel{
+                                                Id = cw.Id,
+                                                Name = cw.Name
+                                           })
+                                          .ToList();
                     return Ok(items);
 
                 }

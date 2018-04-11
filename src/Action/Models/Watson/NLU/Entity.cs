@@ -1,5 +1,5 @@
 ﻿using System;
-
+using CoreEntity = Action.Models.Watson.Entity;
 namespace Action.Models.Watson.NLU
 {
     public class Entity
@@ -10,5 +10,7 @@ namespace Action.Models.Watson.NLU
         public float? Relevance { get; set; }
         public Disambiguation Disambiguation { get; set; }
         public long? Count { get; set; }
+        public long? EntityId { get; set; }
+        public CoreEntity CoreEntity { get; set; }
     }
 }

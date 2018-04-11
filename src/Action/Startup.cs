@@ -137,7 +137,7 @@ namespace Action
             
             
             
-           //StartScraper(dbContext);
+           StartScraper(dbContext);
         }
 
         private void StartScraper(ApplicationDbContext dbContext)
@@ -156,7 +156,7 @@ namespace Action
                     Cron.Daily());
                 
                 RecurringJob.AddOrUpdate(()=>*/
-              //  Task.Run( ()=>  ApplicationTaskScheduler.ProccessDataExtraction(dbContext));/*, 
+                Task.Run( ()=>  ApplicationTaskScheduler.ExtractPersonality(dbContext));/*, 
                //     Cron.Daily());*/
             }
         }
