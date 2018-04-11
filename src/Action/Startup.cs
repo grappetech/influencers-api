@@ -147,17 +147,11 @@ namespace Action
 
             using (var server = new BackgroundJobServer(lOptions, lMemoryStorage))
             {
-                /*JobStorage.Current = new MemoryStorage();
+                JobStorage.Current = new MemoryStorage();
                 
-                RecurringJob.AddOrUpdate(
-                    () => */
-                //new ScrapService().StartScraperV2(dbContext);
-                /*,
+                RecurringJob.AddOrUpdate(()=>
+               Task.Run( ()=>  ApplicationTaskScheduler.ExtractPersonality(dbContext)).GetAwaiter().GetResult(), 
                     Cron.Daily());
-                
-                RecurringJob.AddOrUpdate(()=>*/
-                Task.Run( ()=>  ApplicationTaskScheduler.ExtractPersonality(dbContext)).GetAwaiter().GetResult();/*, 
-               //     Cron.Daily());*/
             }
         }
     }

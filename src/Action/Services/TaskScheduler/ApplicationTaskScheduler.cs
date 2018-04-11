@@ -12,6 +12,7 @@ using Action.Models.Watson.NLU;
 using Action.Models.Watson.PersonalityInsights;
 using Action.Models.Watson.ToneAnalyze;
 using Action.Services.Scrap.V2;
+using Action.Services.SMTP;
 using Action.Services.Watson.V2.LanguageTanslator;
 using Action.Services.Watson.V2.NaturalLanguageUnderstanding;
 using Action.Services.Watson.V2.PersonalityInsights;
@@ -119,17 +120,17 @@ namespace Action.Services.TaskScheduler
                         var sentences = result.Relations.Select(x => x.sentence);
                         foreach (var sentence in sentences)
                         {
-                            var translatedSentence =  new LanguageTranslatorService()
+                            var translatedSentence = new LanguageTranslatorService()
                                 .ProccessTranslation(sentence, "pt", "en", wltc.UserName, wltc.Password)
                                 .GetAwaiter()
                                 .GetResult().RemoveIllegalChars();
-                            
+
                             var toneResult = new ToneAnalyzerService()
                                 .ProccessToneAnalisys(translatedSentence, "en", wta.UserName, wta.Password, wta.Version)
                                 .GetAwaiter()
                                 .GetResult();
-                            if(toneResult == null) continue;
-                            
+                            if (toneResult == null) continue;
+
                             var tone = ToneResult.Parse(toneResult);
                             tone.NluEntityId = entity.Id;
                             tone.ScrapedPageId = result.ScrapedPageId;
@@ -171,10 +172,10 @@ namespace Action.Services.TaskScheduler
         }
 
 
-        public static void ExtractPersonality(ApplicationDbContext dbContext){
-
+        public static void ExtractPersonality(ApplicationDbContext dbContext)
+        {
             #region Set Watson Services Credentials
-    
+
             Debugger.Log(0, "SCP", "Buscando Credenciais." + Environment.NewLine);
             var credentials = dbContext.WatsonCredentials.AsNoTracking().ToList();
             var wpic =
@@ -182,60 +183,71 @@ namespace Action.Services.TaskScheduler
 
 
             Debugger.Log(0, "SCP", "Credenciais definidas." + Environment.NewLine);
-
             #endregion
+
             #region Extract Personality
-            try{
+
+            try
+            {
                 var entities = new Dictionary<Guid, List<long?>>();
 
                 var result = dbContext.NluResults
-                                      .Include(x => x.Entity)
-                                      .AsNoTracking()
-                                      .ToList();
+                    .Include(x => x.Entity)
+                    .AsNoTracking()
+                    .ToList();
 
                 result.ForEach(r =>
                 {
-                    var itm =r.Entity
-                              .Select(x => x.EntityId)
-                              .ToList();
+                    var itm = r.Entity
+                        .Select(x => x.EntityId)
+                        .ToList();
                     entities.Add(r.ScrapedPageId, itm.Where(x => x.HasValue).ToList());
                 });
 
 
                 foreach (var page in entities)
                 {
-
-                    var pg = dbContext.ScrapedPages
-                                      .AsNoTracking()
-                                      .FirstOrDefault(x => x.Id == page.Key && x.Status == EDataExtractionStatus.InProcces);
-
-                    if (pg == null) continue;
-                    page.Value.ForEach(ent =>
+                    try
                     {
-                        Debugger.Log(0, "SCP", "Extraindo Personalidade." + Environment.NewLine);
-                        var profile = new PersonalityInsightsService()
-                            .ProccessText(pg.Translated, wpic.UserName, wpic.Password, wpic.Version)
-                            .GetAwaiter()
-                            .GetResult();
+                        var pg = dbContext.ScrapedPages
+                            .AsNoTracking()
+                            .FirstOrDefault(x => x.Id == page.Key && x.Status == EDataExtractionStatus.InProcces);
 
-                        var piResult = PersonalityResult.Parse(profile);
-
-                        if (piResult != null)
+                        if (pg == null) continue;
+                        SmtpService.SendMessage("luiz@nexo.ai", "[ACTION API SCP]", $"Extraindo Personalidade de {entities.Count} entidades");
+                        page.Value.ForEach(ent =>
                         {
-                            piResult.EntityId = ent.Value;
-                            piResult.ScrapedPageId = pg.Id;
-                            dbContext.Personalities.Add(piResult);
-                            var pagina = dbContext.ScrapedPages.Find(pg.Id);
-                            pagina.Status = EDataExtractionStatus.Finalized;
-                            dbContext.Entry(pagina).State = EntityState.Modified;
-                            dbContext.SaveChanges();
-                        }
-                    });
+                            Debugger.Log(0, "SCP", "Extraindo Personalidade." + Environment.NewLine);
+                            
+                            
+                            var profile = new PersonalityInsightsService()
+                                .ProccessText(pg.Translated, wpic.UserName, wpic.Password, wpic.Version)
+                                .GetAwaiter()
+                                .GetResult();
+
+                            var piResult = PersonalityResult.Parse(profile);
+
+                            if (piResult != null)
+                            {
+                                piResult.EntityId = ent.Value;
+                                piResult.ScrapedPageId = pg.Id;
+                                dbContext.Personalities.Add(piResult);
+                                var pagina = dbContext.ScrapedPages.Find(pg.Id);
+                                pagina.Status = EDataExtractionStatus.Finalized;
+                                dbContext.Entry(pagina).State = EntityState.Modified;
+                                dbContext.SaveChanges();
+                            }
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        Debugger.Log(0, "ERR-SCP", ex.Message + Environment.NewLine);
+                    }
                 }
+                SmtpService.SendMessage("luiz@nexo.ai", "[ACTION API SCP]", "Extração de Personalidade Concluída.");
                 Debugger.Log(0, "SCP", "Extração de Personalidade Concluída." + Environment.NewLine);
 
-#endregion
-
+                #endregion
             }
             catch (Exception ex)
             {
