@@ -8,7 +8,7 @@ namespace Action.VewModels
         public string Id { get; set; }
         [JsonProperty("text")] 
         public string Text { get; set; }
-        [JsonProperty("size")] 
+        [JsonProperty("weight")] 
         public int Weight { get; set; }
         [JsonProperty("type")] 
         public string Type { get; set; }
