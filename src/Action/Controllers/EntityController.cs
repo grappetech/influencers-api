@@ -371,23 +371,6 @@ namespace Action.Controllers
             }
         }
 
-        private ToneItem GetMaxTone(IEnumerable<dynamic> enumerable)
-        {
-            ToneItem tom = new ToneItem();
-            foreach (var item2 in enumerable)
-            {
-                if ((double) item2.Score > tom.Score)
-                {
-                    tom.Score = (double) item2.Score;
-                    tom.Id = Convert.ToString(item2.id);
-                    tom.Name = Convert.ToString(item2.name);
-                }
-            }
-
-            if (tom.Score > 0)
-                return tom;
-            return null;
-        }
 
         
         [HttpGet("{id}/relations")]
@@ -472,7 +455,7 @@ namespace Action.Controllers
         }
 
         [HttpGet("{id}/words")]
-        public IActionResult GetWords([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to)
+        public IActionResult GetWords([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to, [FromQuery] string relationshipFactor = string.Empty)
         {
             try
             {
@@ -481,34 +464,69 @@ namespace Action.Controllers
                     .Where(x => x.Date >= from && x.Date <= to)
                     .Select(x => x.Id);
 
-                var list = _dbContext.NluResults
-                    .Include(x => x.Entity)
-                    .Include(x => x.Keywords)
-                    .ThenInclude(x => x.emotions)
-                    .Where(x=>x.Entity.Any(z=>z.EntityId == id) &&
-                              x.ScrapedPageId != null &&
-                              pageIds.Contains(x.ScrapedPageId))
-                    .ToList()
-                    .SelectMany(x=>x.Keywords)
-                    .GroupBy(x=>x.text)
-                    .Select(x=> new WordViewModel
-                    {
-                        Id = x.Select(c=>c.Id.ToString()).Min(),
-                        Text = x.Key,
-                        Weight = Convert.ToInt32(x.Select(c=>c.relevance ?? 0.1F).Sum()  * 1000),
-                        Type = GetEmotion(new
+                if (string.IsNullOrWhiteSpace(relationshipFactor) || relationshipFactor.ToLower().Equals("undefined"))
+                {
+
+                    var list = _dbContext.NluResults
+                        .Include(x => x.Entity)
+                        .Include(x => x.Keywords)
+                        .ThenInclude(x => x.emotions)
+                        .Where(x => x.Entity.Any(z => z.EntityId == id) &&
+                                    x.ScrapedPageId != null &&
+                                    pageIds.Contains(x.ScrapedPageId))
+                        .ToList()
+                        .SelectMany(x => x.Keywords)
+                        .GroupBy(x => x.text)
+                        .Select(x => new WordViewModel
                         {
-                            anger = x.Select(c=>c.emotions.anger ?? 0.1F).Average(),
-                            disgust = x.Select(c=>c.emotions.disgust ?? 0.1F).Average(),
-                            joy = x.Select(c=>c.emotions.joy ?? 0.1F).Average(),
-                            sadness = x.Select(c=>c.emotions.sadness ?? 0.1F).Average(),
-                            fear = x.Select(c=>c.emotions.fear ?? 0.1F).Average()
+                            Id = x.Select(c => c.Id.ToString()).Min(),
+                            Text = x.Key,
+                            Weight = Convert.ToInt32(x.Select(c => c.relevance ?? 0.1F).Sum() * 1000),
+                            Type = GetEmotion(new
+                            {
+                                anger = x.Select(c => c.emotions.anger ?? 0.1F).Average(),
+                                disgust = x.Select(c => c.emotions.disgust ?? 0.1F).Average(),
+                                joy = x.Select(c => c.emotions.joy ?? 0.1F).Average(),
+                                sadness = x.Select(c => c.emotions.sadness ?? 0.1F).Average(),
+                                fear = x.Select(c => c.emotions.fear ?? 0.1F).Average()
+                            })
                         })
-                    })
-                    .ToList();
-                
-                
-                return Ok(list);
+                        .ToList();
+
+
+                    return Ok(list);
+                }
+                else
+                {
+                    var list = _dbContext.NluResults
+                        .Include(x => x.Entity)
+                        .Include(x => x.Relations)
+                        .ThenInclude(x => x.Arguments)
+                        .Where(x => x.Entity.Any(z => z.EntityId == id) &&
+                                    x.ScrapedPageId != null &&
+                                    pageIds.Contains(x.ScrapedPageId))
+                        .ToList()
+                        .SelectMany(x => x.Relations)
+                        .GroupBy(x => x.type)
+                        .Select(x => new WordViewModel
+                        {
+                            Id = x.Select(c => c.Id.ToString()).Min(),
+                            Text = x.Key,
+                            Weight = Convert.ToInt32(x.Select(c => c.relevance ?? 0.1F).Sum() * 1000),
+                            Type = GetEmotion(new
+                            {
+                                anger = x.Select(c => c.emotions.anger ?? 0.1F).Average(),
+                                disgust = x.Select(c => c.emotions.disgust ?? 0.1F).Average(),
+                                joy = x.Select(c => c.emotions.joy ?? 0.1F).Average(),
+                                sadness = x.Select(c => c.emotions.sadness ?? 0.1F).Average(),
+                                fear = x.Select(c => c.emotions.fear ?? 0.1F).Average()
+                            })
+                        })
+                        .ToList();
+
+
+                    return Ok(list);
+                }
             }
             catch (Exception ex)
             {
@@ -516,6 +534,23 @@ namespace Action.Controllers
             }
         }
 
+        private ToneItem GetMaxTone(IEnumerable<dynamic> enumerable)
+        {
+            ToneItem tom = new ToneItem();
+            foreach (var item2 in enumerable)
+            {
+                if ((double) item2.Score > tom.Score)
+                {
+                    tom.Score = (double) item2.Score;
+                    tom.Id = Convert.ToString(item2.id);
+                    tom.Name = Convert.ToString(item2.name);
+                }
+            }
+
+            if (tom.Score > 0)
+                return tom;
+            return null;
+        }
         private string GetEmotion(dynamic xEmotions)
         {
             var positive = (xEmotions.sadness ?? 0.0 + xEmotions.joy ?? 0.0)/2.0;
