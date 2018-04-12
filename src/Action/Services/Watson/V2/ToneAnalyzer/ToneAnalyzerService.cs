@@ -15,7 +15,9 @@ namespace Action.Services.Watson.V2.ToneAnalyzer
                     {
                         Text = text
                     },
-                    "text/plain");
+                    "text/plain",
+                    true,
+                    contentLanguage:"en");
             });
         }
     }

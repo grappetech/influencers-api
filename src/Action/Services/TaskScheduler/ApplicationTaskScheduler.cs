@@ -160,6 +160,29 @@ namespace Action.Services.TaskScheduler
 
                     #endregion
 
+                    
+                    
+                    #region Extract Tone
+
+                    Debugger.Log(0, "SCP", "Extraindo Tom." + Environment.NewLine);
+                    var tones = new ToneAnalyzerService()
+                        .ProccessToneAnalisys(scrappedPage.Translated, wta.UserName, wta.Password, wta.Version)
+                        .GetAwaiter()
+                        .GetResult();
+
+                    var taResult = ToneResult.Parse(tones);
+
+                    if (taResult != null)
+                    {
+                        taResult.ScrapedPageId = scrappedPage.Id;
+                        dbContext.Tones.Add(taResult);
+                    }
+
+                    Debugger.Log(0, "SCP", "Extração de Tom Concluída." + Environment.NewLine);
+
+                    #endregion
+                    
+                    
                     dbContext.SaveChanges();
                 }
                 catch (Exception ex)
