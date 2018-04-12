@@ -494,7 +494,7 @@ namespace Action.Controllers
                     {
                         Id = x.Select(c=>c.Id.ToString()).Min(),
                         Text = x.Key,
-                        Weight = Convert.ToInt32(x.Select(c=>c.relevance).Average() ?? 0 * 1000),
+                        Weight = Convert.ToInt32(x.Select(c=>c.relevance ?? 0.1F).Sum()  * 1000),
                         Type = GetEmotion(new
                         {
                             anger = x.Select(c=>c.emotions.anger).Average(),
