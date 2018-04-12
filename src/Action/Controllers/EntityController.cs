@@ -484,10 +484,11 @@ namespace Action.Controllers
                 var list = _dbContext.NluResults
                     .Include(x => x.Entity)
                     .Include(x => x.Keywords)
-                    .ThenInclude(x => x.sentiment)
+                    .ThenInclude(x => x.emotions)
                     .Where(x=>x.Entity.Any(z=>z.EntityId == id) &&
                               x.ScrapedPageId != null &&
                               pageIds.Contains(x.ScrapedPageId))
+                    .ToList()
                     .SelectMany(x=>x.Keywords)
                     .GroupBy(x=>x.text)
                     .Select(x=> new WordViewModel
