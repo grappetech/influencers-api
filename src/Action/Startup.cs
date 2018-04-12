@@ -150,7 +150,7 @@ namespace Action
                 JobStorage.Current = new MemoryStorage();
                 
                 RecurringJob.AddOrUpdate(()=>
-               Task.Run( ()=>  ApplicationTaskScheduler.ExtractPersonality(dbContext)).GetAwaiter().GetResult(), 
+               Task.Run( ()=>  ApplicationTaskScheduler.ProccessDataExtraction(dbContext)).GetAwaiter().GetResult(), 
                     Cron.Daily());
             }
         }

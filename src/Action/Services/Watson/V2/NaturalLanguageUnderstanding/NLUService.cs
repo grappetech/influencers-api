@@ -16,6 +16,7 @@ namespace Action.Services.Watson.V2.NaturalLanguageUnderstanding
                 return svc.Analyze(new Parameters
                 {
                     Url = url,
+                    
                     Language = "pt-BR",
                     ReturnAnalyzedText = true,
                     Features = new Features
@@ -25,7 +26,9 @@ namespace Action.Services.Watson.V2.NaturalLanguageUnderstanding
                             Mentions = true,
                             Model = modelId
                         },
-                        Keywords = new KeywordsOptions(),
+                        Keywords = new KeywordsOptions
+                        {
+                        },
                         Relations = new RelationsOptions
                         {
                             Model = modelId

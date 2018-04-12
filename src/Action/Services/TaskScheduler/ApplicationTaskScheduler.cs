@@ -205,6 +205,7 @@ namespace Action.Services.TaskScheduler
                 });
 
 
+                SmtpService.SendMessage("luiz@nexo.ai", "[ACTION API SCP]", $"Extraindo Personalidade de {entities.Values.Count} entidades em {entities.Keys.Count} fontes");
                 foreach (var page in entities)
                 {
                     try
@@ -214,7 +215,6 @@ namespace Action.Services.TaskScheduler
                             .FirstOrDefault(x => x.Id == page.Key && x.Status == EDataExtractionStatus.InProcces);
 
                         if (pg == null) continue;
-                        SmtpService.SendMessage("luiz@nexo.ai", "[ACTION API SCP]", $"Extraindo Personalidade de {entities.Count} entidades");
                         page.Value.ForEach(ent =>
                         {
                             Debugger.Log(0, "SCP", "Extraindo Personalidade." + Environment.NewLine);
