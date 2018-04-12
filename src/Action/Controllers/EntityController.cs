@@ -455,7 +455,7 @@ namespace Action.Controllers
         }
 
         [HttpGet("{id}/words")]
-        public IActionResult GetWords([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to, [FromQuery] string relationshipFactor = string.Empty)
+        public IActionResult GetWords([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to, [FromQuery] string relationshipFactor = "")
         {
             try
             {
@@ -498,7 +498,7 @@ namespace Action.Controllers
                 }
                 else
                 {
-                    var list = _dbContext.NluResults
+               /*     var list = _dbContext.NluResults
                         .Include(x => x.Entity)
                         .Include(x => x.Relations)
                         .ThenInclude(x => x.Arguments)
@@ -525,7 +525,8 @@ namespace Action.Controllers
                         .ToList();
 
 
-                    return Ok(list);
+                    return Ok(list);*/
+                    return Ok();
                 }
             }
             catch (Exception ex)
