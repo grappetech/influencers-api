@@ -497,11 +497,11 @@ namespace Action.Controllers
                         Weight = Convert.ToInt32(x.Select(c=>c.relevance ?? 0.1F).Sum()  * 1000),
                         Type = GetEmotion(new
                         {
-                            anger = x.Select(c=>c.emotions.anger).Average(),
-                            disgust = x.Select(c=>c.emotions.disgust).Average(),
-                            joy = x.Select(c=>c.emotions.joy).Average(),
-                            sadness = x.Select(c=>c.emotions.sadness).Average(),
-                            fear = x.Select(c=>c.emotions.fear).Average()
+                            anger = x.Select(c=>c.emotions.anger ?? 0.1F).Average(),
+                            disgust = x.Select(c=>c.emotions.disgust ?? 0.1F).Average(),
+                            joy = x.Select(c=>c.emotions.joy ?? 0.1F).Average(),
+                            sadness = x.Select(c=>c.emotions.sadness ?? 0.1F).Average(),
+                            fear = x.Select(c=>c.emotions.fear ?? 0.1F).Average()
                         })
                     })
                     .ToList();
