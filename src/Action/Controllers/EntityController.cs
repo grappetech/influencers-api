@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Action.Extensions;
 using Action.Models;
 using Action.Models.Core;
-using Action.Models.Watson;
+using Action.Models.Watson.NLU;
 using Action.VewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Entity = Action.Models.Watson.Entity;
 
 namespace Action.Controllers
 {
@@ -475,12 +476,53 @@ namespace Action.Controllers
         {
             try
             {
-                return Ok(this.MockWords(id));
+
+                var pageIds = _dbContext.ScrapedPages
+                    .Where(x => x.Date >= from && x.Date <= to)
+                    .Select(x => x.Id);
+
+                var list = _dbContext.NluResults
+                    .Include(x => x.Entity)
+                    .Include(x => x.Keywords)
+                    .ThenInclude(x => x.sentiment)
+                    .Where(x=>x.Entity.Any(z=>z.EntityId == id) &&
+                              x.ScrapedPageId != null &&
+                              pageIds.Contains(x.ScrapedPageId))
+                    .SelectMany(x=>x.Keywords)
+                    .GroupBy(x=>x.text)
+                    .Select(x=> new WordViewModel
+                    {
+                        Id = x.Select(c=>c.Id.ToString()).Min(),
+                        Text = x.Key,
+                        Weight = x.Count(),
+                        Type = GetEmotion(new
+                        {
+                            anger = x.Select(c=>c.emotions.anger).Average(),
+                            disgust = x.Select(c=>c.emotions.disgust).Average(),
+                            joy = x.Select(c=>c.emotions.joy).Average(),
+                            sadness = x.Select(c=>c.emotions.sadness).Average(),
+                            fear = x.Select(c=>c.emotions.fear).Average()
+                        })
+                    })
+                    .ToList();
+                
+                
+                return Ok(list);
             }
             catch (Exception ex)
             {
                 return StatusCode((int) EServerError.BusinessError, new List<string> {ex.Message});
             }
+        }
+
+        private string GetEmotion(dynamic xEmotions)
+        {
+            var positive = (xEmotions.sadness ?? 0.0 + xEmotions.joy ?? 0.0)/2.0;
+            var negative = (xEmotions.anger ?? 0.0 + xEmotions.disgust ?? 0.0 + xEmotions.fear ?? 0.0) / 3.0;
+
+            return positive < negative && (positive / negative) > 0.20 ?
+                "negative" : positive > negative && (negative / positive) > 0.20 ?  "positive" : "negative";
+
         }
 
         private List<MentionMock> MockMentions(long id)
