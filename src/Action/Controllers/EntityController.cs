@@ -384,17 +384,28 @@ namespace Action.Controllers
                     .Where(x => x.Date >= from && x.Date <= to)
                     .Select(x => x.Id);
 
-                
+                IQueryable<NLUResult> query;
 
-                    var list = _dbContext.NluResults
+                if (string.IsNullOrWhiteSpace(relationshipFactor) || relationshipFactor.ToLower().Equals("undefined"))
+                    query = _dbContext.NluResults
                         .Include(x => x.Entity)
                         .Include(x => x.Relations)
                         .ThenInclude(x => x.Arguments)
                         .Where(x => x.Entity.Any(z => z.EntityId == id) &&
                                     x.ScrapedPageId != null &&
-                                    x.Relations.Any(z=>z.type.ToLower().Equals(relationshipFactor.ToLower())) &&
-                                    pageIds.Contains(x.ScrapedPageId))
-                        .ToList()
+                                    x.Relations.Any() &&
+                                    pageIds.Contains(x.ScrapedPageId));
+                else
+                    query = _dbContext.NluResults
+                        .Include(x => x.Entity)
+                        .Include(x => x.Relations)
+                        .ThenInclude(x => x.Arguments)
+                        .Where(x => x.Entity.Any(z => z.EntityId == id) &&
+                                    x.ScrapedPageId != null &&
+                                    x.Relations.Any(z => z.type.ToLower().Equals(relationshipFactor.ToLower())) &&
+                                    pageIds.Contains(x.ScrapedPageId));
+
+                    var list = query.ToList()
                         .SelectMany(x => x.Relations)
                         .GroupBy(x => x.sentence)
                         .Select(x => new WordViewModel
