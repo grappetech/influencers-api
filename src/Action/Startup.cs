@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Action.Models;
 using Action.Models.Core;
 //using Action.Services.AutoMapper;
 using Action.Services.Scrap.Core;
+using Action.Services.Scrap.V2;
 using Action.Services.SMTP;
 using Action.Services.TaskScheduler;
 //using AutoMapper;
@@ -136,8 +139,8 @@ namespace Action
         {
             
             
-            
-          StartScraper(dbContext);
+           
+          //StartScraper(dbContext);
         }
 
         private void StartScraper(ApplicationDbContext dbContext)

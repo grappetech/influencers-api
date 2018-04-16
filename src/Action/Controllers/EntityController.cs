@@ -375,11 +375,46 @@ namespace Action.Controllers
         
         [HttpGet("{id}/relations")]
         public IActionResult GetRelations([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to,
-            [FromQuery] string word, [FromQuery] int relationshipFactor, [FromQuery] string type)
+            [FromQuery] string word, [FromQuery] string relationshipFactor, [FromQuery] string type)
         {
             try
             {
-                return Ok(MockRelations(id));
+
+                var pageIds = _dbContext.ScrapedPages
+                    .Where(x => x.Date >= from && x.Date <= to)
+                    .Select(x => x.Id);
+
+                
+
+                    var list = _dbContext.NluResults
+                        .Include(x => x.Entity)
+                        .Include(x => x.Relations)
+                        .ThenInclude(x => x.Arguments)
+                        .Where(x => x.Entity.Any(z => z.EntityId == id) &&
+                                    x.ScrapedPageId != null &&
+                                    x.Relations.Any(z=>z.type.ToLower().Equals(relationshipFactor.ToLower())) &&
+                                    pageIds.Contains(x.ScrapedPageId))
+                        .ToList()
+                        .SelectMany(x => x.Relations)
+                        .GroupBy(x => x.sentence)
+                        .Select(x => new WordViewModel
+                        {
+                            Id = x.Select(c => c.Id.ToString()).Min(),
+                            Text = x.Key,
+                            Weight = Convert.ToInt32(x.Select(c => c.score ?? 0.1F).Sum() * 1000),
+                            Type = GetEmotion(new
+                            {
+                                anger = 0,
+                                disgust = 0,
+                                joy = 0,
+                                sadness = 0,
+                                fear = 0
+                            })
+                        })
+                        .ToList();
+
+
+                    return Ok(list);
             }
             catch (Exception ex)
             {
@@ -498,35 +533,36 @@ namespace Action.Controllers
                 }
                 else
                 {
-               /*     var list = _dbContext.NluResults
+
+                    var list = _dbContext.NluResults
                         .Include(x => x.Entity)
                         .Include(x => x.Relations)
                         .ThenInclude(x => x.Arguments)
                         .Where(x => x.Entity.Any(z => z.EntityId == id) &&
                                     x.ScrapedPageId != null &&
+                                    x.Relations.Any(z=>z.type.ToLower().Equals(relationshipFactor.ToLower())) &&
                                     pageIds.Contains(x.ScrapedPageId))
                         .ToList()
                         .SelectMany(x => x.Relations)
-                        .GroupBy(x => x.type)
+                        .GroupBy(x => x.sentence)
                         .Select(x => new WordViewModel
                         {
                             Id = x.Select(c => c.Id.ToString()).Min(),
                             Text = x.Key,
-                            Weight = Convert.ToInt32(x.Select(c => c.relevance ?? 0.1F).Sum() * 1000),
+                            Weight = Convert.ToInt32(x.Select(c => c.score ?? 0.1F).Sum() * 1000),
                             Type = GetEmotion(new
                             {
-                                anger = x.Select(c => c.emotions.anger ?? 0.1F).Average(),
-                                disgust = x.Select(c => c.emotions.disgust ?? 0.1F).Average(),
-                                joy = x.Select(c => c.emotions.joy ?? 0.1F).Average(),
-                                sadness = x.Select(c => c.emotions.sadness ?? 0.1F).Average(),
-                                fear = x.Select(c => c.emotions.fear ?? 0.1F).Average()
+                                anger = 0,
+                                disgust = 0,
+                                joy = 0,
+                                sadness = 0,
+                                fear = 0
                             })
                         })
                         .ToList();
 
 
-                    return Ok(list);*/
-                    return Ok();
+                    return Ok(list);
                 }
             }
             catch (Exception ex)
