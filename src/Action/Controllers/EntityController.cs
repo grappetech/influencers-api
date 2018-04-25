@@ -386,7 +386,7 @@ namespace Action.Controllers
 
                 
 
-                    var list = _dbContext.NluResults
+                    var query = _dbContext.NluResults
                         .Include(x => x.Entity)
                         .Include(x => x.Relations)
                         .ThenInclude(x => x.Arguments)
@@ -630,30 +630,9 @@ namespace Action.Controllers
         }
 
 
-        private List<RelationsEntities> MockRelations(long id)
-        {
-            Random random = new Random(Randomize.Next());
-            var list = MockWords(id);
-            var results = new List<RelationsEntities>();
-            list.ForEach(x =>
-            {
-                results.Add(new RelationsEntities
-                {
-                    id = x.id,
-                    name = x.text,
-                    score = x.weight > 0 ?x.weight : random.Next(5, 80)/100,
-                    mentions = MockMentions(id)
-                });
-            });
-            return results;
-        }
+        
 
         private List<WordMock> MockWords(long id)
-        {
-            return new List<WordMock>();
-        }
-
-        private dynamic MockPersonality(int id)
         {
             return new List<WordMock>();
         }
