@@ -384,8 +384,6 @@ namespace Action.Controllers
                     .Where(x => x.Date >= from && x.Date <= to)
                     .Select(x => x.Id);
 
-                
-
                     var list = _dbContext.NluResults
                         .Include(x => x.Entity)
                         .Include(x => x.Relations)
