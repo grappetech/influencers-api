@@ -221,7 +221,7 @@ namespace Action.Controllers
             try
             {
                 var scrapdPages = _dbContext.ScrapedPages.Where(x =>
-                    x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
+                    x.Status == EDataExtractionStatus.Finalized);// && x.Date >= from && x.Date <= to);
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
@@ -262,7 +262,7 @@ namespace Action.Controllers
             try
             {
                 var scrapdPages = _dbContext.ScrapedPages.Where(x =>
-                    x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
+                    x.Status == EDataExtractionStatus.Finalized);// && x.Date >= from && x.Date <= to);
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
@@ -297,7 +297,7 @@ namespace Action.Controllers
             try
             {
                 var scrapdPages = _dbContext.ScrapedPages.Where(x =>
-                    x.Status == EDataExtractionStatus.Finalized && x.Date >= from && x.Date <= to);
+                    x.Status == EDataExtractionStatus.Finalized);// && x.Date >= from && x.Date <= to);
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
@@ -381,8 +381,8 @@ namespace Action.Controllers
             {
 
                 var pageIds = _dbContext.ScrapedPages
-                    .Where(x => x.Date >= from && x.Date <= to)
                     .Select(x => x.Id);
+                    //.Where(x => x.Date >= from && x.Date <= to)
 
                 
 
@@ -430,7 +430,7 @@ namespace Action.Controllers
         {
             try
             {
-               var scrapdPages = _dbContext.ScrapedPages.Where(x =>  x.Date >= from && x.Date <= to);
+               var scrapdPages = _dbContext.ScrapedPages;//.Where(x =>  x.Date >= from && x.Date <= to);
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
@@ -497,8 +497,8 @@ namespace Action.Controllers
             {
 
                 var pageIds = _dbContext.ScrapedPages
-                    .Where(x => x.Date >= from && x.Date <= to)
                     .Select(x => x.Id);
+                    //.Where(x => x.Date >= from && x.Date <= to)
 
                 if (string.IsNullOrWhiteSpace(relationshipFactor) || relationshipFactor.ToLower().Equals("undefined"))
                 {
