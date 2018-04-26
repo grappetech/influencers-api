@@ -163,7 +163,7 @@ namespace Action.Controllers
 				{
 					var plan = _dbContext.Accounts.Find(user.AccountId);
 					var userClaims = await _userManager.GetClaimsAsync(user);
-					var expiration = DateTime.UtcNow.AddMinutes(60);
+					var expiration = DateTime.UtcNow.AddDays(30);
 					var claims = new[]
 					{
 						new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
@@ -216,7 +216,7 @@ namespace Action.Controllers
 				{
 					var userClaims = await _userManager.GetClaimsAsync(user);
 					var plan = _dbContext.Accounts.Find(user.AccountId);
-					var expiration = DateTime.UtcNow.AddDays(1);
+					var expiration = DateTime.UtcNow.AddDays(30);
 					var claims = new[]
 					{
 						new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
@@ -241,9 +241,6 @@ namespace Action.Controllers
 						signingCredentials: signingCredentials
 					);
 					var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-
-					//SmtpService.SendMessage(model.Email, "[ACTION-API Acesso]",
-					//	string.Concat(model.Url, "?token=", token, "&key=", user.AccountId));
 
 					SmtpService.SendMessage(model.Email, "[ACTION-API Acesso]",
 						string.Concat(model.Url, "?token=", token));
