@@ -239,7 +239,7 @@ namespace Action.Controllers
                         percentile = c.Average(p => p.Percentile),
                         details = c.SelectMany(d => d.Details)
                             .GroupBy(e => e.Name)
-                            .Select(f => new {Name = f.Key, Percentile = f.Average(g => g.Percentile)})
+                            .Select(f => new {name = f.Key, percentile = f.Average(g => g.Percentile)})
                             .ToList()
                     });
 
