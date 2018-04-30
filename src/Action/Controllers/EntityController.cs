@@ -234,16 +234,25 @@ namespace Action.Controllers
                 var Personality = Personalities
                     .SelectMany(x => x.Personality.Select(c => new {c.Name, c.Percentile, c.Details}))
                     .GroupBy(x => x.Name).Select(c => new
-                    {
-                        name = c.Key,
-                        percentile = c.Average(p => p.Percentile),
-                        details = c.SelectMany(d => d.Details)
+                    PersonalityDescriptionViewModel{
+                        Name = c.Key,
+                        Percentile = c.Average(p => p.Percentile),
+                        Details = c.SelectMany(d => d.Details)
                             .GroupBy(e => e.Name)
-                            .Select(f => new {name = f.Key, percentile = f.Average(g => g.Percentile)})
+                            .Select(f => new PersonalityDetailDescriptionViewModel
+                            {
+                                Name = f.Key, 
+                                Percentile = f.Average(g => g.Percentile)
+                            })
                             .ToList()
                     });
 
-                var result = Personality.Select(x => new {x.name, x.percentile, x.details});
+                var result = Personality.Select(x => new PersonalityDescriptionViewModel
+                {
+                    Name = x.Name, 
+                    Percentile = x.Percentile, 
+                    Details = x.Details
+                });
 
                 return Ok(result);
             }
