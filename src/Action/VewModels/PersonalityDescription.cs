@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Microsoft.WindowsAzure.Storage.Blob.Protocol;
 using Newtonsoft.Json;
 
 namespace Action.VewModels
 {
     public abstract class APersonalityDescription
     {
-        protected struct STranslatedDescription
+        public class  STranslatedDescription
         {
-            internal readonly string Name;
-            internal readonly string Description;
+            public  string Name { get; set; }
+            public  string Description { get; set; }
 
             public STranslatedDescription(string name, string description)
             {
@@ -17,7 +19,8 @@ namespace Action.VewModels
             }
         }
 
-        protected readonly Dictionary<string, STranslatedDescription> TranslatedData =
+        [JsonIgnore]
+        public Dictionary<string, STranslatedDescription> TranslatedData =
             new Dictionary<string, STranslatedDescription>();
 
         public APersonalityDescription()
@@ -68,7 +71,7 @@ namespace Action.VewModels
                     "Forte senso de dever e obrigação<br/>Compromisso com causas e crenças"));
             TranslatedData.Add("Self-discipline",
                 new STranslatedDescription("Autodisciplina ",
-                    "'Will-power,' para persistir em tarefas difíceis ou desagradáveis até que sejam concluídas<br/>Trabalhando em condições adversas para atingir grandes objetivos."));
+                    "Will-power, para persistir em tarefas difíceis ou desagradáveis até que sejam concluídas<br/>Trabalhando em condições adversas para atingir grandes objetivos."));
             TranslatedData.Add("Orderliness",
                 new STranslatedDescription("Regularidade ",
                     "Organizados, arrumados e limpos.<br/>Confiaveis, tradicionais e conservadores "));
@@ -86,7 +89,7 @@ namespace Action.VewModels
             TranslatedData.Add("Fiery",
                 new STranslatedDescription("Furioso ",
                     "Tem uma tendência a sentir raiva.<br/>Quebra paradgmas, transgride e provoca"));
-            TranslatedData.Add("Susceptible to stress",
+            TranslatedData.Add("Self-consciousness",
                 new STranslatedDescription("Autoconciência ",
                     "Sensível sobre o que os outros pensam. Preocupações sobre rejeição, comentários deixam-o tímido e desconfortável.<br/>Inclusiva, não provoca conflitos, pensa no equilibrio"));
             TranslatedData.Add("Prone to worry",
@@ -159,15 +162,21 @@ namespace Action.VewModels
         [JsonProperty("name")]
         public string Name
         {
-            get => TranslatedData[_name].Name;
-            set => _name = value;
+            get
+            {
+             return TranslatedData.FirstOrDefault(x=>x.Key.Equals(_name)).Value?.Name ?? _name;
+            }
+            set { _name = value; }
         }
 
 
         [JsonProperty("description")]
         public string Description
         {
-            get => TranslatedData[_name].Description;
+            get
+            {
+                return TranslatedData.FirstOrDefault(x=>x.Key.Equals(_name)).Value?.Description ?? _name;
+            }
         }
 
         [JsonProperty("percentile")] 
