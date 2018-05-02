@@ -289,7 +289,7 @@ namespace Action.Controllers
                         description = ""
                     });
 
-                var result = Personality.Select(x => new {x.name, x.percentile, x.description});
+                var result = Personality.Select(x => new PersonalityValueDescription{Name = x.name, Percentile = x.percentile}).ToList();
 
                 return Ok(result);
             }
