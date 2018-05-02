@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Action.Extensions;
@@ -491,7 +492,18 @@ namespace Action.Controllers
         {
             try
             {
-                return Ok(this.MockFeeling());
+
+                var scores = _dbContext.NluResults
+                    .Include(x=>x.Entity)
+                    .Include(x => x.Keywords)
+                    .ThenInclude(x => x.sentiment)
+                    .Where(x => x.Entity.Any(z => z.EntityId.Equals(id)))
+                    .SelectMany(x => x.Keywords)
+                    .Select(x => x.sentiment)
+                    .Select(x => x.score)
+                    .ToList();
+                
+                return Ok(MockFeeling(scores));
             }
             catch (Exception ex)
             {
@@ -624,17 +636,15 @@ namespace Action.Controllers
             }
         }
 
-        private Object MockFeeling()
+        private Object MockFeeling(List<float?> scores)
         {
-            Random random = new Random(Randomize.Next());
-
             return new
             {
-                positive = Math.Round(random.NextDouble(), 4),
-                negative = Math.Round(random.NextDouble(), 4),
-                neutro = Math.Round(random.NextDouble(), 4),
-                mentions = random.Next(20, 150),
-                sources = random.Next(100, 300)
+                positive = scores.Count(x=>x.HasValue && x.Value >= 0.4F),
+                negative = scores.Count(x=>x.HasValue && x.Value <= -0.4F),
+                neutro = scores.Count(x=> !x.HasValue || (x.HasValue && x.Value > -4.0F && x.Value < 4.0F)),
+                mentions = scores.Count,
+                sources = _dbContext.ScrapSources.Count()
             };
         }
 
