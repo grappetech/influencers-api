@@ -218,11 +218,11 @@ namespace Action.Controllers
         public dynamic GetPersonality([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to)
         {
             long lid = id;
-            
+
             try
             {
                 var scrapdPages = _dbContext.ScrapedPages.Where(x =>
-                    x.Status == EDataExtractionStatus.Finalized);// && x.Date >= from && x.Date <= to);
+                    x.Status == EDataExtractionStatus.Finalized); // && x.Date >= from && x.Date <= to);
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
@@ -246,9 +246,9 @@ namespace Action.Controllers
 
                 var result = Personality.Select(x => new PersonalityDescriptionViewModel
                 {
-                    Name =x.name, 
-                    Percentile = x.percentile, 
-                    Details = x.details.Select(d=>new PersonalityDetailDescriptionViewModel
+                    Name = x.name,
+                    Percentile = x.percentile,
+                    Details = x.details.Select(d => new PersonalityDetailDescriptionViewModel
                     {
                         Name = d.name,
                         Percentile = d.percentile
@@ -266,13 +266,12 @@ namespace Action.Controllers
         [HttpGet("{id}/values")]
         public dynamic GetValues([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to)
         {
-            
             long lid = id;
-            
+
             try
             {
                 var scrapdPages = _dbContext.ScrapedPages.Where(x =>
-                    x.Status == EDataExtractionStatus.Finalized);// && x.Date >= from && x.Date <= to);
+                    x.Status == EDataExtractionStatus.Finalized); // && x.Date >= from && x.Date <= to);
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
@@ -290,7 +289,8 @@ namespace Action.Controllers
                         description = ""
                     });
 
-                var result = Personality.Select(x => new PersonalityValueDescription{Name = x.name, Percentile = x.percentile}).ToList();
+                var result = Personality
+                    .Select(x => new PersonalityValueDescription {Name = x.name, Percentile = x.percentile}).ToList();
 
                 return Ok(result);
             }
@@ -307,11 +307,12 @@ namespace Action.Controllers
             try
             {
                 var scrapdPages = _dbContext.ScrapedPages.Where(x =>
-                    x.Status == EDataExtractionStatus.Finalized);// && x.Date >= from && x.Date <= to);
+                    x.Status == EDataExtractionStatus.Finalized); // && x.Date >= from && x.Date <= to);
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
-                var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId.HasValue && x.EntityId.Value == lid).Select(
+                var tones = _dbContext.Tones.Where(x =>
+                    pagesId.Contains(x.ScrapedPageId) && x.EntityId.HasValue && x.EntityId.Value == lid).Select(
                     x => new
                     {
                         scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
@@ -382,102 +383,120 @@ namespace Action.Controllers
         }
 
 
-        
         [HttpGet("{id}/relations")]
         public IActionResult GetRelations([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to,
             [FromQuery] string word, [FromQuery] string relationshipFactor, [FromQuery] string type)
         {
             try
             {
-
                 var pageIds = _dbContext.ScrapedPages
                     .Select(x => x.Id);
-                    //.Where(x => x.Date >= from && x.Date <= to)
+                //.Where(x => x.Date >= from && x.Date <= to)
 
-                
 
-                    var query = _dbContext.NluResults
-                        .Include(x => x.Entity)
-                        .Include(x => x.Relations)
-                        .ThenInclude(x => x.Arguments)
-                        .Where(x => x.Entity.Any(z => z.EntityId == id) &&
-                                    x.ScrapedPageId != null &&
-                                    x.Relations.Any(z => z.type.ToLower().Equals(relationshipFactor.ToLower())) &&
-                                    pageIds.Contains(x.ScrapedPageId));
+                var query = _dbContext.NluResults
+                    .Include(x => x.Entity)
+                    .Include(x => x.Relations)
+                    .ThenInclude(x => x.Arguments)
+                    .Where(x => x.Entity.Any(z => z.EntityId == id) &&
+                                x.ScrapedPageId != null &&
+                                x.Relations.Any(z => z.type.ToLower().Equals(relationshipFactor.ToLower())) &&
+                                pageIds.Contains(x.ScrapedPageId));
 
-                    var list = query.ToList()
-                        .SelectMany(x => x.Relations)
-                        .GroupBy(x => x.sentence)
-                        .Select(x => new WordViewModel
+                var list = query.ToList()
+                    .SelectMany(x => x.Relations)
+                    .GroupBy(x => x.sentence)
+                    .Select(x => new WordViewModel
+                    {
+                        Id = x.Select(c => c.Id.ToString()).Min(),
+                        Text = x.Key,
+                        Weight = Convert.ToInt32(x.Select(c => c.score ?? 0.1F).Sum() * 1000),
+                        Type = GetEmotion(new
                         {
-                            Id = x.Select(c => c.Id.ToString()).Min(),
-                            Text = x.Key,
-                            Weight = Convert.ToInt32(x.Select(c => c.score ?? 0.1F).Sum() * 1000),
-                            Type = GetEmotion(new
-                            {
-                                anger = 0,
-                                disgust = 0,
-                                joy = 0,
-                                sadness = 0,
-                                fear = 0
-                            })
+                            anger = 0,
+                            disgust = 0,
+                            joy = 0,
+                            sadness = 0,
+                            fear = 0
                         })
-                        .ToList();
+                    })
+                    .ToList();
 
 
-                    return Ok(list);
+                return Ok(list);
             }
             catch (Exception ex)
             {
                 return StatusCode((int) EServerError.BusinessError, new List<string> {ex.Message});
             }
         }
-        
-        
+
+
         [HttpGet("{id}/mentions")]
         public IActionResult GetMentions([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to,
-            [FromQuery] string word, [FromQuery] int relationshipFactor, [FromQuery] string type)
+            [FromQuery] string word, [FromQuery] int? relationshipFactor, [FromQuery] string type)
         {
             try
             {
-               var scrapdPages = _dbContext.ScrapedPages;//.Where(x =>  x.Date >= from && x.Date <= to);
+                var scrapdPages = _dbContext.ScrapedPages; //.Where(x =>  x.Date >= from && x.Date <= to);
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
+
+                if (!relationshipFactor.HasValue)
+                {
+                    var resultKw = _dbContext.NluResults
+                        .Include(x => x.Keywords)
+                        .ThenInclude(x => x.emotions)
+                        .Where(x => x.Keywords.Any(k => k.text.ToLower().Contains(word.ToLower())))
+                        .SelectMany(x => x.Keywords)
+                        .Select(x => new
+                        {
+                            text = x.fragment,
+                            url = x.retrieved_url,
+                            type = (x.sentiment!= null && x.sentiment.score  > 4) ? "positive" :
+                                (x.sentiment!= null && x.sentiment.score < -4) ? "negative" : "neutro",
+                            date = DateTime.Today.AddMonths(-1)
+                        })
+                        .ToList();
+                }
+
+
                 var tones = _dbContext.Tones.Where(x => pagesId.Contains(x.ScrapedPageId) && x.EntityId == id)
-                	.Select(x => new
-                	{
-                		scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
-                		scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
-                		Mentions = x.SetenceTones.Select(z => new
-                		{
-                			z.Id,
-                			z.Text,
-                			tone = GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
-                			{
-                				t.Score,
-                				id = t.ToneId,
-                				name = t.ToneName
-                			}))
-                		})
-                	});
+                    .Select(x => new
+                    {
+                        scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
+                        scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
+                        Mentions = x.SetenceTones.Select(z => new
+                        {
+                            z.Id,
+                            z.Text,
+                            tone = GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
+                            {
+                                t.Score,
+                                id = t.ToneId,
+                                name = t.ToneName
+                            }))
+                        })
+                    });
 
                 var result = tones.SelectMany(x => x.Mentions.Select(y => new
                 {
-                	id = y.Id,
-                	text = y.Text,
-                	toneId = y.tone.Id,
-                	url = x.Url,
-                	type = y.tone.ToneType.ToString(),
-                	date = x.Date
+                    id = y.Id,
+                    text = y.Text,
+                    toneId = y.tone.Id,
+                    url = x.Url,
+                    type = y.tone.ToneType.ToString(),
+                    date = x.Date
                 }));
 
                 if (word != null && !word.Equals(""))
-                	result = result.Where(x => x.text.Contains(word));
+                    result = result.Where(x => x.text.Contains(word));
                 if (type != null && !type.Equals(""))
-                	result = result.Where(x => x.type.Equals(type));
+                    result = result.Where(x => x.type.Equals(type));
                 if (relationshipFactor > 0)
-                { }
+                {
+                }
 
                 return Ok(result);
             }
@@ -492,9 +511,8 @@ namespace Action.Controllers
         {
             try
             {
-
                 var scores = _dbContext.NluResults
-                    .Include(x=>x.Entity)
+                    .Include(x => x.Entity)
                     .Include(x => x.Keywords)
                     .ThenInclude(x => x.sentiment)
                     .Where(x => x.Entity.Any(z => z.EntityId.Equals(id)))
@@ -502,7 +520,7 @@ namespace Action.Controllers
                     .Select(x => x.sentiment)
                     .Select(x => x.score)
                     .ToList();
-                
+
                 return Ok(CalculateFeeling(scores));
             }
             catch (Exception ex)
@@ -512,18 +530,17 @@ namespace Action.Controllers
         }
 
         [HttpGet("{id}/words")]
-        public IActionResult GetWords([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to, [FromQuery] string relationshipFactor = "")
+        public IActionResult GetWords([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to,
+            [FromQuery] string relationshipFactor = "")
         {
             try
             {
-
                 var pageIds = _dbContext.ScrapedPages
                     .Select(x => x.Id);
-                    //.Where(x => x.Date >= from && x.Date <= to)
+                //.Where(x => x.Date >= from && x.Date <= to)
 
                 if (string.IsNullOrWhiteSpace(relationshipFactor) || relationshipFactor.ToLower().Equals("undefined"))
                 {
-
                     var list = _dbContext.NluResults
                         .Include(x => x.Entity)
                         .Include(x => x.Keywords)
@@ -555,14 +572,13 @@ namespace Action.Controllers
                 }
                 else
                 {
-
                     var list = _dbContext.NluResults
                         .Include(x => x.Entity)
                         .Include(x => x.Relations)
                         .ThenInclude(x => x.Arguments)
                         .Where(x => x.Entity.Any(z => z.EntityId == id) &&
                                     x.ScrapedPageId != null &&
-                                    x.Relations.Any(z=>z.type.ToLower().Equals(relationshipFactor.ToLower())) &&
+                                    x.Relations.Any(z => z.type.ToLower().Equals(relationshipFactor.ToLower())) &&
                                     pageIds.Contains(x.ScrapedPageId))
                         .ToList()
                         .SelectMany(x => x.Relations)
@@ -610,14 +626,14 @@ namespace Action.Controllers
                 return tom;
             return null;
         }
+
         private string GetEmotion(dynamic xEmotions)
         {
-            var positive = (xEmotions.sadness ?? 0.0 + xEmotions.joy ?? 0.0)/2.0;
+            var positive = (xEmotions.sadness ?? 0.0 + xEmotions.joy ?? 0.0) / 2.0;
             var negative = (xEmotions.anger ?? 0.0 + xEmotions.disgust ?? 0.0 + xEmotions.fear ?? 0.0) / 3.0;
 
-            return positive < negative && (positive / negative) > 0.20 ?
-                "negative" : positive > negative && (negative / positive) > 0.20 ?  "positive" : "negative";
-
+            return positive < negative && (positive / negative) > 0.20 ? "negative" :
+                positive > negative && (negative / positive) > 0.20 ? "positive" : "negative";
         }
 
         private List<MentionMock> MockMentions(long id)
@@ -640,16 +656,14 @@ namespace Action.Controllers
         {
             return new
             {
-                positive = scores.Count(x=>x >= 0.4),
-                negative = scores.Count(x=>x <= -0.4),
-                neutro = scores.Count(x=> x > -4.0 && x < 4.0),
+                positive = scores.Count(x => x >= 0.4),
+                negative = scores.Count(x => x <= -0.4),
+                neutro = scores.Count(x => x > -4.0 && x < 4.0),
                 mentions = scores.Count,
                 sources = _dbContext.ScrapSources.Count()
             };
         }
 
-
-        
 
         private List<WordMock> MockWords(long id)
         {
@@ -671,7 +685,7 @@ namespace Action.Controllers
         public string id { get; set; }
         public string name { get; set; }
         public decimal score { get; set; }
-        public List<MentionMock> mentions { get; set; } 
+        public List<MentionMock> mentions { get; set; }
     }
 
     internal class MentionMock
