@@ -99,12 +99,49 @@ namespace Action.Services.TaskScheduler
                         Text = nluAnalysis.AnalyzedText.RemoveIllegalChars(),
                         Url = item.Href
                     };
-
+                    
                     scrappedPage.Translated = new LanguageTranslatorService()
                         .ProccessTranslation(scrappedPage.Text, "pt", "en", wltc.UserName, wltc.Password)
                         .GetAwaiter()
                         .GetResult().RemoveIllegalChars();
 
+                    result.Keywords.ForEach(k =>
+                    {
+                        var fragment = "";
+                        var pos = nluAnalysis.AnalyzedText.IndexOf(k.text);
+                        var end = pos > 101 ? pos + 100 : 0 + k.text.Length;
+                        fragment = nluAnalysis.AnalyzedText.Substring(pos > 101 ? pos - 100 : pos, (end + 100 + pos) < (nluAnalysis.AnalyzedText.Length - 100) ? end + 100 : end);
+                        k.fragment = fragment;
+                        
+                        if(fragment.Length > 100)
+                            k.translatedFragment = new LanguageTranslatorService()
+                                .ProccessTranslation(fragment, "pt", "en", wltc.UserName, wltc.Password)
+                                .GetAwaiter()
+                                .GetResult().RemoveIllegalChars();
+
+                        if (k.emotions == null)
+                        {
+                            var emotion = new ToneAnalyzerService()
+                                .ProccessToneAnalisys(fragment, wta.UserName, wta.Password, wta.Version)
+                                .GetAwaiter()
+                                .GetResult();
+                            k.emotions = new EmotionsKeyword
+                            {
+                                anger = emotion?.DocumentTone?.Tones?.FirstOrDefault(x=>x.ToneId.ToLower().Equals("anger"))?.Score ?? 0,
+                                disgust = emotion?.DocumentTone?.Tones?.FirstOrDefault(x=>x.ToneId.ToLower().Equals("disgust"))?.Score ?? 0,
+                                fear = emotion?.DocumentTone?.Tones?.FirstOrDefault(x=>x.ToneId.ToLower().Equals("fear"))?.Score ?? 0,
+                                joy = emotion?.DocumentTone?.Tones?.FirstOrDefault(x=>x.ToneId.ToLower().Equals("joy"))?.Score ?? 0,
+                                sadness = emotion?.DocumentTone?.Tones?.FirstOrDefault(x=>x.ToneId.ToLower().Equals("sadness"))?.Score ?? 0
+                            };
+                        }
+                         
+                        if(k.sentiment == null)
+                            k.sentiment = new SentimentKeyword
+                            {
+                                score = k.emotions?.joy ?? 0 - (new double[]{k.emotions?.anger??0, k.emotions?.disgust??0, k.emotions?.fear??0, k.emotions?.sadness??0}).Average()
+                            };
+                        
+                    });
                     result.ScrapedPageId = scrappedPage.Id;
                     dbContext.ScrapedPages.Add(scrappedPage);
                     dbContext.NluResults.Add(result);
@@ -160,8 +197,6 @@ namespace Action.Services.TaskScheduler
 
                     #endregion
 
-                    
-                    
                     #region Extract Tone
 
                     Debugger.Log(0, "SCP", "Extraindo Tom." + Environment.NewLine);

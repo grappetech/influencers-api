@@ -7,9 +7,7 @@ namespace Action.Models.Watson.NLU
 {
     public class NLUResult
     {
-
-        [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        [Key] public Guid Id { get; set; } = Guid.NewGuid();
 
         public Guid ScrapedPageId { get; set; }
 
@@ -48,6 +46,8 @@ namespace Action.Models.Watson.NLU
                         }
                     }
                 };
+            else
+                lNLUResult.Emotion = null;
 
             if (pResult.Categories != null)
                 foreach (var categoriesResult in pResult.Categories)
@@ -56,6 +56,8 @@ namespace Action.Models.Watson.NLU
                         Score = categoriesResult.Score,
                         Label = categoriesResult.Label
                     });
+            else
+                lNLUResult.Category = null;
 
             if (pResult.Concepts != null)
                 foreach (var conceptsResult in pResult.Concepts)
@@ -65,6 +67,8 @@ namespace Action.Models.Watson.NLU
                         Dbpedia_resource = conceptsResult.DbpediaResource,
                         Relevance = conceptsResult.Relevance
                     });
+            else
+                lNLUResult.Concept = null;
 
             if (pResult.Entities != null)
                 foreach (var entitiesResult in pResult.Entities)
@@ -80,6 +84,8 @@ namespace Action.Models.Watson.NLU
                         Count = entitiesResult.Count,
                         Type = entitiesResult.Type
                     });
+            else
+                lNLUResult.Entity = null;
 
             if (pResult.Keywords != null)
                 foreach (var keywordsResult in pResult.Keywords)
@@ -87,18 +93,23 @@ namespace Action.Models.Watson.NLU
                     {
                         relevance = keywordsResult.Relevance,
                         text = keywordsResult.Text,
-                        emotions = new EmotionsKeyword
-                        {
-                            anger = keywordsResult.Emotion != null ? keywordsResult.Emotion.Anger : null,
-                            disgust = keywordsResult.Emotion != null ? keywordsResult.Emotion.Disgust : null,
-                            fear = keywordsResult.Emotion != null ? keywordsResult.Emotion.Fear : null,
-                            joy = keywordsResult.Emotion != null ? keywordsResult.Emotion.Joy : null,
-                            sadness = keywordsResult.Emotion != null ? keywordsResult.Emotion.Sadness : null
-                        },
-                        sentiment = new SentimentKeyword
-                        {
-                            score = keywordsResult.Sentiment != null ? keywordsResult.Sentiment.Score : null
-                        }
+                        emotions = keywordsResult.Emotion != null
+                            ? new EmotionsKeyword
+                            {
+                                anger = keywordsResult.Emotion != null ? keywordsResult.Emotion.Anger : 0,
+                                disgust =
+                                    (double) (keywordsResult.Emotion != null ? keywordsResult.Emotion.Disgust : 0),
+                                fear = (double) (keywordsResult.Emotion != null ? keywordsResult.Emotion.Fear : 0),
+                                joy = (double) (keywordsResult.Emotion != null ? keywordsResult.Emotion.Joy : 0),
+                                sadness = (double) (keywordsResult.Emotion != null ? keywordsResult.Emotion.Sadness : 0)
+                            }
+                            : null,
+                        sentiment = keywordsResult.Sentiment != null
+                            ? new SentimentKeyword
+                            {
+                                score = (double) (keywordsResult.Sentiment != null ? keywordsResult.Sentiment.Score : 0)
+                            }
+                            : null
                     });
 
             if (pResult.Relations != null)
@@ -120,6 +131,7 @@ namespace Action.Models.Watson.NLU
                             });
                         lRelation.Arguments.Add(lArgument);
                     }
+
                     lNLUResult.Relations.Add(lRelation);
                 }
 

@@ -503,7 +503,7 @@ namespace Action.Controllers
                     .Select(x => x.score)
                     .ToList();
                 
-                return Ok(MockFeeling(scores));
+                return Ok(CalculateFeeling(scores));
             }
             catch (Exception ex)
             {
@@ -541,11 +541,11 @@ namespace Action.Controllers
                             Weight = Convert.ToInt32(x.Select(c => c.relevance ?? 0.1F).Sum() * 1000),
                             Type = GetEmotion(new
                             {
-                                anger = x.Select(c => c.emotions.anger ?? 0.1F).Average(),
-                                disgust = x.Select(c => c.emotions.disgust ?? 0.1F).Average(),
-                                joy = x.Select(c => c.emotions.joy ?? 0.1F).Average(),
-                                sadness = x.Select(c => c.emotions.sadness ?? 0.1F).Average(),
-                                fear = x.Select(c => c.emotions.fear ?? 0.1F).Average()
+                                anger = x.Select(c => c.emotions?.anger ?? 0.1).Average(),
+                                disgust = x.Select(c => c.emotions?.disgust ?? 0.1).Average(),
+                                joy = x.Select(c => c.emotions?.joy ?? 0.1).Average(),
+                                sadness = x.Select(c => c.emotions?.sadness ?? 0.1).Average(),
+                                fear = x.Select(c => c.emotions?.fear ?? 0.1).Average()
                             })
                         })
                         .ToList();
@@ -636,13 +636,13 @@ namespace Action.Controllers
             }
         }
 
-        private Object MockFeeling(List<float?> scores)
+        private dynamic CalculateFeeling(List<double> scores)
         {
             return new
             {
-                positive = scores.Count(x=>x.HasValue && x.Value >= 0.4F),
-                negative = scores.Count(x=>x.HasValue && x.Value <= -0.4F),
-                neutro = scores.Count(x=> !x.HasValue || (x.HasValue && x.Value > -4.0F && x.Value < 4.0F)),
+                positive = scores.Count(x=>x >= 0.4),
+                negative = scores.Count(x=>x <= -0.4),
+                neutro = scores.Count(x=> x > -4.0 && x < 4.0),
                 mentions = scores.Count,
                 sources = _dbContext.ScrapSources.Count()
             };

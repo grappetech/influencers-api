@@ -633,15 +633,15 @@ namespace Action.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<float?>("anger");
+                    b.Property<double?>("anger");
 
-                    b.Property<float?>("disgust");
+                    b.Property<double>("disgust");
 
-                    b.Property<float?>("fear");
+                    b.Property<double>("fear");
 
-                    b.Property<float?>("joy");
+                    b.Property<double>("joy");
 
-                    b.Property<float?>("sadness");
+                    b.Property<double>("sadness");
 
                     b.HasKey("Id");
 
@@ -741,6 +741,8 @@ namespace Action.Migrations
 
                     b.Property<Guid?>("emotionsId");
 
+                    b.Property<string>("fragment");
+
                     b.Property<string>("language");
 
                     b.Property<float?>("relevance");
@@ -750,6 +752,8 @@ namespace Action.Migrations
                     b.Property<Guid?>("sentimentId");
 
                     b.Property<string>("text");
+
+                    b.Property<string>("translatedFragment");
 
                     b.HasKey("Id");
 
@@ -947,7 +951,7 @@ namespace Action.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<float?>("score");
+                    b.Property<double>("score");
 
                     b.HasKey("Id");
 

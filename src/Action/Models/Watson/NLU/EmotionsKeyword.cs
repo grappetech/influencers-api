@@ -5,10 +5,10 @@ namespace Action.Models.Watson.NLU
     public class EmotionsKeyword
     {
         public Guid Id { get; set; } = Guid.NewGuid();
-        public float? sadness { get; set; }
-        public float? joy { get; set; }
-        public float? fear { get; set; }
-        public float? disgust { get; set; }
-        public float? anger { get; set; }
+        public double sadness { get; set; }
+        public double joy { get; set; }
+        public double fear { get; set; }
+        public double disgust { get; set; }
+        public double? anger { get; set; }
     }
 }

@@ -28,7 +28,8 @@ namespace Action.Services.Watson.V2.NaturalLanguageUnderstanding
                         },
                         Keywords = new KeywordsOptions
                         {
-                            Sentiment = true
+                            Sentiment = true,
+                            Emotion = true
                         },
                         Relations = new RelationsOptions
                         {
