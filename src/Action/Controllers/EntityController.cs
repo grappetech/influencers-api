@@ -465,7 +465,7 @@ namespace Action.Controllers
                             date = DateTime.Today.AddMonths(-1)
                         });
 
-                    if (!string.IsNullOrWhiteSpace(type))
+                    if (!string.IsNullOrWhiteSpace(type) && !type.Equals("undefined"))
                         resultKw = resultKw.Where(x => x.type.Equals(type));
                         
                     return Ok(resultKw.ToList());
