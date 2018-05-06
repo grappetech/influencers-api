@@ -438,6 +438,11 @@ namespace Action.Controllers
         {
             try
             {
+                word = word ?? "";
+                Guid wordId;
+                
+                var wordIsId = Guid.TryParse(word, out wordId);
+                
                 var scrapdPages = _dbContext.ScrapedPages; //.Where(x =>  x.Date >= from && x.Date <= to);
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
@@ -448,7 +453,7 @@ namespace Action.Controllers
                     var resultKw = _dbContext.NluResults
                         .Include(x => x.Keywords)
                         .ThenInclude(x => x.emotions)
-                        .Where(x => x.Keywords.Any(k => k.text.ToLower().Contains(word.ToLower())))
+                        .Where(x => x.Keywords.Any(k => k.text.ToLower().Contains(word.ToLower())) || (wordIsId && x.Keywords.Any(k=>k.Id.Equals(wordId))))
                         .SelectMany(x => x.Keywords)
                         .Select(x => new
                         {
