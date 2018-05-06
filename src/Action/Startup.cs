@@ -155,10 +155,10 @@ namespace Action
                 /*RecurringJob.AddOrUpdate(()=>
                Task.Run( ()=>  ApplicationTaskScheduler.ProccessDataExtraction(dbContext)).GetAwaiter().GetResult(), 
                     Cron.Daily());
-                */
+                
                 RecurringJob.AddOrUpdate(()=>
                         Task.Run( ()=>  ApplicationTaskScheduler.ExtractPersonality(dbContext)).GetAwaiter().GetResult(), 
-                    Cron.Daily());
+                    Cron.Daily());*/
             }
         }
     }

@@ -447,6 +447,7 @@ namespace Action.Controllers
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
+                
 
                 if (!relationshipFactor.HasValue)
                 {
@@ -462,9 +463,12 @@ namespace Action.Controllers
                             type = (x.sentiment!= null && x.sentiment.score  > 4) ? "positive" :
                                 (x.sentiment!= null && x.sentiment.score < -4) ? "negative" : "neutro",
                             date = DateTime.Today.AddMonths(-1)
-                        })
-                        .ToList();
-                    return Ok(resultKw);
+                        });
+
+                    if (!string.IsNullOrWhiteSpace(type))
+                        resultKw = resultKw.Where(x => x.type.Equals(type));
+                        
+                    return Ok(resultKw.ToList());
                 }
 
 

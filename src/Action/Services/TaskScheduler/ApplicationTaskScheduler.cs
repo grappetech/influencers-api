@@ -141,7 +141,7 @@ namespace Action.Services.TaskScheduler
                                                     ? (nluAnalysis.AnalyzedText.Length - pos - 1)
                                                     : end);
                                             k.fragment = fragment;
-
+                                            k.retrieved_url = s.Url;
                                             if (fragment.Length > 100)
                                                 k.translatedFragment = new LanguageTranslatorService()
                                                     .ProccessTranslation(fragment, "pt", "en", wltc.UserName,
