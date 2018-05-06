@@ -464,6 +464,7 @@ namespace Action.Controllers
                             date = DateTime.Today.AddMonths(-1)
                         })
                         .ToList();
+                    return Ok(resultKw);
                 }
 
 
