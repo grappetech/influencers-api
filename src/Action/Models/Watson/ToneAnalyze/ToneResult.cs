@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using IBM.WatsonDeveloperCloud.ToneAnalyzer.v3.Model;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Action.Models.Watson.ToneAnalyze
 {
@@ -8,8 +10,9 @@ namespace Action.Models.Watson.ToneAnalyze
     {
         public Guid Id { get; set; } = Guid.NewGuid();
 
+        [JsonProperty("document_tone")]
         public DocumentTone DocumentTone { get; set; }
-
+        [JsonProperty("sentence_tone")]
         public List<SentencesTone> SetenceTones { get; set; } = new List<SentencesTone>();
         public Guid NluEntityId { get; set; }
         public Guid ScrapedPageId { get; set; }

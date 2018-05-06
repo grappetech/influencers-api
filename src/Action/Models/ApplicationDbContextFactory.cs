@@ -8,7 +8,7 @@ namespace Action.Models
             public ApplicationDbContext CreateDbContext(string[] args)
             {
                 var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            optionsBuilder.UseMySql("Server=sl-us-south-1-portal.0.dblayer.com;port=24035;Database=connection;Uid=admin;Pwd=RXIVJFYGQLTNOJJA;SslMode=none;");
+            optionsBuilder.UseMySql("Server=sl-us-south-1-portal.0.dblayer.com;port=24035;Database=connectionDb;Uid=admin;Pwd=RXIVJFYGQLTNOJJA;SslMode=none;");
             //optionsBuilder.UseMySql("Server=localhost;port=3306;Database=connection;Uid=root;Pwd=Projetos18;");
                 return new ApplicationDbContext(optionsBuilder.Options);
             }

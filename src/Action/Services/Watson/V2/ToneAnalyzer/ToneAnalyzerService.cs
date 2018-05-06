@@ -6,7 +6,7 @@ namespace Action.Services.Watson.V2.ToneAnalyzer
     public class ToneAnalyzerService
     {
         public Task<ToneAnalysis> ProccessToneAnalisys(string text, string language, string username, string password,
-            string Version= "2017-08-01")
+            string Version= "2016-05-19")
         {
             return Task.Run(() =>
             {
