@@ -24,7 +24,7 @@ namespace WatsonServices.Services.ApiClient.Watson
         
         public async Task<ToneResult> PostTone(string request, ApiAuthorization credentials = null)
         {
-            var parameters = new Dictionary<string, string> {{"version", VERSION}};
+            var parameters = new Dictionary<string, string> {{"version", VERSION},{"sentences","true"}};
             var result = await Post<ToneResult>(Url, $"tone", new { text=request}, true,
                Credendials, parameters);
             return result;

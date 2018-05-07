@@ -306,8 +306,7 @@ namespace Action.Controllers
             long lid = id;
             try
             {
-                var scrapdPages = _dbContext.ScrapedPages.Where(x =>
-                    x.Status == EDataExtractionStatus.Finalized); // && x.Date >= from && x.Date <= to);
+               /* var scrapdPages = _dbContext.ScrapedPages; // && x.Date >= from && x.Date <= to);
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
@@ -371,10 +370,28 @@ namespace Action.Controllers
                     score = x.avg,
                     id = x.Key,
                     name = resultTones.FirstOrDefault(y => y.Id.Equals(x.Key)).Name
-                });
+                });*/
 
 
-                return Ok(result);
+                var tones = _dbContext.Tones.Where(x => x.EntityId.Equals(lid))
+                    .Include(x => x.DocumentTone)
+                    .ThenInclude(x => x.ToneCategories)
+                    .ThenInclude(x => x.Tones)
+                    .Select(x => x.DocumentTone)
+                    .SelectMany(x => x.ToneCategories)
+                    .Where(x => x.CategoryId.Equals("language_tone"))
+                    .SelectMany(x => x.Tones)
+                    .GroupBy(x=>x.ToneId)
+                    .Select(x => new
+                    {
+                        score = x.Select(z=>z.Score).Average(),
+                        id = x.Key,
+                        name = x.Select(z=>z.ToneName).FirstOrDefault()
+                    })
+                    .ToList();
+
+                
+                return Ok(tones);
             }
             catch (Exception ex)
             {

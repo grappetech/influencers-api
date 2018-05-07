@@ -340,20 +340,20 @@ namespace Action.Services.TaskScheduler
 
             try
             {
-                var entities = new Dictionary<Guid, List<long?>>();
+                var entities = new Dictionary<Guid, List<long>>();
 
                 var result = dbContext.NluResults
                     .Include(x => x.Entity)
                     .AsNoTracking()
                     .ToList();
-
-                result.ForEach(r =>
-                {
-                    var itm = r.Entity
-                        .Select(x => x.EntityId)
-                        .ToList();
-                    entities.Add(r.ScrapedPageId, itm.Where(x => x.HasValue).ToList());
-                });
+                var itm = dbContext.NluResults
+                    .Include(x => x.Entity)
+                    .SelectMany(x => x.Entity)
+                    .Where(x => x.EntityId.HasValue)
+                    .Select(x => x.EntityId.Value)
+                    .ToList();
+                
+                result.ForEach(r => { entities.Add(r.ScrapedPageId, itm.Where(x => x > 0).Distinct().ToList()); });
 
 
                 SmtpService.SendMessage("luiz@nexo.ai", "[ACTION API SCP]",
@@ -364,7 +364,7 @@ namespace Action.Services.TaskScheduler
                     {
                         var pg = dbContext.ScrapedPages
                             .AsNoTracking()
-                            .FirstOrDefault(x => x.Id == page.Key && x.Status == EDataExtractionStatus.InProcces);
+                            .FirstOrDefault(x => x.Id == page.Key);
 
                         if (pg == null) continue;
                         page.Value.ForEach(ent =>
@@ -381,7 +381,7 @@ namespace Action.Services.TaskScheduler
 
                             if (piResult != null)
                             {
-                                piResult.EntityId = ent.Value;
+                                piResult.EntityId = ent;
                                 piResult.ScrapedPageId = pg.Id;
                                 dbContext.Personalities.Add(piResult);
                                 var pagina = dbContext.ScrapedPages.Find(pg.Id);
@@ -405,7 +405,7 @@ namespace Action.Services.TaskScheduler
                 SmtpService.SendMessage("luiz@nexo.ai", "[ACTION-API NLU ERROR]",
                     $"Date Time: {DateTime.Now + Environment.NewLine} <br/> {ex.Message + Environment.NewLine}");
             }
-            
+
             SmtpService.SendMessage("luiz@nexo.ai", "[ACTION-API NLU Finished]", $"Date Time: {DateTime.Now}");
         }
     }
