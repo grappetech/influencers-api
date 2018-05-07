@@ -668,7 +668,7 @@ namespace Action.Controllers
             {
                 positive = scores.Count(x => x >= 0.4),
                 negative = scores.Count(x => x <= -0.4),
-                neutro = scores.Count(x => x > -4.0 && x < 4.0),
+                neutro = scores.Count(x => x > -0.4 && x < 0.4),
                 mentions = scores.Count,
                 sources = _dbContext.ScrapSources.Count()
             };
