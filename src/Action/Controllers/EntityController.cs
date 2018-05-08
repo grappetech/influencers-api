@@ -20,9 +20,9 @@ using Entity = Action.Models.Watson.Entity;
 
 namespace Action.Controllers
 {
-    [Route("api/entities")]
     [EnableCors("Default")]
     [AllowAnonymous]
+    [Route("api/entities")]
     public class EntityController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
