@@ -306,88 +306,13 @@ namespace Action.Controllers
             long lid = id;
             try
             {
-               /* var scrapdPages = _dbContext.ScrapedPages; // && x.Date >= from && x.Date <= to);
-
-                var pagesId = scrapdPages.Select(x => x.Id).ToList();
-
-                var tones = _dbContext.Tones.Where(x =>
-                    pagesId.Contains(x.ScrapedPageId) && x.EntityId.HasValue && x.EntityId.Value == lid).Select(
-                    x => new
-                    {
-                        scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Url,
-                        x.SetenceTones,
-                        scrapdPages.FirstOrDefault(y => y.Id == x.ScrapedPageId).Date,
-                        Mentions = x.SetenceTones.Select(z => new
-                        {
-                            z.Id,
-                            z.Text,
-                            tone = GetMaxTone(z.ToneCategories.SelectMany(y => y.Tones).Select(t => new
-                            {
-                                t.Score,
-                                id = t.ToneId,
-                                name = t.ToneName
-                            }))
-                        })
-                    });
-
-                var stones = tones.SelectMany(x => x.SetenceTones).Select(x => new
-                {
-                    x.Text,
-                    tones = x.ToneCategories.SelectMany(y => y.Tones).Select(z => new
-                    {
-                        z.Score,
-                        Id = z.ToneId,
-                        Name = z.ToneName
-                    })
-                });
-
-                var resultTones = new List<ToneItem>();
-
-                foreach (var item in stones)
-                {
-                    ToneItem tom = new ToneItem();
-
-                    foreach (var item2 in item.tones)
-                    {
-                        if (item2.Score > tom.Score)
-                        {
-                            tom.Score = item2.Score.Value;
-                            tom.Id = item2.Id;
-                            tom.Name = item2.Name;
-                        }
-                    }
-
-                    if (tom.Score > 0)
-                        resultTones.Add(tom);
-                }
-
-                var result = resultTones.GroupBy(x => x.Id).Select(x => new
-                {
-                    x.Key,
-                    avg = x.Average(y => y.Score)
-                }).Select(x => new
-                {
-                    score = x.avg,
-                    id = x.Key,
-                    name = resultTones.FirstOrDefault(y => y.Id.Equals(x.Key)).Name
-                });*/
-
-
-                var tones = _dbContext.Tones.Where(x => x.EntityId.Equals(lid))
-                    .Include(x => x.DocumentTone)
-                    .ThenInclude(x => x.ToneCategories)
-                    .ThenInclude(x => x.Tones)
-                    .Select(x => x.DocumentTone)
-                    .SelectMany(x => x.ToneCategories)
-                    .Where(x => x.CategoryId.Equals("language_tone"))
-                    .SelectMany(x => x.Tones)
-                    .GroupBy(x=>x.ToneId)
-                    .Select(x => new
-                    {
-                        score = x.Select(z=>z.Score).Average(),
-                        id = x.Key,
-                        name = x.Select(z=>z.ToneName).FirstOrDefault()
-                    })
+               
+                var tones = _dbContext.NluResults
+                    .Where(x => x.Entity.Any(z=>z.EntityId.Equals(lid)))
+                    .Include(x=>x.Keywords)
+                    .ThenInclude(x=>x.emotions)
+                    .SelectMany(x=>x.Keywords)
+                    .Include(x=>x.emotions)
                     .ToList();
 
                 
