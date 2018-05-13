@@ -34,6 +34,21 @@ namespace Action.Controllers
             _htmlEncoder = htmlEncoder;
         }
 
+        [HttpGet("roles")]
+        public IActionResult GetFactors([FromQuery] string filter)
+        {
+            if (string.IsNullOrWhiteSpace(filter))
+                filter = string.Empty;
+            
+            var result = _dbContext.Set<EntityRole>()
+                .Where(x => x.Name.Contains(filter.ToLower()))
+                .OrderBy(x=>x.Name)
+                .ToList();
+
+            return Ok(result);
+        }
+
+
         // GET: api/values
         [HttpGet("")]
         public dynamic Get([FromQuery] string name = "")
@@ -306,16 +321,15 @@ namespace Action.Controllers
             long lid = id;
             try
             {
-               
                 var tones = _dbContext.NluResults
-                    .Where(x => x.Entity.Any(z=>z.EntityId.Equals(lid)))
-                    .Include(x=>x.Keywords)
-                    .ThenInclude(x=>x.emotions)
-                    .SelectMany(x=>x.Keywords)
-                    .Include(x=>x.emotions)
+                    .Where(x => x.Entity.Any(z => z.EntityId.Equals(lid)))
+                    .Include(x => x.Keywords)
+                    .ThenInclude(x => x.emotions)
+                    .SelectMany(x => x.Keywords)
+                    .Include(x => x.emotions)
                     .ToList();
 
-                
+
                 return Ok(tones);
             }
             catch (Exception ex)
@@ -382,34 +396,34 @@ namespace Action.Controllers
             {
                 word = word ?? "";
                 Guid wordId;
-                
+
                 var wordIsId = Guid.TryParse(word, out wordId);
-                
+
                 var scrapdPages = _dbContext.ScrapedPages; //.Where(x =>  x.Date >= from && x.Date <= to);
 
                 var pagesId = scrapdPages.Select(x => x.Id).ToList();
 
-                
 
                 if (!relationshipFactor.HasValue)
                 {
                     var resultKw = _dbContext.NluResults
                         .Include(x => x.Keywords)
                         .ThenInclude(x => x.emotions)
-                        .Where(x => x.Keywords.Any(k => k.text.ToLower().Contains(word.ToLower())) || (wordIsId && x.Keywords.Any(k=>k.Id.Equals(wordId))))
+                        .Where(x => x.Keywords.Any(k => k.text.ToLower().Contains(word.ToLower())) ||
+                                    (wordIsId && x.Keywords.Any(k => k.Id.Equals(wordId))))
                         .SelectMany(x => x.Keywords)
                         .Select(x => new
                         {
                             text = x.fragment,
                             url = x.retrieved_url,
-                            type = (x.sentiment!= null && x.sentiment.score  > 4) ? "positive" :
-                                (x.sentiment!= null && x.sentiment.score < -4) ? "negative" : "neutro",
+                            type = (x.sentiment != null && x.sentiment.score > 4) ? "positive" :
+                                (x.sentiment != null && x.sentiment.score < -4) ? "negative" : "neutro",
                             date = DateTime.Today.AddMonths(-1)
                         });
 
                     if (!string.IsNullOrWhiteSpace(type) && !type.Equals("undefined"))
                         resultKw = resultKw.Where(x => x.type.Equals(type));
-                        
+
                     return Ok(resultKw.ToList());
                 }
 

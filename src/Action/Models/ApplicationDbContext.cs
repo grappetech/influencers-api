@@ -21,6 +21,10 @@ namespace Action.Models
 		
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
+			builder.Entity<EntityRole>()
+				.HasKey(x => x.Id);
+			builder.Entity<BriefingTag>()
+				.HasKey(x => x.Id);
 			builder.Entity<WatsonCredentials>()
 				.HasKey(x => x.Service);
 				

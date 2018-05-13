@@ -324,6 +324,22 @@ namespace Action.Controllers
               
             });
         }
+
+        [HttpGet("tags")]
+        public IActionResult GetFactors([FromQuery] string filter)
+        {
+            return ValidateUser(() =>
+            {
+                if (string.IsNullOrWhiteSpace(filter))
+                    filter = string.Empty;
+                
+                var result = _dbContext.Set<BriefingTag>().Where(x => x.Text.ToLower().Contains(filter.ToLower()))
+                    .OrderBy(x => x.Text)
+                    .ToList();
+
+                return Ok(result);
+            });
+        }
     }
     
 }

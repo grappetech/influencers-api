@@ -78,6 +78,19 @@ namespace Action.Migrations
                     b.ToTable("Briefings");
                 });
 
+            modelBuilder.Entity("Action.Models.Core.BriefingTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(180);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BriefingTag");
+                });
+
             modelBuilder.Entity("Action.Models.Core.City", b =>
                 {
                     b.Property<long>("Id")
@@ -106,6 +119,19 @@ namespace Action.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Countries");
+                });
+
+            modelBuilder.Entity("Action.Models.Core.EntityRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(180);
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EntityRole");
                 });
 
             modelBuilder.Entity("Action.Models.Core.ImageRepo", b =>
