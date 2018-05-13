@@ -335,6 +335,7 @@ namespace Action.Controllers
                 
                 var result = _dbContext.Set<BriefingTag>().Where(x => x.Text.ToLower().Contains(filter.ToLower()))
                     .OrderBy(x => x.Text)
+                    .Select(x=>new {id = x.Id, text = x.Text})
                     .ToList();
 
                 return Ok(result);

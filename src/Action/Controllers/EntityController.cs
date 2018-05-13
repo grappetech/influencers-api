@@ -43,6 +43,7 @@ namespace Action.Controllers
             var result = _dbContext.Set<EntityRole>()
                 .Where(x => x.Name.Contains(filter.ToLower()))
                 .OrderBy(x=>x.Name)
+                .Select(x=>new {id = x.Id, name = x.Name})
                 .ToList();
 
             return Ok(result);
