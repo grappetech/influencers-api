@@ -332,11 +332,11 @@ namespace Action.Controllers
 
                 var result = new dynamic[]
                 {
-                    new {title = "anger", value = tones.Select(x => x.emotions.anger).Average()},
-                    new {title = "fear", value = tones.Select(x => x.emotions.fear).Average()},
-                    new {title = "sadness", value = tones.Select(x => x.emotions.sadness).Average()},
-                    new {title = "joy", value = tones.Select(x => x.emotions.joy).Average()},
-                    new {title = "disgust", value = tones.Select(x => x.emotions.disgust).Average()}
+                    new {name = "anger", score = tones.Select(x => x.emotions.anger).Average()},
+                    new {name = "fear", score = tones.Select(x => x.emotions.fear).Average()},
+                    new {name = "sadness", score = tones.Select(x => x.emotions.sadness).Average()},
+                    new {name = "joy", score = tones.Select(x => x.emotions.joy).Average()},
+                    new {name = "disgust", score = tones.Select(x => x.emotions.disgust).Average()}
                 };
 
                 return Ok(result);
