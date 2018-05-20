@@ -330,8 +330,16 @@ namespace Action.Controllers
                     .Include(x => x.emotions)
                     .ToList();
 
+                var result = new
+                {
+                    anger = tones.Select(x => x.emotions.anger).Average(),
+                    fear = tones.Select(x => x.emotions.fear).Average(),
+                    sadness = tones.Select(x => x.emotions.sadness).Average(),
+                    joy = tones.Select(x => x.emotions.joy).Average(),
+                    disgust = tones.Select(x => x.emotions.disgust).Average()
+                };
 
-                return Ok(tones);
+                return Ok(result);
             }
             catch (Exception ex)
             {

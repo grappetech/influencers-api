@@ -1,9 +1,11 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace Action.Models.Watson.NLU
 {
     public class Keywords
     {
+        [JsonProperty("id")]
         public Guid Id { get; set; } = Guid.NewGuid();
         public string language { get; set; }
         public string retrieved_url { get; set; }
