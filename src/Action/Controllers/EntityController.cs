@@ -39,11 +39,11 @@ namespace Action.Controllers
         {
             if (string.IsNullOrWhiteSpace(filter))
                 filter = string.Empty;
-            
+
             var result = _dbContext.Set<EntityRole>()
                 .Where(x => x.Name.Contains(filter.ToLower()))
-                .OrderBy(x=>x.Name)
-                .Select(x=>new {id = x.Id, name = x.Name})
+                .OrderBy(x => x.Name)
+                .Select(x => new {id = x.Id, name = x.Name})
                 .ToList();
 
             return Ok(result);
@@ -330,13 +330,13 @@ namespace Action.Controllers
                     .Include(x => x.emotions)
                     .ToList();
 
-                var result = new
+                var result = new dynamic[]
                 {
-                    anger = tones.Select(x => x.emotions.anger).Average(),
-                    fear = tones.Select(x => x.emotions.fear).Average(),
-                    sadness = tones.Select(x => x.emotions.sadness).Average(),
-                    joy = tones.Select(x => x.emotions.joy).Average(),
-                    disgust = tones.Select(x => x.emotions.disgust).Average()
+                    new {title = "anger", value = tones.Select(x => x.emotions.anger).Average()},
+                    new {title = "fear", value = tones.Select(x => x.emotions.fear).Average()},
+                    new {title = "sadness", value = tones.Select(x => x.emotions.sadness).Average()},
+                    new {title = "joy", value = tones.Select(x => x.emotions.joy).Average()},
+                    new {title = "disgust", value = tones.Select(x => x.emotions.disgust).Average()}
                 };
 
                 return Ok(result);
