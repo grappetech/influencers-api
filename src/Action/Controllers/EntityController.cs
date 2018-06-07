@@ -352,7 +352,7 @@ namespace Action.Controllers
         public IActionResult GetRelations([FromRoute] long id, [FromQuery] DateTime from, [FromQuery] DateTime to,
             [FromQuery] string word, [FromQuery] string relationshipFactor, [FromQuery] string type)
         {
-            try
+            /*try
             {
                 var pageIds = _dbContext.ScrapedPages
                     .Select(x => x.Id);
@@ -393,7 +393,8 @@ namespace Action.Controllers
             catch (Exception ex)
             {
                 return StatusCode((int) EServerError.BusinessError, new List<string> {ex.Message});
-            }
+            }*/
+            return GetWords(id, from, to,relationshipFactor ?? "");
         }
 
 

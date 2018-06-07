@@ -1,1 +1,14 @@
-﻿null
+﻿{
+  "socialEngagement": 0,
+  "ageRanges": {
+    "age18_24": 0,
+    "age25_31": 0,
+    "age32_38": 0,
+    "age39_45": 0,
+    "age46_52": 0,
+    "age53_59": 0,
+    "age60": 0
+  },
+  "males": 0,
+  "females": 0
+}

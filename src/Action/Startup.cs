@@ -140,7 +140,7 @@ namespace Action
             
             
            
-          StartScraper(dbContext);
+        //  StartScraper(dbContext);
         }
 
         private void StartScraper(ApplicationDbContext dbContext)

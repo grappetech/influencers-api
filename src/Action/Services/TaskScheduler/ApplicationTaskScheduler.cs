@@ -321,13 +321,15 @@ namespace Action.Services.TaskScheduler
             #endregion
         }
 
-
-        public static void ExtractPersonality(ApplicationDbContext dbContext)
+        [STAThread]
+        public static void ExtractPersonality(ApplicationDbContext context)
         {
+
+            var dbContext = context;
             #region Set Watson Services Credentials
 
             Debugger.Log(0, "SCP", "Buscando Credenciais." + Environment.NewLine);
-            var credentials = dbContext.WatsonCredentials.AsNoTracking().ToList();
+            var credentials = dbContext.WatsonCredentials.ToList();
             var wpic =
                 credentials.FirstOrDefault(x => x.Service == EWatsonServices.WatsonPersonalityInsights);
 

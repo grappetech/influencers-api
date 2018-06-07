@@ -1,1 +1,19 @@
-null
+{
+  "public":
+  {
+    "agerange":{
+      "agerange":"18_24",
+      "score":0
+    },
+    "gener":[
+      {
+        "sex":"male",
+        "percentile":0
+      },
+      {
+        "sex":"female",
+        "percentile":0
+      }
+    ]
+  }
+}

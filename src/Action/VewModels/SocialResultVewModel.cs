@@ -12,8 +12,8 @@ namespace Action.VewModels
         [JsonProperty("engament")]
         public double Engagement { get; set; }
         [JsonProperty("ageRanges")]
-        public AgeRangesViewModel AgeRanges { get; set; }
+        public AgeRangesViewModel AgeRanges { get; set; } = new AgeRangesViewModel();
         [JsonProperty("stats")]
-        public List<SocialStatViewModel> Stats { get; set; }
+        public List<SocialStatViewModel> Stats { get; set; } = new List<SocialStatViewModel>();
     }
 }

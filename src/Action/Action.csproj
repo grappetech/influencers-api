@@ -11,17 +11,17 @@
     <NoWarn>$(NoWarn);NU1605</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Hangfire" Version="1.6.17" />
+    <PackageReference Include="Hangfire" Version="1.6.19" />
     <PackageReference Include="Hangfire.MemoryStorage" Version="1.5.2" />
-    <PackageReference Include="IBM.WatsonDeveloperCloud.Conversation.v1" Version="2.1.0" />
-    <PackageReference Include="IBM.WatsonDeveloperCloud.Discovery.v1" Version="2.1.0" />
-    <PackageReference Include="IBM.WatsonDeveloperCloud.LanguageTranslator.v2" Version="2.1.0" />
-    <PackageReference Include="IBM.WatsonDeveloperCloud.NaturalLanguageUnderstanding.v1" Version="2.1.0" />
-    <PackageReference Include="IBM.WatsonDeveloperCloud.PersonalityInsights.v3" Version="2.1.0" />
-    <PackageReference Include="IBM.WatsonDeveloperCloud.SpeechToText.v1" Version="2.1.0" />
-    <PackageReference Include="IBM.WatsonDeveloperCloud.TextToSpeech.v1" Version="2.1.0" />
-    <PackageReference Include="IBM.WatsonDeveloperCloud.ToneAnalyzer.v3" Version="2.1.0" />
-    <PackageReference Include="IBM.WatsonDeveloperCloud.VisualRecognition.v3" Version="2.1.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.Conversation.v1" Version="2.3.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.Discovery.v1" Version="2.3.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.LanguageTranslator.v2" Version="2.3.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.NaturalLanguageUnderstanding.v1" Version="2.3.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.PersonalityInsights.v3" Version="2.3.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.SpeechToText.v1" Version="2.3.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.TextToSpeech.v1" Version="2.3.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.ToneAnalyzer.v3" Version="2.3.0" />
+    <PackageReference Include="IBM.WatsonDeveloperCloud.VisualRecognition.v3" Version="2.3.0" />
     <PackageReference Include="LinqKit.Microsoft.EntityFrameworkCore" Version="1.1.15" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />
@@ -29,9 +29,9 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.2" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2" />
@@ -39,7 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\AutoMapper" />
-      <Folder Include="Services\Watson\Models"/>
+      <Folder Include="Services\Watson\Models" />
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>
