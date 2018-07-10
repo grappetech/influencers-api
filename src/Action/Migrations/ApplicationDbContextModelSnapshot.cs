@@ -485,6 +485,8 @@ namespace Action.Migrations
 
                     b.Property<string>("FacebookUser");
 
+                    b.Property<int?>("IndustryId");
+
                     b.Property<string>("InstagranUser");
 
                     b.Property<string>("Name");
@@ -502,6 +504,8 @@ namespace Action.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
+
+                    b.HasIndex("IndustryId");
 
                     b.ToTable("Entities");
                 });
@@ -1381,6 +1385,10 @@ namespace Action.Migrations
                     b.HasOne("Action.Models.ServiceAccount.Account")
                         .WithMany("Entities")
                         .HasForeignKey("AccountId");
+
+                    b.HasOne("Action.Models.Core.Industry", "Industry")
+                        .WithMany("Entities")
+                        .HasForeignKey("IndustryId");
                 });
 
             modelBuilder.Entity("Action.Models.Watson.NLU.Argument", b =>

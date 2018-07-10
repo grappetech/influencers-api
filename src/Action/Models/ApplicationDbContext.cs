@@ -77,6 +77,12 @@ namespace Action.Models
                    .WithOne(x=>x.CoreEntity)
                    .HasForeignKey(x=>x.EntityId);
 
+            builder.Entity<Entity>()
+                   .HasOne(x => x.Industry)
+                   .WithMany(i => i.Entities)
+                   .HasForeignKey(x => x.IndustryId);
+                  
+
 			builder.Entity<SecondaryPlan>()
 				.HasOne(x => x.Account)
 				.WithMany(x => x.SecondaryPlans)
