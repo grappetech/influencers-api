@@ -1,11 +1,11 @@
 ﻿using Action.Data.Models.Core.Scrap;
 using Action.Services;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace ActionUI.Admin.Pages.Sources
+namespace ActionUI.Admin.Pages.Logged.Sources
 {
     public class ListModel : PageModel
     {
@@ -19,8 +19,7 @@ namespace ActionUI.Admin.Pages.Sources
         public List<ScrapSource> ScrapSourceList { get; set; }
 
         public void OnGet()
-        {
-            HttpContext.Session.SetString("userSession", "Marcio");
+        {            
             this.ScrapSourceList = this._sourceService.Get().OrderByDescending(s=>s.Id).ToList();
         }
 

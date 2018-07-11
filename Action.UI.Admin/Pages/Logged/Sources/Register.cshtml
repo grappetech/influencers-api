@@ -1,5 +1,5 @@
 ﻿@page "{id:int}"
-@model ActionUI.Admin.Pages.Sources.RegisterModel
+@model RegisterModel
 @{
     ViewData["Title"] = "Register";
 }
@@ -64,9 +64,18 @@
                                             <label for="projectinput5">Tag Inicio</label>
                                             <select id="projectinput5" asp-for="@Model.SourceScrap.StarTag" class="form-control">
                                                 <option value="">--Selecione--</option>
-                                                @foreach (var tag in Model.SourceScrap.ListTags)
+                                                @foreach (string tag in Model.SourceScrap.ListTags)
                                                 {
-                                                    <option value="@tag">@tag</option>
+                                                    if (tag.Contains("body"))
+                                                    {
+                                                        <option selected="selected" value="@tag">@tag</option>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@tag">@tag</option>
+
+                                                    }
 
                                                 }
 
@@ -79,9 +88,18 @@
                                             <label for="projectinput5">Tag Fim</label>
                                             <select id="projectinput5" asp-for="@Model.SourceScrap.EndTag" class="form-control">
                                                 <option value="">--Selecione--</option>
-                                                @foreach (var tag in Model.SourceScrap.ListTags)
+                                                @foreach (string tag in Model.SourceScrap.ListTags)
                                                 {
-                                                    <option value="@tag">@tag</option>
+                                                    if (tag.Contains("body"))
+                                                    {
+                                                        <option selected="selected" value="@tag">@tag</option>
+
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@tag">@tag</option>
+
+                                                    }
 
                                                 }
 
@@ -122,7 +140,7 @@
 
 
                             <div class="form-actions">
-                                <a href="/Sources/list" class="btn btn-raised btn-raised btn-warning mr-1">
+                                <a href="/Logged/Sources/list" class="btn btn-raised btn-raised btn-warning mr-1">
                                     <i class="ft-x"></i> Cancelar
                                 </a>
                                 <button type="button" class="btn btn-raised btn-raised btn-primary" id="btnSaveRegister">

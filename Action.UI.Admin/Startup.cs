@@ -68,10 +68,14 @@ namespace ActionUI.Admin
 
             //custom services
             ConfigureServiceDI(services);
-            services.AddMvc(options =>
-            {
-                options.Filters.Add(new CustomFilter.UserLoggedFilter());
-            });
+            services.AddMvc()
+                .AddRazorPagesOptions(options =>
+                {
+                    options.Conventions.AddPageRoute("/Login", "");
+
+                    options.Conventions.AddFolderApplicationModelConvention("/Logged",
+                        model => model.Filters.Add(new CustomFilter.UserLoggedFilter()));
+                });
         }
 
         private void ConfigureServiceDI(IServiceCollection services)

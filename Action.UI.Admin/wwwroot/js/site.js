@@ -8,7 +8,7 @@ var Site = {
 
             e.preventDefault();
             Site.notification.confirm("Aviso", "Deseja realmente sair?", function() {
-                window.location.href="/Index?handler=logout"
+                window.location.href="/Logged/Index?handler=logout"
             });
         });
     }

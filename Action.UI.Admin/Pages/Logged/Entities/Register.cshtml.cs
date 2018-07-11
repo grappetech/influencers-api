@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 
-namespace ActionUI.Admin.Pages.Entities
+namespace ActionUI.Admin.Pages.Logged.Entities
 {
     public class RegisterModel : PageModel
     {

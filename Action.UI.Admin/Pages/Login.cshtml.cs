@@ -48,7 +48,7 @@ namespace ActionUI.Admin.Pages
             if (userFound)
             {
                 HttpContext.Session.SetString(Constants.USER_SESSION, user.Id);
-                return RedirectToPage("Entities/List");
+                return RedirectToPage("Logged/Index");
             }
 
             return Page();

@@ -7,31 +7,23 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 
-namespace ActionUI.Admin.Pages.Sources
+namespace ActionUI.Admin.Pages.Logged.Sources
 {
     public class RegisterModel : PageModel
     {
 
-
-
         private readonly SourceService _sourceService;
         public RegisterModel(SourceService sourceService)
-        {
-            
+        {   
             _sourceService = sourceService;
-            string userSession = HttpContext?.Session.GetString("userSession");
-
         }
-
-
-
 
         [BindProperty]
         public ViewModel.SourceScrapViewModel SourceScrap { get; set; } = new ViewModel.SourceScrapViewModel();
 
         public void OnGet(int id)
         {
-            string userSession = HttpContext.Session.GetString("userSession");
+            
             if (id > 0)
             {
                 var entity = this._sourceService.Get(id);

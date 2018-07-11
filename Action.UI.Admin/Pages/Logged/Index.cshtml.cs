@@ -7,7 +7,7 @@ using ActionUI.Admin.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace ActionUI.Admin.Pages
+namespace ActionUI.Admin.Pages.Logged
 {
     public class IndexModel : PageModel
     {
@@ -41,7 +41,7 @@ namespace ActionUI.Admin.Pages
         public IActionResult OnGetLogout()
         {
             HttpContext.Session.Clear();
-            return RedirectToPage("Login");
+            return RedirectToPage("/Login");
         }
     }
 }

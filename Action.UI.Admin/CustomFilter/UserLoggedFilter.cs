@@ -15,7 +15,12 @@ namespace ActionUI.Admin.CustomFilter
             //_logger.LogDebug("Global OnPageHandlerSelectionAsync called.");
 
             bool canAccess = this.CanAccess(context);
-           
+
+
+            if (!canAccess)
+            {
+                context.HttpContext.Response.Redirect("/Login");
+            }
 
             await Task.CompletedTask;
         }
@@ -26,6 +31,9 @@ namespace ActionUI.Admin.CustomFilter
             {
 
                 var userSession = context.HttpContext.Session.GetString(Constants.USER_SESSION);
+
+                if (string.IsNullOrEmpty(userSession))
+                    return false;
 
             }
 

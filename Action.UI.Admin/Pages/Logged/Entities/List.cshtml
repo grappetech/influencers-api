@@ -19,51 +19,49 @@
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4 class="card-title">Fontes de Scrap</h4>
+                        <h4 class="card-title">Entidades</h4>
                         <!-- <p>For basic styling add the base class <code>.table</code> to any <code>&lt;table&gt;</code>. It may seem super redundant, but given the widespread use of tables for other plugins like calendars and date pickers, we've opted to isolate our custom table styles.</p> -->
                     </div>
                     <div class="card-body">
                         <div class="card-block">
 
                             <div class="form-actions">
-
-                                <a href="/Sources/Register/0" class="btn btn-raised btn-raised btn-primary">
-                                    <i class="fa fa-plus"></i> Add Fonte
+                            
+                                <a  href="/Entities/Register/0" class="btn btn-raised btn-raised btn-primary">
+                                    <i class="fa fa-plus"></i> Add Entidade
                                 </a>
-
-                              
                             </div>
                             <table class="table data-table">
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Nome</th>
                                         <th>Alias</th>
-                                        <th>Profundidade</th>
-                                        <th>Tag Início</th>
-                                        <th>Tag Fim</th>
-                                        <th>Limite</th>
+                                        <th>Tipo</th>
+                                        <th>
+                                            Qtd.
+                                            <br>Entidades Watson
+                                        </th>
                                         <th>&nbsp;</th>
                                     </tr>
                                 </thead>
                                 <tbody>
 
-                                    @foreach (var scrapSource in Model.ScrapSourceList)
+                                    @foreach (var entity in Model.WattsonEntities)
                                     {
-                                    <tr>
-                                        <th scope="row">@scrapSource.Id</th>
-                                        <td>@scrapSource.Alias</td>
-                                        <td>@scrapSource.Dept</td>
-                                        <td>@scrapSource.StarTag</td>
-                                        <td>@scrapSource.EndTag</td>
-                                        <td>@scrapSource.Limit</td>
-                                        
-                                        <td>
-                                            <a class="success p-0" data-original-title="" title="" href="/Sources/Register/@scrapSource.Id">
-                                                <i class="ft-edit-2 font-medium-3 mr-2"></i>
-                                            </a>
+                                        <tr>
+                                            <th scope="row">@entity.Id</th>
+                                            <td>@entity.Name</td>
+                                            <td>@entity.Alias</td>
+                                            <td>mdo</td>
+                                            <td>@entity?.RelatedEntities.Count</td>
+                                            <td>
+                                                <a class="success p-0" data-original-title="" title="" href="/Logged/Entities/Register/@entity.Id">
+                                                    <i class="ft-edit-2 font-medium-3 mr-2"></i>
+                                                </a>
 
-                                        </td>
-                                    </tr>
+                                            </td>
+                                        </tr>
                                     }
 
                                 </tbody>
