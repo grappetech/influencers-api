@@ -1,0 +1,327 @@
+﻿@page "{id:long}"
+@model ActionUI.Admin.Pages.Entities.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+@section css{
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/datatables.min.css">
+}
+@section scripts{
+    <script src="~/app-assets/vendors/js/datatable/datatables.min.js" type="text/javascript"></script>
+
+    <script src="~/js/Admin/DataTableConfig.js" type="text/javascript"></script>
+    <script src="~/js/Admin/Pages/Entity/EntityRegister.js" type="text/javascript"></script>
+
+}
+
+<!-- Basic form layout section start -->
+<section id="basic-form-layouts">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="content-header">Cadastro de Entidade @ViewData["msg"]</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <!-- <h4 class="card-title" id="basic-layout-form">Project Info</h4>
+                    <p class="mb-0">This is the most basic and default form having form sections. To add form section use
+                      <code>.form-section</code> class with any heading tags. This form has the buttons on the bottom left corner which is the default
+                      position.
+                    </p> -->
+                </div>
+                <div class="card-body">
+                    <div class="px-3">
+                        <form class="form formRegisterEntity" method="post">
+
+                            <input type="hidden" asp-for="@Model.Entity.SelectedUnRelatedWatsonEntity" id="selectedUnrelatedEntity" />
+                            <!--Entidades que serão desmarcadas-->
+                            <input type="hidden" asp-for="@Model.Entity.UnSelectedUnRelatedWatsonEntity" id="unselectedEntity" />
+
+
+
+                            <div class="form-body">
+                                @*<h4 class="form-section">
+            <i class="ft-user"></i> Informação de Entidade
+        </h4>*@
+
+                                @if (Model.Entity != null && Model.Entity.Id > 0)
+                                {
+                                    <div class="row">
+                                        <div class="col-md-12 col-sm-12">
+                                            <div class="card card-outline-primary box-shadow-0 text-center" style="height: 301.75px;">
+                                                <div class="card-body">
+                                                    <div class="card-block pt-3">
+                                                        <div class="row d-flex">
+                                                            <div class="col align-self-center">
+                                                                @if (!string.IsNullOrEmpty(Model.Entity.PictureUrl))
+                                                                {
+                                                                    <img src="@Model.Entity.PictureUrl" alt="@Model.Entity.Name" width="190">
+
+                                                                }
+                                                            </div>
+                                                            <div class="col align-self-center">
+                                                                <h4 class="card-title mt-3">@Model.Entity.Name</h4>
+                                                                <p class="card-text">@Model.Entity.Alias</p>
+                                                                @*<button class="btn btn-raised btn-primary">Buy Now</button>*@
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="projectinput1">Nome</label>
+                                            <input type="hidden" asp-for="Entity.Id" />
+                                            <input type="text" id="entityName" asp-for="Entity.Name" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="projectinput2">Alias</label>
+                                            <input type="text" id="entityAlias" class="form-control" asp-for="Entity.Alias">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="projectinput3">Url Site</label>
+                                            <input type="text" id="entityUrlSite" class="form-control" asp-for="Entity.SiteUrl">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="projectinput4">URL Imagem</label>
+                                            <input type="text" id="entityImageUrl" class="form-control" asp-for="Entity.PictureUrl">
+
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h4 class="form-section">
+                                    <i class="ft-file-text"></i> Social URL
+                                </h4>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="projectinput3">Facebook</label>
+                                            <input type="text" id="entityFacebookUser" asp-for="Entity.FacebookUser" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="projectinput4">Tweeter</label>
+                                            <input type="text" id="entityTweeterUser" asp-for="Entity.TweeterUser" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="projectinput3">Youtube</label>
+                                            <input type="text" id="entityYoutubeUser" asp-for="Entity.YoutubeUser" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="projectinput4">Instagram</label>
+                                            <input type="text" id="entityInstagranUser" asp-for="Entity.InstagranUser" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h4 class="form-section">
+                                    <i class="ft-file-text"></i> Geral
+                                </h4>
+
+                                <div class="row">
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="projectinput6">Industria</label>
+                                            <select id="projectinput6" asp-for="@Model.Entity.IndustryId" class="form-control">
+                                                <option value="">--Selecione--</option>
+                                                @foreach (var industry in Model.Entity.Industries)
+                                                {
+                                                    <option value="@industry.Id">@industry.Name</option>
+                                                }
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="projectinput6">Categoria</label>
+                                            <select id="projectinput6" asp-for="@Model.Entity.CategoryId" class="form-control">
+
+                                                <option value="">--Selecione--</option>
+                                                @foreach (var category in Model.Entity.Categories)
+                                                {
+                                                    <option value="@category.Id">@category.Name</option>
+                                                }
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="projectinput5">Camada</label>
+                                            <select id="projectinput5" asp-for="@Model.Entity.Tier" class="form-control">
+                                                <option value="">--Selecione--</option>
+                                                <option value="1">Camada 1</option>
+                                                <option value="2">Camada 2</option>
+                                                <option value="3">Camada 3</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                                <!--
+    <div class="form-group">
+      <label>Select File</label>
+      <input type="file" class="form-control-file" id="projectinput8">
+    </div>
+
+    <div class="form-group">
+      <label for="projectinput8">About Project</label>
+      <textarea id="projectinput8" rows="5" class="form-control" name="comment"></textarea>
+    </div> -->
+
+                                <h4 class="form-section">
+                                    <i class="ft-file-text"></i> Entidades Watson
+                                </h4>
+
+
+                                @if (Model.Entity.RelatedWatsonEntity?.Count > 0)
+                                {
+                                    <div class="row" id="dtEntityRelatedContainer">
+                                        <div class="col-sm-12">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h4 class="card-title">Entidades relacionadas</h4>
+
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="card-block">
+                                                        <table class="table dtscroll-vertical" id="dtEntityRelated">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="display:none">#</th>
+                                                                    <th>Descrição</th>
+                                                                    <th>Tipo</th>
+                                                                    <th>Opção</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var unRelatedEntity in Model.Entity.RelatedWatsonEntity)
+                                                                {
+                                                                    <tr>
+                                                                        <th style="display:none" scope="row">@unRelatedEntity.Id</th>
+                                                                        <td>@unRelatedEntity.Text</td>
+                                                                        <td>@unRelatedEntity.Type</td>
+                                                                        <td><input data-entitycoreid="@unRelatedEntity.Id" class="chkRelatedEntity" data-entityid="@Model.Entity.Id" checked type="checkbox"></td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                }
+                                else
+                                {
+
+                                    <div class="alert alert-warning" role="alert">
+                                        Nenhuma Entidade Watson foi relacionada
+                                    </div>
+                                }
+
+                                @if (Model.Entity.UnRelatedWatsonEntity?.Count > 0)
+                                {
+
+
+
+                                    <div class="row" id="dtEntityNotRelatedContainer">
+                                        <div class="col-sm-12">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h4 class="card-title">Entidades não relacionadas</h4>
+
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="card-block">
+                                                        <table class="table dtscroll-vertical" id="dtEntityNotRelated">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th style="display:none">#</th>
+                                                                    <th>Descrição</th>
+                                                                    <th>Tipo</th>
+                                                                    <th>Opção</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var unRelatedEntity in Model.Entity.UnRelatedWatsonEntity)
+                                                                {
+                                                                    <tr>
+                                                                        <th style="display:none" scope="row">@unRelatedEntity.Id</th>
+                                                                        <td>@unRelatedEntity.Text</td>
+                                                                        <td>@unRelatedEntity.Type</td>
+                                                                        <td><input class="chkUnRelatedEntity" data-entitycoreid="@unRelatedEntity.Id" data-entityid="@Model.Entity.Id" type="checkbox"></td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                }
+                                else
+                                {
+
+                                    <div class="alert alert-warning" role="alert">
+                                        Nenhuma Entidade Watson disponível para relacionar
+                                    </div>
+                                }
+                            </div>
+
+
+                            <div class="form-actions">
+                                <a href="/Entities/list" class="btn btn-raised btn-raised btn-warning mr-1">
+                                    <i class="ft-x"></i> Cancelar
+                                </a>
+                                <button type="button" class="btn btn-raised btn-raised btn-primary" id="btnSaveRegister">
+                                    <i class="fa fa-check-square-o"></i> Salvar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+</section>
+<!-- // Basic form layout section end -->

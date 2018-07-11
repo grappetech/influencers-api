@@ -1,0 +1,143 @@
+﻿@page "{id:int}"
+@model ActionUI.Admin.Pages.Sources.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+@section css{
+    <link rel="stylesheet" type="text/css" href="~/app-assets/vendors/css/tables/datatable/datatables.min.css">
+}
+@section scripts{
+    <script src="~/app-assets/vendors/js/datatable/datatables.min.js" type="text/javascript"></script>
+
+    <script src="~/js/Admin/DataTableConfig.js" type="text/javascript"></script>
+    <script src="~/js/Admin/Pages/Entity/EntityRegister.js" type="text/javascript"></script>
+
+}
+
+<!-- Basic form layout section start -->
+<section id="basic-form-layouts">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="content-header">Cadastro de Fontes Scrap</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <!-- <h4 class="card-title" id="basic-layout-form">Project Info</h4>
+                    <p class="mb-0">This is the most basic and default form having form sections. To add form section use
+                      <code>.form-section</code> class with any heading tags. This form has the buttons on the bottom left corner which is the default
+                      position.
+                    </p> -->
+                </div>
+                <div class="card-body">
+                    <div class="px-3">
+                        <form class="form formRegisterEntity" method="post">
+
+                            <div class="form-body">
+      
+                               
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="projectinput1">Alias</label>
+                                            <input type="hidden" asp-for="SourceScrap.Id" />
+                                            <input type="text" id="entityName" asp-for="SourceScrap.Alias" class="form-control">
+                                        </div>
+                                    </div>
+                               
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label for="projectinput3">Url</label>
+                                            <input type="text" id="entityUrlSite" class="form-control" asp-for="SourceScrap.Url">
+                                        </div>
+                                    </div>
+                           
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="projectinput5">Tag Inicio</label>
+                                            <select id="projectinput5" asp-for="@Model.SourceScrap.StarTag" class="form-control">
+                                                <option value="">--Selecione--</option>
+                                                @foreach (var tag in Model.SourceScrap.ListTags)
+                                                {
+                                                    <option value="@tag">@tag</option>
+
+                                                }
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="projectinput5">Tag Fim</label>
+                                            <select id="projectinput5" asp-for="@Model.SourceScrap.EndTag" class="form-control">
+                                                <option value="">--Selecione--</option>
+                                                @foreach (var tag in Model.SourceScrap.ListTags)
+                                                {
+                                                    <option value="@tag">@tag</option>
+
+                                                }
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="projectinput3">Dept</label>
+                                            <input type="number" class="form-control" asp-for="SourceScrap.Dept">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="projectinput5">Status</label>
+                                            <select id="projectinput5" asp-for="@Model.SourceScrap.PageStatus" class="form-control">
+                                                <option value="">--Selecione--</option>
+                                                @foreach (var key in Model.SourceScrap.DicPageStaus.Keys)
+                                                {
+                                                    <option value="@key">@Model.SourceScrap.DicPageStaus[key]</option>
+
+                                                }
+
+                                            </select>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                              
+
+                                <h4 class="form-section">
+                                    <i class="ft-file-text"></i> Entidades Watson
+                                </h4>
+
+
+                            <div class="form-actions">
+                                <a href="/Sources/list" class="btn btn-raised btn-raised btn-warning mr-1">
+                                    <i class="ft-x"></i> Cancelar
+                                </a>
+                                <button type="button" class="btn btn-raised btn-raised btn-primary" id="btnSaveRegister">
+                                    <i class="fa fa-check-square-o"></i> Salvar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+</section>
+<!-- // Basic form layout section end -->
