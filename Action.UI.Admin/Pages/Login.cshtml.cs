@@ -68,9 +68,9 @@ namespace ActionUI.Admin.Pages
             {
                 if (user != null)
                 {
-                    //var removePasswordResult = await _userManager.RemovePasswordAsync(user);
-                    //if (removePasswordResult.Succeeded)
-                    if (1 == 1)
+                 var removePasswordResult = await _userManager.RemovePasswordAsync(user);
+                 if (removePasswordResult.Succeeded)
+                 
                     {
 
                         var dateTimeLimit = DateTime.Now.AddMinutes(30);
