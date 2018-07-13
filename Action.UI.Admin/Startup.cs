@@ -14,6 +14,7 @@ using ActionUI.Admin.ExtensionsMethods;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Action.Data.Models.Core;
 using Action.Services.SMTP;
+using System.Globalization;
 
 namespace ActionUI.Admin
 {
@@ -69,6 +70,13 @@ namespace ActionUI.Admin
 
             //custom services
             ConfigureServiceDI(services);
+
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
+                options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"),new CultureInfo("en-US") };
+            });
 
 
 
