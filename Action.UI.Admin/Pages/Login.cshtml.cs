@@ -77,7 +77,7 @@ namespace ActionUI.Admin.Pages
                         StringBuilder sb = new StringBuilder();
                         sb.Append("<p>Admin ACT10N<br> Segue abaixo link para Reset de senha<br></p>");
                         sb.Append($"<a href='{link}'>Reset de Senha Admin ACT10N</a>");
-                        sb.Append($"<br>Este link é válido até {string.Format("{0:HH:mm} do dia {1:dd/MM/yyyy}", dateTimeLimit, dateTimeLimit)}");
+                        sb.Append($"<br>Este link é válido por 30 minutos");
 
                         result = new { status = true, message = "E-mail de recuperação de senha enviado com sucesso" };
 
