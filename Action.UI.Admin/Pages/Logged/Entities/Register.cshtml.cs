@@ -92,7 +92,7 @@ namespace ActionUI.Admin.Pages.Logged.Entities
                 CategoryId = (int)entity.CategoryId,
                 IndustryId = entity.IndustryId,
                 FacebookUser = entity.FacebookUser,
-                TweeterUser = entity.TweeterUser,
+                TwitterUser = entity.TweeterUser,
                 InstagranUser = entity.InstagranUser,
                 YoutubeUser = entity.YoutubeUser,
                 PictureUrl = entity.PictureUrl,
@@ -157,7 +157,7 @@ namespace ActionUI.Admin.Pages.Logged.Entities
                 //Category = Enum.GetName(typeof(ECategory), CategoryId);
                 IndustryId = this.Entity.IndustryId,
                 FacebookUser = this.Entity.FacebookUser,
-                TweeterUser = this.Entity.TweeterUser,
+                TweeterUser = this.Entity.TwitterUser,
                 InstagranUser = this.Entity.InstagranUser,
                 YoutubeUser = this.Entity.YoutubeUser,
                 PictureUrl = this.Entity.PictureUrl,

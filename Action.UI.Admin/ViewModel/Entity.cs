@@ -19,7 +19,7 @@ namespace ActionUI.Admin.ViewModel
         public string Category { get; set; }
         public DateTime Date { get; set; } = DateTime.Today;
         public string FacebookUser { get; set; }
-        public string TweeterUser { get; set; }
+        public string TwitterUser { get; set; }
         public string InstagranUser { get; set; }
         public string YoutubeUser { get; set; }
         public string PictureUrl { get; set; }

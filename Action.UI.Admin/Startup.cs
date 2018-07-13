@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ActionUI.Admin.ExtensionsMethods;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Action.Data.Models.Core;
+using Action.Services.SMTP;
 
 namespace ActionUI.Admin
 {
@@ -68,6 +69,20 @@ namespace ActionUI.Admin
 
             //custom services
             ConfigureServiceDI(services);
+
+
+
+
+            //ConfigureSmtp
+            services.Configure<SmtpConfiguration>(Configuration.GetSection("SmtpConfiguration"));
+            SmtpConfiguration.Configure(Configuration["SmtpConfiguration:Host"],
+                Convert.ToInt32(Configuration["SmtpConfiguration:Port"]),
+                Configuration["SmtpConfiguration:UserName"],
+                Configuration["SmtpConfiguration:Password"],
+                Configuration["SmtpConfiguration:Sender"],
+                Convert.ToBoolean(Configuration["SmtpConfiguration:IsSSL"]));
+
+
             services.AddMvc()
                 .AddRazorPagesOptions(options =>
                 {
