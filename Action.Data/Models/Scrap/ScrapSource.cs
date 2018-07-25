@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Action.Data.Models.Core;
 
 namespace Action.Data.Models.Core.Scrap
@@ -15,5 +16,6 @@ namespace Action.Data.Models.Core.Scrap
         public int Limit { get; set; }
         public int Dept { get; set; } = 3;
         public EPageStatus PageStatus { get; set; } = EPageStatus.Enabled;
+        public virtual List<ScrapSourceIndustry> Industries { get; set; } = new List<ScrapSourceIndustry>();
     }
 }

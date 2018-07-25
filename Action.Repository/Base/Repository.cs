@@ -37,6 +37,11 @@ namespace Action.Repository.Base
 
         }
 
+        public IQueryable<TEntity> QueryableEntity()
+        {
+            return _context.Set<TEntity>();
+        }
+
         public IQueryable<TEntity> Get(Func<TEntity, bool> predicate)
         {
             var entity = _context.Set<TEntity>().Where(predicate).AsQueryable();

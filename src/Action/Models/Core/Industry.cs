@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Action.Models.Scrap;
+using System.Collections.Generic;
 using Entity = Action.Models.Watson.Entity;
 
 namespace Action.Models.Core
@@ -10,5 +11,6 @@ namespace Action.Models.Core
 
 
         public virtual ICollection<Entity> Entities { get; set; }
+        public virtual ICollection<ScrapSourceIndustry> ScrapSources { get; set; }
     }
 }

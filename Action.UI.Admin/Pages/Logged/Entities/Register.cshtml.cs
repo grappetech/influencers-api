@@ -1,13 +1,12 @@
-﻿using System;
+﻿using Action.Services;
+using ActionUI.Admin.ViewModel;
+using ActionUI.Admin.ViewModel.Industry;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Action.Data.Models.Core.Watson;
-using Action.Services;
-using ActionUI.Admin.ViewModel;
-using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 
 namespace ActionUI.Admin.Pages.Logged.Entities
@@ -18,11 +17,13 @@ namespace ActionUI.Admin.Pages.Logged.Entities
         private readonly EntityService _entityService;
         private readonly WatsonEntityService _coreEntityService;
         private readonly IndustryService _industryService;
-        public RegisterModel(EntityService entityService, WatsonEntityService coreEntityService, IndustryService industryService)
+        private readonly SourceService _sourceService;
+        public RegisterModel(EntityService entityService, WatsonEntityService coreEntityService, IndustryService industryService, SourceService sourceService)
         {
             _entityService = entityService;
             _coreEntityService = coreEntityService;
             _industryService = industryService;
+            _sourceService = sourceService;
 
         }
 
@@ -35,17 +36,17 @@ namespace ActionUI.Admin.Pages.Logged.Entities
         public void OnGet(long id)
         {
 
-            
+
             var entitiesUnrelateds = this._coreEntityService.GetNotRelatedCoreEntities();
 
 
-            if(id > 0)
+            if (id > 0)
             {
                 var entity = this._entityService.Get(id);
                 var entitiesRelateds = this._coreEntityService.GetRelatedCoreEntities(id);
                 this.Entity = parseToViewModel(entity);
 
-                if(entitiesRelateds!=null && entitiesRelateds.Count> 0)
+                if (entitiesRelateds != null && entitiesRelateds.Count > 0)
                 {
                     this.Entity.RelatedWatsonEntity = entitiesRelateds.Select(x => new WatsonEntityiewModel()
                     {
@@ -58,6 +59,7 @@ namespace ActionUI.Admin.Pages.Logged.Entities
             }
 
 
+
             var industries = this._industryService.Get();
             if (industries != null && industries.Count > 0)
             {
@@ -67,6 +69,59 @@ namespace ActionUI.Admin.Pages.Logged.Entities
                     Name = x.Name
                 }));
             }
+
+            //industrias para relação de sources
+            if (this.Entity.Industries != null && this.Entity.Industries.Count > 0)
+            {
+                this.Entity.SourceListIndustry = new List<IndustryViewModel>(this.Entity.Industries);
+            }
+
+            //buscar todos as fontes 
+            var listSources = this._sourceService.Get();
+            //buscar os sources da industria ligada a entidade
+
+            if (this.Entity.IndustryId > 0)
+            {
+                var entityIndustry = this._industryService.Get(this.Entity.IndustryId);
+                if (entityIndustry != null && entityIndustry.ScrapSources != null)
+                {
+
+                    var industriesSource = entityIndustry.ScrapSources.Select(s => new EntitySourceViewModel
+                    {
+                        Id = s.ScrapSourceId,
+                        Alias = s.ScrapSource.Alias,
+                        Limit = s.ScrapSource.Limit,
+                        Url = s.ScrapSource.Url,
+                        IndustryId = entityIndustry.Id,
+                        IndustryName = entityIndustry.Name
+
+                    }).ToList();
+
+                    this.Entity.EntitySourceScraps = listSources.Select(s => new EntitySourceViewModel
+                    {
+                        Id = s.Id,
+                        Alias = s.Alias,
+                        Limit = s.Limit,
+                        Url = s.Url,
+                        IndustryId = s.Industries.FirstOrDefault(x=>x.IndustryId== this.Entity.IndustryId).IndustryId
+
+                    }).ToList();
+
+
+                    //atualizar as fontes que já são do mesmo tipo de industria
+                    if (this.Entity.EntitySourceScraps != null)
+                    {
+
+                        //vincular source da mesma industria
+
+                        this.Entity.EntitySourceScraps
+                            .Where(s => industriesSource.Any(ind => ind.IndustryId == s.IndustryId)).ToList()
+                            .ForEach(s => s.IsSameIndustryOfEntity = true);
+                    }
+
+                }
+            }
+
 
             this.Entity.UnRelatedWatsonEntity = entitiesUnrelateds.Select(x => new WatsonEntityiewModel()
             {
@@ -90,9 +145,9 @@ namespace ActionUI.Admin.Pages.Logged.Entities
                 Name = entity.Name,
                 Alias = entity.Alias,
                 CategoryId = (int)entity.CategoryId,
-                IndustryId = entity.IndustryId,
+                IndustryId = (int)entity.IndustryId,
                 FacebookUser = entity.FacebookUser,
-                TwitterUser = entity.TweeterUser,
+                TweeterUser = entity.TweeterUser,
                 InstagranUser = entity.InstagranUser,
                 YoutubeUser = entity.YoutubeUser,
                 PictureUrl = entity.PictureUrl,
@@ -157,12 +212,13 @@ namespace ActionUI.Admin.Pages.Logged.Entities
                 //Category = Enum.GetName(typeof(ECategory), CategoryId);
                 IndustryId = this.Entity.IndustryId,
                 FacebookUser = this.Entity.FacebookUser,
-                TweeterUser = this.Entity.TwitterUser,
+                TweeterUser = this.Entity.TweeterUser,
                 InstagranUser = this.Entity.InstagranUser,
                 YoutubeUser = this.Entity.YoutubeUser,
                 PictureUrl = this.Entity.PictureUrl,
                 SiteUrl = this.Entity.SiteUrl,
-                Tier = this.Entity.Tier
+                Tier = this.Entity.Tier,
+                ExecutionInterval = this.Entity.ExecutionInterval
             };
         }
     }

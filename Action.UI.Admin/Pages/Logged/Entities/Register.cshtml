@@ -44,8 +44,8 @@
 
                             <div class="form-body">
                                 @*<h4 class="form-section">
-            <i class="ft-user"></i> Informação de Entidade
-        </h4>*@
+                                        <i class="ft-user"></i> Informação de Entidade
+                                    </h4>*@
 
                                 @if (Model.Entity != null && Model.Entity.Id > 0)
                                 {
@@ -121,8 +121,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="projectinput4">Twitter</label>
-                                            <input type="text" id="entityTweeterUser" asp-for="Entity.TwitterUser" class="form-control">
+                                            <label for="projectinput4">Tweeter</label>
+                                            <input type="text" id="entityTweeterUser" asp-for="Entity.TweeterUser" class="form-control">
                                         </div>
                                     </div>
                                 </div>
@@ -148,9 +148,9 @@
 
                                 <div class="row">
 
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="projectinput6">Industria</label>
+                                            <label for="projectinput6">Indústria</label>
                                             <select id="projectinput6" asp-for="@Model.Entity.IndustryId" class="form-control">
                                                 <option value="">--Selecione--</option>
                                                 @foreach (var industry in Model.Entity.Industries)
@@ -161,7 +161,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="projectinput6">Categoria</label>
                                             <select id="projectinput6" asp-for="@Model.Entity.CategoryId" class="form-control">
@@ -175,30 +175,104 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-md-3">
                                         <div class="form-group">
-                                            <label for="projectinput5">Camada</label>
+                                            <label for="projectinput5">Frequência</label>
                                             <select id="projectinput5" asp-for="@Model.Entity.Tier" class="form-control">
                                                 <option value="">--Selecione--</option>
-                                                <option value="1">Camada 1</option>
-                                                <option value="2">Camada 2</option>
-                                                <option value="3">Camada 3</option>
+                                                <option value="1">Semanal</option>
+                                                <option value="2">Quinzena</option>
+                                                <option value="3">Mensal</option>
                                             </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="projectinput5">Intervalo Execução</label>
+                                            <input asp-for="Entity.ExecutionInterval" type="number" class="form-control" />
                                         </div>
                                     </div>
 
 
                                 </div>
-                                <!--
-    <div class="form-group">
-      <label>Select File</label>
-      <input type="file" class="form-control-file" id="projectinput8">
-    </div>
 
-    <div class="form-group">
-      <label for="projectinput8">About Project</label>
-      <textarea id="projectinput8" rows="5" class="form-control" name="comment"></textarea>
-    </div> -->
+
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4 class="card-title">Fontes</h4>
+
+                                                <div class="card-body">
+                                                    <div class="card-block">
+
+
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label for="projectinput6">Alias Fonte:</label>
+                                                                    <select id="projectinput6" asp-for="@Model.Entity.SelectedSourceId" class="form-control">
+                                                                        <option value="">--Selecione--</option>
+                                                                        @foreach (var industry in Model.Entity.Industries)
+                                                                        {
+                                                                            <option value="@industry.Id">@industry.Name</option>
+                                                                        }
+
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label for="projectinput6">Url:</label>
+                                                                    <label for="projectinput6">Enderço URL</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12">
+
+                                                                <table class="table" id="dtIndustries">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>ID</th>
+                                                                            <th>Alias</th>
+                                                                            <th>Indústria</th>
+                                                                            <th>&nbsp;</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var source in Model.Entity.EntitySourceScraps)
+                                                                        {
+
+
+                                                                            <tr class="@(source.IsSameIndustryOfEntity ? "table-warning" : "")">
+                                                                                <td><label for="chkIndustry_@source.Id"> @source.Id</label></td>
+                                                                                <td><label for="chkIndustry_@source.Id">@source.Alias</label></td>
+                                                                                <td><label for="chkIndustry_@source.Id">@source.IndustryName</label></td>
+                                                                                <td>
+                                                                                    <input id="chkIndustry_@source.Id"
+                                                                                           class="chkIndustry" @(1 == 1 ? "checked=checked" : "")
+                                                                                           data-scrapsourceid=""
+                                                                                           data-industryid="@source.Id" type="checkbox">
+                                                                                </td>
+                                                                            </tr>
+
+
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
 
                                 <h4 class="form-section">
                                     <i class="ft-file-text"></i> Entidades Watson

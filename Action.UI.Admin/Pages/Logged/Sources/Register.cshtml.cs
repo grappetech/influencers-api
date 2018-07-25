@@ -1,9 +1,15 @@
-﻿using Action.Services;
+﻿using Action.Data.Context;
+using Action.Data.Models.Core.Scrap;
+using Action.Services;
+using ActionUI.Admin.ViewModel.SourceScrap;
+using ActionUI.Admin.ViewModel.Industry;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 
@@ -13,44 +19,69 @@ namespace ActionUI.Admin.Pages.Logged.Sources
     {
 
         private readonly SourceService _sourceService;
-        public RegisterModel(SourceService sourceService)
-        {   
+        private readonly IndustryService _industryService;
+        private readonly ApplicationDbContext _applicationDbContext;
+        public RegisterModel(SourceService sourceService, IndustryService industryService, ApplicationDbContext context)
+        {
             _sourceService = sourceService;
+            _industryService = industryService;
+            _applicationDbContext = context;
         }
 
         [BindProperty]
-        public ViewModel.SourceScrapViewModel SourceScrap { get; set; } = new ViewModel.SourceScrapViewModel();
+        public SourceScrapViewModel SourceScrap { get; set; } = new SourceScrapViewModel();
 
         public void OnGet(int id)
         {
-            
+            this.SourceScrap.Industries = this._industryService.Get().Select(x => new IndustryViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Selected = false
+
+            }).ToList();
+
             if (id > 0)
             {
                 var entity = this._sourceService.Get(id);
                 this.SourceScrap = parseToViewModel(entity);
+
+                //marcar os que ja estiverem marcados
+                if (entity.Industries != null)
+                {
+                    var industriesId = entity.Industries.Select(x => x.IndustryId).ToList();
+                    this.SourceScrap.Industries.Where(i => industriesId.Any(selectedIndustryId => selectedIndustryId == i.Id)).ToList().ForEach(i => i.Selected = true);
+
+                }
+
             }
 
             this.SourceScrap.ListTags.AddRange(this.ListHtmlTags());
 
         }
 
-        private ViewModel.SourceScrapViewModel parseToViewModel(Action.Data.Models.Core.Scrap.ScrapSource source)
+        private SourceScrapViewModel parseToViewModel(Action.Data.Models.Core.Scrap.ScrapSource source)
         {
 
             if (source == null)
-                return new ViewModel.SourceScrapViewModel();
+                return new SourceScrapViewModel();
 
-            return new ViewModel.SourceScrapViewModel()
-            {
-                Id = source.Id,
 
-                Alias = source.Alias,
-                Dept = source.Dept,
-                EndTag = source.EndTag,
-                StarTag = source.StarTag,
-                PageStatus = source.PageStatus,
-                Url = source.Url
-            };
+            if (this.SourceScrap == null)
+                this.SourceScrap = new SourceScrapViewModel();
+
+
+            this.SourceScrap.Id = source.Id;
+            this.SourceScrap.Alias = source.Alias;
+            this.SourceScrap.Dept = source.Dept;
+            this.SourceScrap.EndTag = source.EndTag;
+            this.SourceScrap.StarTag = source.StarTag;
+            this.SourceScrap.PageStatus = source.PageStatus;
+            this.SourceScrap.Url = source.Url;
+            
+            
+            return this.SourceScrap;
+
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -62,7 +93,7 @@ namespace ActionUI.Admin.Pages.Logged.Sources
             {
                 var sourceModel = parseToModel();
 
-                long souceId =await this._sourceService.Save(sourceModel);
+                long souceId = await this._sourceService.Save(sourceModel);
 
                 return RedirectToPage("Register", new { id = sourceModel.Id });
 
@@ -78,17 +109,44 @@ namespace ActionUI.Admin.Pages.Logged.Sources
 
         private Action.Data.Models.Core.Scrap.ScrapSource parseToModel()
         {
-            return new Action.Data.Models.Core.Scrap.ScrapSource
+            var sourceScarp = new Action.Data.Models.Core.Scrap.ScrapSource
             {
                 Id = this.SourceScrap.Id,
                 Alias = this.SourceScrap.Alias,
                 Dept = this.SourceScrap.Dept,
-                StarTag= this.SourceScrap.StarTag,
+                StarTag = this.SourceScrap.StarTag,
                 EndTag = this.SourceScrap.EndTag,
                 Limit = this.SourceScrap.Limit,
                 PageStatus = this.SourceScrap.PageStatus,
                 Url = this.SourceScrap.Url
             };
+
+
+            if (!string.IsNullOrEmpty(this.SourceScrap.SelectedIndustries))
+            {
+                string[] arrIndustries = this.SourceScrap.SelectedIndustries.Split(';');
+                if (arrIndustries != null && arrIndustries.Count() > 0)
+                {
+                    int industryId;
+
+                    foreach (string _industryId in arrIndustries)
+                    {
+                        if (int.TryParse(_industryId, out industryId))
+                        {
+                            sourceScarp.Industries.Add(new ScrapSourceIndustry
+                            {
+                                IndustryId = industryId
+                            });
+
+                            industryId = 0;
+                        }
+                    }
+
+                }
+            }
+
+
+            return sourceScarp;
         }
 
         private List<string> ListHtmlTags()

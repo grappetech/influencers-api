@@ -9,7 +9,8 @@ namespace Action.Repository.Base
     public interface IRepository<TEntity> where TEntity : class
     {
         IQueryable<TEntity> GetAll();
-        IQueryable<TEntity> Get(Func<TEntity, bool> predicate);        
+        IQueryable<TEntity> Get(Func<TEntity, bool> predicate);
+        IQueryable<TEntity> QueryableEntity();
         TEntity Find(params object[] key);
         void Update(TEntity entity);
         int SaveChanges();

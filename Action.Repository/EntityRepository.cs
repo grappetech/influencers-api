@@ -15,9 +15,6 @@ namespace Action.Repository
 
         }
 
-        public void teste()
-        {
-
-        }
+      
     }
 }

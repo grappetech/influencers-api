@@ -14,9 +14,10 @@ using System;
 namespace Action.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180724224716_Add_ExecutionIntervel_AtEntity")]
+    partial class Add_ExecutionIntervel_AtEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -440,19 +441,6 @@ namespace Action.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ScrapSources");
-                });
-
-            modelBuilder.Entity("Action.Models.Scrap.ScrapSourceIndustry", b =>
-                {
-                    b.Property<int>("ScrapSourceId");
-
-                    b.Property<int>("IndustryId");
-
-                    b.HasKey("ScrapSourceId", "IndustryId");
-
-                    b.HasIndex("IndustryId");
-
-                    b.ToTable("ScrapSourceIndustry");
                 });
 
             modelBuilder.Entity("Action.Models.ServiceAccount.Account", b =>
@@ -1382,19 +1370,6 @@ namespace Action.Migrations
                     b.HasOne("Action.Models.ServiceAccount.Account", "Account")
                         .WithMany("SecondaryPlans")
                         .HasForeignKey("AccountId");
-                });
-
-            modelBuilder.Entity("Action.Models.Scrap.ScrapSourceIndustry", b =>
-                {
-                    b.HasOne("Action.Models.Core.Industry", "Industry")
-                        .WithMany("ScrapSources")
-                        .HasForeignKey("IndustryId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Action.Models.Scrap.ScrapSource", "ScrapSource")
-                        .WithMany("Industries")
-                        .HasForeignKey("ScrapSourceId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Action.Models.ServiceAccount.Account", b =>

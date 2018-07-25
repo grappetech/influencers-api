@@ -6,6 +6,8 @@ using WatsonEntity = Action.Data.Models.Watson.NLU.Entity;
 
 namespace Action.Data.Models.Core.Watson
 {
+
+    //Entities
     public class Entity
     {
         [Key]
@@ -29,5 +31,6 @@ namespace Action.Data.Models.Core.Watson
 
         public virtual ICollection<WatsonEntity> RelatedEntities { get; set; } = new List<WatsonEntity>();
         public ICollection<Briefing> Briefings { get; set; } = new List<Briefing>();
+        public int ExecutionInterval { get; set; }
     }
 }

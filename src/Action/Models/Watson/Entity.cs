@@ -27,5 +27,7 @@ namespace Action.Models.Watson
         public Industry Industry { get; set; }
         public virtual ICollection<WatsonEntity> RelatedEntities { get; set; } = new List<WatsonEntity>();
         public ICollection<Briefing> Briefings { get; set; } = new List<Briefing>();
+
+        public int ExecutionInterval { get; set; }
     }
 }
