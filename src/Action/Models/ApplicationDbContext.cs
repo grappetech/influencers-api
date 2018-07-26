@@ -73,6 +73,11 @@ namespace Action.Models
                 .HasMany(x => x.Briefings);
 
             builder.Entity<Entity>()
+                .Property(x => x.RelatedRoles)
+                .HasMaxLength(1000)
+                .HasColumnType("varchar(1000)");
+
+            builder.Entity<Entity>()
                    .HasMany(x => x.RelatedEntities)
                    .WithOne(x => x.CoreEntity)
                    .HasForeignKey(x => x.EntityId);
@@ -108,6 +113,21 @@ namespace Action.Models
             .WithMany(s => s.ScrapSources)
             .HasForeignKey(x => x.IndustryId);
 
+
+            //entities x sources
+
+            builder.Entity<ScrapSourceEntity>()
+                .HasKey(x => new {  x.ScrapSourceId, x.EntityId });
+
+            builder.Entity<ScrapSourceEntity>()
+                .HasOne(x => x.ScrapSource)
+                .WithMany(i => i.Entities)
+                .HasForeignKey(x => x.ScrapSourceId);
+
+            builder.Entity<ScrapSourceEntity>()
+            .HasOne(x => x.Entity)
+            .WithMany(s => s.ScrapSources)
+            .HasForeignKey(x => x.EntityId);
 
 
 

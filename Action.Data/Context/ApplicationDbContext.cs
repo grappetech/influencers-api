@@ -41,21 +41,24 @@ namespace Action.Data.Context
         public DbSet<WatsonCredentials> WatsonCredentials { get; set; }
         public DbSet<BrickedSource> BrickedSources { get; set; }
 
+        
+
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            
+         
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.EnableSensitiveDataLogging( true);
             //base.OnConfiguring(this.optionsBuilder);
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
-      
+
 
             builder.Entity<EntityRole>()
                 .HasKey(x => x.Id);
@@ -109,6 +112,11 @@ namespace Action.Data.Context
                 .HasMany(x => x.Briefings);
 
             builder.Entity<Entity>()
+            .Property(x => x.RelatedRoles)
+            .HasMaxLength(1000)
+            .HasColumnType("varchar(1000)");
+
+            builder.Entity<Entity>()
                    .HasMany(x => x.RelatedEntities)
                    .WithOne(x => x.CoreEntity)
                    .HasForeignKey(x => x.EntityId);
@@ -142,6 +150,23 @@ namespace Action.Data.Context
             .HasOne(x => x.Industry)
             .WithMany(s => s.ScrapSources)
             .HasForeignKey(x => x.IndustryId);
+
+
+            //entities x sources
+
+            builder.Entity<ScrapSourceEntity>()
+                .HasKey(x => new { x.ScrapSourceId, x.EntityId });
+
+            builder.Entity<ScrapSourceEntity>()
+                .HasOne(x => x.ScrapSource)
+                .WithMany(i => i.Entities)
+                .HasForeignKey(x => x.ScrapSourceId);
+
+            builder.Entity<ScrapSourceEntity>()
+            .HasOne(x => x.Entity)
+            .WithMany(s => s.ScrapSources)
+            .HasForeignKey(x => x.EntityId);
+
 
 
 

@@ -93,6 +93,7 @@ namespace ActionUI.Admin.Pages.Logged.Sources
             {
                 var sourceModel = parseToModel();
 
+                List<int> listIdSources = sourceModel.Industries.Select(s => s.ScrapSourceId).ToList();
                 long souceId = await this._sourceService.Save(sourceModel);
 
                 return RedirectToPage("Register", new { id = sourceModel.Id });

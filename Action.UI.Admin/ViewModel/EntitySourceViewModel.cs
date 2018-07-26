@@ -16,8 +16,11 @@ namespace ActionUI.Admin.ViewModel
         public int IndustryId { get; set; }
         public string IndustryName { get; set; }
 
-        public bool IsSameIndustryOfEntity { get; set; }
 
-
+        public bool Selected { get; set; }
+        public bool IsEntityRelated { get; set; }
+        public bool IsIndustryRelated { get; set; }
+        public bool IsNotRelated { get; set; }
+        public int DisplayOrder { get; internal set; }
     }
 }

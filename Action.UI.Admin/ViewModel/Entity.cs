@@ -1,5 +1,7 @@
 ﻿using Action.Data.Models.Core;
 using ActionUI.Admin.ViewModel.Industry;
+using ActionUI.Admin.ViewModel.Role;
+using ActionUI.Admin.ViewModel.SourceScrap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +34,9 @@ namespace ActionUI.Admin.ViewModel
 
 
         public string SelectedUnRelatedWatsonEntity { get; set; }
+        public string SelectedRoles { get; set; }
         public string UnSelectedUnRelatedWatsonEntity { get; set; }
+        public string SelectedSources { get; set; }
         public int SelectedSourceId { get; set; }
 
 
@@ -44,7 +48,7 @@ namespace ActionUI.Admin.ViewModel
         {
             new CategoryViewModel{ Id = (int) ECategory.Brand, Name="Marca"},
             new CategoryViewModel{ Id = (int) ECategory.Person, Name="Pessoa"}
-          //  new CategoryViewModel{ Id = (int) ECategory.Personality, Name="Personalidade"}
+           //new CategoryViewModel{ Id = (int) ECategory.Personality, Name="Personalidade"}
 
         };
 
@@ -53,6 +57,9 @@ namespace ActionUI.Admin.ViewModel
 
         public List<IndustryViewModel> SourceListIndustry { get; set; } = new List<IndustryViewModel>();
         public List<EntitySourceViewModel> EntitySourceScraps { get; set; } = new List<EntitySourceViewModel>();
+
+        public List<SourceScrapViewModel> ScraptSources { get; set; } = new List<SourceScrapViewModel>();
+        public List<EntityRoleViewModel> Roles { get; set; } = new List<EntityRoleViewModel>();
 
 
 

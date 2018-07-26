@@ -164,6 +164,20 @@ Site.notification = {
                     callbackOkResult();
             }
         }).catch(swal.noop);
+    },
+    htmlMessage: function (titlelHtml, htmlBody) {
+
+        if (!titlelHtml)
+            titlelHtml = "Informe um título";
+
+        if (!htmlBody)
+            htmlBody = "";
+
+        swal({
+            title: titlelHtml,
+            text: htmlBody,
+            html: false
+        });
     }
 }
 

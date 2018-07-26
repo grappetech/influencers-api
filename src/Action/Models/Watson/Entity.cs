@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Action.Models.Core;
+using Action.Models.Scrap;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Action.Models.Core;
 using WatsonEntity = Action.Models.Watson.NLU.Entity;
 
 namespace Action.Models.Watson
@@ -24,10 +25,14 @@ namespace Action.Models.Watson
         public int Tier { get; set; } = 3;
         public int? IndustryId { get; set; }
 
+        public int ExecutionInterval { get; set; }
+        public string RelatedRoles { get; set; }
+
         public Industry Industry { get; set; }
         public virtual ICollection<WatsonEntity> RelatedEntities { get; set; } = new List<WatsonEntity>();
         public ICollection<Briefing> Briefings { get; set; } = new List<Briefing>();
 
-        public int ExecutionInterval { get; set; }
+        public virtual ICollection<ScrapSourceEntity> ScrapSources { get; set; } = new List<ScrapSourceEntity>();
+
     }
 }

@@ -14,9 +14,10 @@ using System;
 namespace Action.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180725184536_Add_ScrapSourceEntities")]
+    partial class Add_ScrapSourceEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -520,10 +521,6 @@ namespace Action.Migrations
                     b.Property<string>("Name");
 
                     b.Property<string>("PictureUrl");
-
-                    b.Property<string>("RelatedRoles")
-                        .HasColumnType("varchar(1000)")
-                        .HasMaxLength(1000);
 
                     b.Property<string>("SiteUrl");
 

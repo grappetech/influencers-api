@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Action.Models.Core;
+using Action.Models.Watson;
 
 namespace Action.Models.Scrap
 {
@@ -17,5 +18,6 @@ namespace Action.Models.Scrap
         public int Dept { get; set; } = 3;
         public EPageStatus PageStatus { get; set; } = EPageStatus.Enabled;
         public virtual ICollection<ScrapSourceIndustry> Industries { get; set; }
+        public virtual ICollection<ScrapSourceEntity> Entities { get; set; }
     }
 }

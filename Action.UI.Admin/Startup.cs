@@ -98,7 +98,8 @@ namespace ActionUI.Admin
 
                     options.Conventions.AddFolderApplicationModelConvention("/Logged",
                         model => model.Filters.Add(new CustomFilter.UserLoggedFilter()));
-                });
+                })
+                .AddJsonOptions(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         private void ConfigureServiceDI(IServiceCollection services)
@@ -107,6 +108,7 @@ namespace ActionUI.Admin
             services.AddTransient<WatsonEntityService>();
             services.AddTransient<IndustryService>();
             services.AddTransient<SourceService>();
+            services.AddTransient<EntityRoleService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
