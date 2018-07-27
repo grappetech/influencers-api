@@ -119,7 +119,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="projectinput4">Tweeter</label>
+                                            <label for="projectinput4">Twitter</label>
                                             <input type="text" id="entityTweeterUser" asp-for="Entity.TweeterUser" class="form-control">
                                         </div>
                                     </div>
@@ -147,7 +147,7 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <div class="form-group">
-                                            <label for="ddlCategory">Categoria</label>
+                                            <label for="ddlCategory">Tipo</label>
                                             <select id="ddlCategory" asp-for="@Model.Entity.CategoryId" class="form-control">
 
                                                 <option value="">--Selecione--</option>
@@ -187,7 +187,7 @@
 
                                     <div class="col-md-4" id="divIndustry">
                                         <div class="form-group">
-                                            <label for="projectinput6">Indústria</label>
+                                            <label for="projectinput6">Categoria</label>
                                             <select id="projectinput6" asp-for="@Model.Entity.IndustryId" class="form-control">
                                                 <option value="">--Selecione--</option>
                                                 @foreach (var industry in Model.Entity.Industries)
@@ -198,26 +198,27 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="projectinput5" class="font-small-1">Intervalo Execução</label>
 
+                                            <input asp-for="Entity.ExecutionInterval" value="1" type="number" class="form-control" />
+
+                                        </div>
+                                    </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
                                             <label for="projectinput5">Frequência</label>
                                             <select id="projectinput5" asp-for="@Model.Entity.Tier" class="form-control">
                                                 <option value="">--Selecione--</option>
-                                                <option value="1">Semanal</option>
-                                                <option value="2">Quinzena</option>
-                                                <option value="3">Mensal</option>
+                                                <option value="1">Dia</option>
+                                                <option value="2">Semana</option>
+                                                <option value="3">Quinzena</option>
+                                                <option value="4">Mês</option>
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <label for="projectinput5" class="font-small-1">Intervalo Execução</label>
-                                            
-                                                <input asp-for="Entity.ExecutionInterval" type="number" class="form-control" />
-                                         
-                                        </div>
-                                    </div>
+
 
 
                                 </div>
