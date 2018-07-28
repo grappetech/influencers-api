@@ -442,6 +442,32 @@ namespace Action.Migrations
                     b.ToTable("ScrapSources");
                 });
 
+            modelBuilder.Entity("Action.Models.Scrap.ScrapSourceEntity", b =>
+                {
+                    b.Property<int>("ScrapSourceId");
+
+                    b.Property<long>("EntityId");
+
+                    b.HasKey("ScrapSourceId", "EntityId");
+
+                    b.HasIndex("EntityId");
+
+                    b.ToTable("ScrapSourceEntity");
+                });
+
+            modelBuilder.Entity("Action.Models.Scrap.ScrapSourceIndustry", b =>
+                {
+                    b.Property<int>("ScrapSourceId");
+
+                    b.Property<int>("IndustryId");
+
+                    b.HasKey("ScrapSourceId", "IndustryId");
+
+                    b.HasIndex("IndustryId");
+
+                    b.ToTable("ScrapSourceIndustry");
+                });
+
             modelBuilder.Entity("Action.Models.ServiceAccount.Account", b =>
                 {
                     b.Property<int>("Id")
@@ -483,13 +509,21 @@ namespace Action.Migrations
 
                     b.Property<DateTime>("Date");
 
+                    b.Property<int>("ExecutionInterval");
+
                     b.Property<string>("FacebookUser");
+
+                    b.Property<int?>("IndustryId");
 
                     b.Property<string>("InstagranUser");
 
                     b.Property<string>("Name");
 
                     b.Property<string>("PictureUrl");
+
+                    b.Property<string>("RelatedRoles")
+                        .HasColumnType("varchar(1000)")
+                        .HasMaxLength(1000);
 
                     b.Property<string>("SiteUrl");
 
@@ -502,6 +536,8 @@ namespace Action.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
+
+                    b.HasIndex("IndustryId");
 
                     b.ToTable("Entities");
                 });
@@ -1365,6 +1401,32 @@ namespace Action.Migrations
                         .HasForeignKey("AccountId");
                 });
 
+            modelBuilder.Entity("Action.Models.Scrap.ScrapSourceEntity", b =>
+                {
+                    b.HasOne("Action.Models.Watson.Entity", "Entity")
+                        .WithMany("ScrapSources")
+                        .HasForeignKey("EntityId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Action.Models.Scrap.ScrapSource", "ScrapSource")
+                        .WithMany("Entities")
+                        .HasForeignKey("ScrapSourceId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Action.Models.Scrap.ScrapSourceIndustry", b =>
+                {
+                    b.HasOne("Action.Models.Core.Industry", "Industry")
+                        .WithMany("ScrapSources")
+                        .HasForeignKey("IndustryId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Action.Models.Scrap.ScrapSource", "ScrapSource")
+                        .WithMany("Industries")
+                        .HasForeignKey("ScrapSourceId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Action.Models.ServiceAccount.Account", b =>
                 {
                     b.HasOne("Action.Models.Core.User", "Administrator")
@@ -1381,6 +1443,10 @@ namespace Action.Migrations
                     b.HasOne("Action.Models.ServiceAccount.Account")
                         .WithMany("Entities")
                         .HasForeignKey("AccountId");
+
+                    b.HasOne("Action.Models.Core.Industry", "Industry")
+                        .WithMany("Entities")
+                        .HasForeignKey("IndustryId");
                 });
 
             modelBuilder.Entity("Action.Models.Watson.NLU.Argument", b =>
