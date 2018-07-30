@@ -39,7 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\AutoMapper" />
-      <Folder Include="Services\Watson\Models" />
+    <Folder Include="Services\Watson\Models" />
   </ItemGroup>
   <ProjectExtensions>
     <VisualStudio>

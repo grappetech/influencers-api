@@ -122,37 +122,28 @@ namespace Action.Controllers
         }
 
         [HttpPost("{entityId}")]
-        public IActionResult Post([FromRoute] int entityId, [FromBody] BriefingViewModel model)
+        public IActionResult Post([FromRoute] int entityId, [FromBody] BriefingRequestViewModel model)
         {
             if (ModelState.IsValid)
                 return ValidateUser(() =>
                 {
-                    if (model.Strength <= 0)
-                        model.Strength = (decimal) (model.Description.Length / 1200.0);
                     try
                     {
                         var briefing = new Briefing
                         {
+                            ConnectedEntityId = entityId,
                             AgeRange = model.AgeRange,
                             Analysis = string.Empty,
                             Brand = string.Empty,
                             City = string.Empty,
-                            Date = model.Date ?? DateTime.Today,
+                            Date =  DateTime.Today,
                             Description = model.Description,
-                            DocumentUrl = model.DocumentUrl,
-                            Factor = model.Factor,
                             Gender = model.Gender,
-                            Status = model.Status ?? EStatus.Initial,
+                            Status = EStatus.Initial,
                             Name = model.Name,
-                            Personality = model.Personality,
-                            State = model.State,
-                            Tone = model.Tone,
-                            Value = model.Value,
-                            Strength = model.Strength
                         };
                         _dbContext.Briefings.Add(briefing);
                         _dbContext.SaveChanges();
-                        model.Id = briefing.Id;
                         return Ok(model);
                     }
                     catch (Exception ex)
