@@ -26,9 +26,9 @@ namespace Action.Controllers
                 .AsNoTracking()
                 .Include(x => x.State).Select(c => new
                 {
-                    c.Id,
-                    c.Name,
-                    State = new
+                    id =c.Id,
+                    name =c.Name,
+                    state = new
                     {
                         c.State.Id,
                         c.State.Code,
