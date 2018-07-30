@@ -428,6 +428,22 @@ namespace Action.Services.TaskScheduler
 
 
         [STAThread]
+        public static void UpdateEntities(ApplicationDbContext context)
+        {
+            foreach (var entity in context.Entities)
+            {
+                foreach (var obj in context.NluResults.Include(x=>x.Entity)
+                    .SelectMany(x=>x.Entity)
+                    .Where(x=>x.EntityId == null && x.Text.ToLower().Contains(entity.Name.ToLower())))
+                {
+                    obj.EntityId = entity.Id;
+                }
+            }
+
+            context.SaveChanges();
+        }
+
+        [STAThread]
         public static void ExtractPersonality(ApplicationDbContext context)
         {
             var dbContext = context;

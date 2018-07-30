@@ -156,9 +156,9 @@ namespace Action
                Task.Run( ()=>  ApplicationTaskScheduler.ProccessDataExtraction(dbContext)).GetAwaiter().GetResult(), 
                     Cron.Daily());
                 
-              /*  RecurringJob.AddOrUpdate(()=>
-                        Task.Run( ()=>  ApplicationTaskScheduler.ExtractPersonality(dbContext)).GetAwaiter().GetResult(), 
-                    Cron.Daily());*/
+                RecurringJob.AddOrUpdate(()=>
+                        Task.Run( ()=>  ApplicationTaskScheduler.UpdateEntities(dbContext)).GetAwaiter().GetResult(), 
+                    Cron.Daily());
             }
         }
     }
