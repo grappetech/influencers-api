@@ -345,7 +345,7 @@ namespace Action.Controllers
                     new {name = "fear", score = tones.Select(x => x.emotions.fear).Average()},
                     new {name = "sadness", score = tones.Select(x => x.emotions.sadness).Average()},
                     new {name = "disgust", score = tones.Select(x => x.emotions.disgust).Average()},
-                    new {name = "creativity", score = creativity ?? 0}
+                    new {name = "creativity", score = creativity.HasValue ? creativity.Value : 0}
                 };
 
                 return Ok(result);
