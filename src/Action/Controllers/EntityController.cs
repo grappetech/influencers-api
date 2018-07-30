@@ -436,8 +436,8 @@ namespace Action.Controllers
                         {
                             text = x.fragment,
                             url = x.retrieved_url,
-                            type = (x.sentiment != null && x.sentiment.score > 4) ? "positive" :
-                                (x.sentiment != null && x.sentiment.score < -4) ? "negative" : "neutro",
+                            type = (x.sentiment != null && x.sentiment.score > 0.4) ? "positive" :
+                                (x.sentiment != null && x.sentiment.score < -0.4) ? "negative" : "neutro",
                             date = DateTime.Today.AddMonths(-1)
                         });
 
