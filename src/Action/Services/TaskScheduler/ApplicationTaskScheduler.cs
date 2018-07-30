@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 using Action.Extensions;
 using Action.Models;
 using Action.Models.Core;
@@ -18,6 +20,7 @@ using Action.Services.Watson.V2.NaturalLanguageUnderstanding;
 using Action.Services.Watson.V2.PersonalityInsights;
 using Action.Services.Watson.V2.ToneAnalyzer;
 using IBM.WatsonDeveloperCloud.NaturalLanguageUnderstanding.v1.Model;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using WatsonServices.Services.ApiClient.Core.Models;
 using WatsonServices.Services.ApiClient.Watson;
@@ -52,7 +55,7 @@ namespace Action.Services.TaskScheduler
 
             Debugger.Log(0, "SCP", "Extraindo Links das fontes" + Environment.NewLine);
             var linkQueue = new List<ScrapQueue>();
-            dbContext.ScrapSources.AsNoTracking()
+           /* dbContext.ScrapSources.AsNoTracking()
                 .ToList().ForEach(s =>
                 {
                     dbContext.Entities.Select(e => e.Name).ToList().ForEach(i =>
@@ -68,8 +71,8 @@ namespace Action.Services.TaskScheduler
 
                     dbContext.ScrapQueue.AddRange(linkQueue);
 
-                    dbContext.SaveChanges();
-
+                    dbContext.SaveChanges();*/
+PrepareQueue(dbContext);
                     var queue = dbContext.ScrapQueue
                         .Where(x => !x.Completed)
                         .AsNoTracking()
@@ -83,7 +86,7 @@ namespace Action.Services.TaskScheduler
                                 var links = new Scrapper().ProccessTask(scrapQueue.Url, 1)
                                     .GetAwaiter()
                                     .GetResult()
-                                    .Where(x => new Uri(x.Href).DnsSafeHost.Equals(new Uri(s.Url).DnsSafeHost));
+                                    .Where(x => new Uri(x.Href).DnsSafeHost.Equals(new Uri(scrapQueue.Url).DnsSafeHost));
 
                                 foreach (var item in links)
                                 {
@@ -141,7 +144,7 @@ namespace Action.Services.TaskScheduler
                                                     ? (nluAnalysis.AnalyzedText.Length - pos - 1)
                                                     : end);
                                             k.fragment = fragment;
-                                            k.retrieved_url = s.Url;
+                                            k.retrieved_url = scrapQueue.Url;
                                             if (fragment.Length > 100)
                                                 k.translatedFragment = new LanguageTranslatorService()
                                                     .ProccessTranslation(fragment, "pt", "en", wltc.UserName,
@@ -316,11 +319,118 @@ namespace Action.Services.TaskScheduler
                                 Debugger.Log(0, "ERR", "Falha NLU." + ex.Message);
                             }
                         });
-                });
+             /*   });*/
 
             #endregion
         }
 
+
+        public static void PrepareQueue(ApplicationDbContext dbContext)
+        {
+            //Entidades Diárias
+            var l1 = dbContext.Entities.Where(x =>
+                    x.Tier == 1 && x.ExecutionInterval == x.LastExecutionDate.CompareTo(DateTime.Today))
+                .Include(x => x.ScrapSources)
+                .ThenInclude(x => x.ScrapSource)
+                .Select(x => new {x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
+                .ToList();
+            
+            //Entidades Semanais
+            var l2 = dbContext.Entities.Where(x =>
+                    x.Tier == 2 && x.ExecutionInterval*7 == x.LastExecutionDate.CompareTo(DateTime.Today))
+                .Include(x => x.ScrapSources)
+                .ThenInclude(x => x.ScrapSource)
+                .Select(x => new {x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
+                .ToList(); 
+
+            //Entidades Quinzenais
+            var l3 = dbContext.Entities.Where(x =>
+                    x.Tier == 3 && x.ExecutionInterval*14 == x.LastExecutionDate.CompareTo(DateTime.Today))
+                .Include(x => x.ScrapSources)
+                .ThenInclude(x => x.ScrapSource)
+                .Select(x => new {x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
+                .ToList(); 
+            
+            //Entidades Mensais
+            var l4 = dbContext.Entities.Where(x =>
+                    x.Tier == 4 && x.ExecutionInterval*30 == x.LastExecutionDate.CompareTo(DateTime.Today))
+                .Include(x => x.ScrapSources)
+                .ThenInclude(x => x.ScrapSource)
+                .Select(x => new {x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
+                .ToList();
+            
+            
+            //Join
+            ConcurrentBag<ScrapQueue> queue = new ConcurrentBag<ScrapQueue>();
+            Parallel.Invoke(
+                () =>
+                {
+                    Parallel.ForEach(l1, x =>
+                    {
+                        foreach (var scrapSource in x.Source)
+                        {
+
+                            queue.Add(new ScrapQueue
+                            {
+                                Url = scrapSource.Url.Replace("{{entity}}", x.Name)
+                            });
+
+                        }
+                    });
+                },() =>
+                {
+                    Parallel.ForEach(l2, x =>
+                    {
+                        foreach (var scrapSource in x.Source)
+                        {
+
+                            queue.Add(new ScrapQueue
+                            {
+                                Url = scrapSource.Url.Replace("{{entity}}", x.Name)
+                            });
+
+                        }
+                    });
+                },
+                () =>
+            {
+                Parallel.ForEach(l3, x =>
+                {
+                    foreach (var scrapSource in x.Source)
+                    {
+
+                        queue.Add(new ScrapQueue
+                        {
+                            Url = scrapSource.Url.Replace("{{entity}}", x.Name)
+                        });
+
+                    }
+                });
+            },
+                () =>
+                {
+                    Parallel.ForEach(l4, x =>
+                    {
+                        foreach (var scrapSource in x.Source)
+                        {
+
+                            queue.Add(new ScrapQueue
+                            {
+                                Url = scrapSource.Url.Replace("{{entity}}", x.Name)
+                            });
+
+                        }
+                    });
+                });
+            
+            
+            //Persiste
+            dbContext.ScrapQueue.AddRange(queue.ToArray());
+            dbContext.SaveChanges();
+
+        }
+        
+        
         [STAThread]
         public static void ExtractPersonality(ApplicationDbContext context)
         {
