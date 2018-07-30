@@ -219,12 +219,12 @@ namespace Action.Controllers
                             });
                     return Ok(new
                     {
-                        EntityId = entityId,
-                        BriefingId = id,
-                        Briefing = briefing,
-                        BriefingDate = briefing.Date,
-                        Status = briefing.Status ?? EStatus.Processed,
-                        Recomendations = entities
+                        entityId = entityId,
+                        briefingId = id,
+                        briefing = briefing,
+                        briefingDate = briefing.Date,
+                        status = briefing.Status ?? EStatus.Processed,
+                        recomendations = entities
                     });
                 }
                 catch (Exception ex)
