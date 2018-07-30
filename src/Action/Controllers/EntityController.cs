@@ -330,13 +330,22 @@ namespace Action.Controllers
                     .Include(x => x.emotions)
                     .ToList();
 
+
+                var creativity = _dbContext.Personalities
+                    .Where(x => x.EntityId == lid)
+                    .SelectMany(x => x.Personality)
+                    .SelectMany(x => x.Details)
+                    .Where(x => x.Name.ToLower().Equals("Imagination"))
+                    .Select(x => x.Percentile).Average();
+                
                 var result = new dynamic[]
                 {
                     new {name = "joy", score = tones.Select(x => x.emotions.joy).Average()},
                     new {name = "anger", score = tones.Select(x => x.emotions.anger).Average()},
                     new {name = "fear", score = tones.Select(x => x.emotions.fear).Average()},
                     new {name = "sadness", score = tones.Select(x => x.emotions.sadness).Average()},
-                    new {name = "disgust", score = tones.Select(x => x.emotions.disgust).Average()}
+                    new {name = "disgust", score = tones.Select(x => x.emotions.disgust).Average()},
+                    new {name = "creativity", score = creativity ?? 0}
                 };
 
                 return Ok(result);
