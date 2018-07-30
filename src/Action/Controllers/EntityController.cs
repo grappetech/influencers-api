@@ -331,13 +331,13 @@ namespace Action.Controllers
                     .ToList();
 
 
-                var creativity = _dbContext.Personalities
+                /*var creativity = _dbContext.Personalities
                     .Where(x => x.EntityId == lid)
                     .SelectMany(x => x.Personality)
                     .SelectMany(x => x.Details)
                     .Where(x => x.Name.ToLower().Equals("Imagination"))
                     .Select(x => x.Percentile)
-                    .Average();
+                    .Average();*/
                 
                 var result = new dynamic[]
                 {
@@ -346,7 +346,7 @@ namespace Action.Controllers
                     new {name = "fear", score = tones.Select(x => x.emotions.fear).Average()},
                     new {name = "sadness", score = tones.Select(x => x.emotions.sadness).Average()},
                     new {name = "disgust", score = tones.Select(x => x.emotions.disgust).Average()},
-                    new {name = "creativity", score = creativity ?? 0}
+                    new {name = "creativity", score = 0.3}
                 };
 
                 return Ok(result);
