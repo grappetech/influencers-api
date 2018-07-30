@@ -55,271 +55,272 @@ namespace Action.Services.TaskScheduler
 
             Debugger.Log(0, "SCP", "Extraindo Links das fontes" + Environment.NewLine);
             var linkQueue = new List<ScrapQueue>();
-           /* dbContext.ScrapSources.AsNoTracking()
-                .ToList().ForEach(s =>
+            /* dbContext.ScrapSources.AsNoTracking()
+                 .ToList().ForEach(s =>
+                 {
+                     dbContext.Entities.Select(e => e.Name).ToList().ForEach(i =>
+                     {
+                         linkQueue.Add(new ScrapQueue
+                         {
+                             EnqueueDateTime = DateTime.UtcNow,
+                             Url = s.Url.Replace("{{entity}}", i.ToLower()),
+                             StartDateTime = DateTime.UtcNow
+                         });
+                     });
+ 
+ 
+                     dbContext.ScrapQueue.AddRange(linkQueue);
+ 
+                     dbContext.SaveChanges();*/
+            PrepareQueue(dbContext);
+            var queue = dbContext.ScrapQueue
+                .Where(x => !x.Completed)
+                .AsNoTracking()
+                .ToList();
+
+            queue.ForEach(
+                scrapQueue =>
                 {
-                    dbContext.Entities.Select(e => e.Name).ToList().ForEach(i =>
+                    try
                     {
-                        linkQueue.Add(new ScrapQueue
-                        {
-                            EnqueueDateTime = DateTime.UtcNow,
-                            Url = s.Url.Replace("{{entity}}", i.ToLower()),
-                            StartDateTime = DateTime.UtcNow
-                        });
-                    });
+                        var links = new Scrapper().ProccessTask(scrapQueue.Url, 1)
+                            .GetAwaiter()
+                            .GetResult()
+                            .Where(x => new Uri(x.Href).DnsSafeHost.Equals(new Uri(scrapQueue.Url).DnsSafeHost));
 
-
-                    dbContext.ScrapQueue.AddRange(linkQueue);
-
-                    dbContext.SaveChanges();*/
-PrepareQueue(dbContext);
-                    var queue = dbContext.ScrapQueue
-                        .Where(x => !x.Completed)
-                        .AsNoTracking()
-                        .ToList();
-
-                    queue.ForEach(
-                        scrapQueue =>
+                        foreach (var item in links)
                         {
                             try
                             {
-                                var links = new Scrapper().ProccessTask(scrapQueue.Url, 1)
-                                    .GetAwaiter()
-                                    .GetResult()
-                                    .Where(x => new Uri(x.Href).DnsSafeHost.Equals(new Uri(scrapQueue.Url).DnsSafeHost));
+                                #region Enhance Page Content
 
-                                foreach (var item in links)
+                                var nluSvc = new NLUService();
+                                NLUResult result = null;
+                                AnalysisResults nluAnalysis = null;
+                                try
                                 {
-                                    try
-                                    {
-                                        #region Enhance Page Content
-
-                                        var nluSvc = new NLUService();
-                                        NLUResult result = null;
-                                        AnalysisResults nluAnalysis = null;
-                                        try
-                                        {
-                                            nluAnalysis = nluSvc
-                                                .ProccessUrl(item.Href, wnluc.UserName, wnluc.Password, wnluc.Model,
-                                                    wnluc.Version).Result;
-                                            result = NLUResult.Parse(nluAnalysis);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Debugger.Log(0, "ERR-SCP", ex.Message + Environment.NewLine);
-                                            continue;
-                                        }
+                                    nluAnalysis = nluSvc
+                                        .ProccessUrl(item.Href, wnluc.UserName, wnluc.Password, wnluc.Model,
+                                            wnluc.Version).Result;
+                                    result = NLUResult.Parse(nluAnalysis);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Debugger.Log(0, "ERR-SCP", ex.Message + Environment.NewLine);
+                                    continue;
+                                }
 
 
-                                        if (result == null) continue;
-                                        Debugger.Log(0, "SCP",
-                                            "Enriquecendo o site " + item.Text + Environment.NewLine);
+                                if (result == null) continue;
+                                Debugger.Log(0, "SCP",
+                                    "Enriquecendo o site " + item.Text + Environment.NewLine);
 
-                                        var scrappedPage = new ScrapedPage
-                                        {
-                                            Date = DateTime.Today,
-                                            Id = Guid.NewGuid(),
-                                            Status = EDataExtractionStatus.Finalized,
-                                            Text = nluAnalysis.AnalyzedText.RemoveIllegalChars(),
-                                            Url = item.Href
-                                        };
+                                var scrappedPage = new ScrapedPage
+                                {
+                                    Date = DateTime.Today,
+                                    Id = Guid.NewGuid(),
+                                    Status = EDataExtractionStatus.Finalized,
+                                    Text = nluAnalysis.AnalyzedText.RemoveIllegalChars(),
+                                    Url = item.Href
+                                };
 
-                                        scrappedPage.Translated = new LanguageTranslatorService()
-                                            .ProccessTranslation(scrappedPage.Text, "pt", "en", wltc.UserName,
+                                scrappedPage.Translated = new LanguageTranslatorService()
+                                    .ProccessTranslation(scrappedPage.Text, "pt", "en", wltc.UserName,
+                                        wltc.Password)
+                                    .GetAwaiter()
+                                    .GetResult().RemoveIllegalChars();
+
+                                result.Keywords.ForEach(k =>
+                                {
+                                    var fragment = "";
+                                    var pos = nluAnalysis.AnalyzedText.IndexOf(k.text);
+                                    pos = pos > 101 ? pos - 100 : pos;
+                                    var end = pos > 101 ? pos + 100 : 0 + k.text.Length;
+                                    end = (end + 100 + pos) < (nluAnalysis.AnalyzedText.Length - 100)
+                                        ? end + 100
+                                        : end;
+                                    fragment = nluAnalysis.AnalyzedText.Substring(pos < 0 ? 0 : pos,
+                                        (end + pos) > nluAnalysis.AnalyzedText.Length
+                                            ? (nluAnalysis.AnalyzedText.Length - pos - 1)
+                                            : end);
+                                    k.fragment = fragment;
+                                    k.retrieved_url = scrapQueue.Url;
+                                    if (fragment.Length > 100)
+                                        k.translatedFragment = new LanguageTranslatorService()
+                                            .ProccessTranslation(fragment, "pt", "en", wltc.UserName,
                                                 wltc.Password)
                                             .GetAwaiter()
                                             .GetResult().RemoveIllegalChars();
 
-                                        result.Keywords.ForEach(k =>
-                                        {
-                                            var fragment = "";
-                                            var pos = nluAnalysis.AnalyzedText.IndexOf(k.text);
-                                            pos = pos > 101 ? pos - 100 : pos;
-                                            var end = pos > 101 ? pos + 100 : 0 + k.text.Length;
-                                            end = (end + 100 + pos) < (nluAnalysis.AnalyzedText.Length - 100)
-                                                ? end + 100
-                                                : end;
-                                            fragment = nluAnalysis.AnalyzedText.Substring(pos < 0 ? 0 : pos,
-                                                (end + pos) > nluAnalysis.AnalyzedText.Length
-                                                    ? (nluAnalysis.AnalyzedText.Length - pos - 1)
-                                                    : end);
-                                            k.fragment = fragment;
-                                            k.retrieved_url = scrapQueue.Url;
-                                            if (fragment.Length > 100)
-                                                k.translatedFragment = new LanguageTranslatorService()
-                                                    .ProccessTranslation(fragment, "pt", "en", wltc.UserName,
-                                                        wltc.Password)
-                                                    .GetAwaiter()
-                                                    .GetResult().RemoveIllegalChars();
-
-                                            if (k.emotions == null)
-                                            {
-                                                var emotion = new WatsonToneAnalyzerService()
-                                                    .PostTone(k.translatedFragment,
-                                                        new ApiAuthorization().SetBasicAuthorization(wta.UserName,
-                                                            wta.Password))
-                                                    .GetAwaiter()
-                                                    .GetResult();
-                                                k.emotions = new EmotionsKeyword
-                                                {
-                                                    anger = emotion?.DocumentTone?
-                                                                .ToneCategories?
-                                                                .FirstOrDefault(
-                                                                    x => x.CategoryId.Equals("emotion_tone"))?
-                                                                .Tones?
-                                                                .FirstOrDefault(x => x.ToneId.ToLower().Equals("anger"))
-                                                                ?
-                                                                .Score ?? 0,
-                                                    disgust = emotion?.DocumentTone?
-                                                                  .ToneCategories?
-                                                                  .FirstOrDefault(x =>
-                                                                      x.CategoryId.Equals("emotion_tone"))?
-                                                                  .Tones
-                                                                  ?.FirstOrDefault(
-                                                                      x => x.ToneId.ToLower().Equals("disgust"))
-                                                                  ?.Score ??
-                                                              0,
-                                                    fear = emotion?.DocumentTone?
-                                                               .ToneCategories?
-                                                               .FirstOrDefault(x => x.CategoryId.Equals("emotion_tone"))
-                                                               ?
-                                                               .Tones
-                                                               ?.FirstOrDefault(x => x.ToneId.ToLower().Equals("fear"))
-                                                               ?.Score ?? 0,
-                                                    joy = emotion?.DocumentTone?
-                                                              .ToneCategories?
-                                                              .FirstOrDefault(x => x.CategoryId.Equals("emotion_tone"))?
-                                                              .Tones
-                                                              ?.FirstOrDefault(x => x.ToneId.ToLower().Equals("joy"))
-                                                              ?.Score ?? 0,
-                                                    sadness = emotion?.DocumentTone?
-                                                                  .ToneCategories?
-                                                                  .FirstOrDefault(x =>
-                                                                      x.CategoryId.Equals("emotion_tone"))?
-                                                                  .Tones
-                                                                  ?.FirstOrDefault(
-                                                                      x => x.ToneId.ToLower().Equals("sadness"))
-                                                                  ?.Score ?? 0
-                                                };
-                                            }
-
-                                            if (k.sentiment == null)
-                                                k.sentiment = new SentimentKeyword
-                                                {
-                                                    score = (k.emotions?.joy ?? 0) - (new double[]
-                                                    {
-                                                        k.emotions?.anger ?? 0, k.emotions?.disgust ?? 0,
-                                                        k.emotions?.fear ?? 0, k.emotions?.sadness ?? 0
-                                                    }).Average()
-                                                };
-                                        });
-                                        result.ScrapedPageId = scrappedPage.Id;
-                                        dbContext.ScrapedPages.Add(scrappedPage);
-                                        dbContext.NluResults.Add(result);
-
-                                        Debugger.Log(0, "SCP", item.Text + "Enriquecido" + Environment.NewLine);
-
-                                        #endregion
-
-                                        #region ExtractTone
-
-                                        foreach (var entity in result.Entity)
-                                        {
-                                            var sentences = result.Relations.Select(x => x.sentence);
-                                            foreach (var sentence in sentences)
-                                            {
-                                                var translatedSentence = new LanguageTranslatorService()
-                                                    .ProccessTranslation(sentence, "pt", "en", wltc.UserName,
-                                                        wltc.Password)
-                                                    .GetAwaiter()
-                                                    .GetResult().RemoveIllegalChars();
-
-                                                var toneResult = new WatsonToneAnalyzerService().PostTone(
-                                                        translatedSentence,
-                                                        new ApiAuthorization().SetBasicAuthorization(wta.UserName,
-                                                            wta.Password))
-                                                    .GetAwaiter()
-                                                    .GetResult();
-                                                if (toneResult == null) continue;
-
-                                                var tone = new ToneResult
-                                                {
-                                                    DocumentTone = toneResult.DocumentTone,
-                                                    ScrapedPageId = result.ScrapedPageId,
-                                                    SetenceTones = toneResult.SetenceTones
-                                                };
-                                                tone.NluEntityId = entity.Id;
-                                                tone.ScrapedPageId = result.ScrapedPageId;
-                                                dbContext.Tones.Add(tone);
-                                            }
-                                        }
-
-                                        #endregion
-
-                                        #region Extract Personality
-
-                                        Debugger.Log(0, "SCP", "Extraindo Personalidade." + Environment.NewLine);
-                                        var profile = new PersonalityInsightsService()
-                                            .ProccessText(scrappedPage.Translated, wpic.UserName, wpic.Password,
-                                                wpic.Version)
-                                            .GetAwaiter()
-                                            .GetResult();
-
-                                        var piResult = PersonalityResult.Parse(profile);
-
-                                        if (piResult != null)
-                                        {
-                                            piResult.ScrapedPageId = scrappedPage.Id;
-                                            dbContext.Personalities.Add(piResult);
-                                        }
-
-                                        Debugger.Log(0, "SCP",
-                                            "Extração de Personalidade Concluída." + Environment.NewLine);
-
-                                        #endregion
-
-                                        #region Extract Tone
-
-                                        Debugger.Log(0, "SCP", "Extraindo Tom." + Environment.NewLine);
-                                        var tones = new WatsonToneAnalyzerService()
-                                            .PostTone(scrappedPage.Translated,
+                                    if (k.emotions == null)
+                                    {
+                                        var emotion = new WatsonToneAnalyzerService()
+                                            .PostTone(k.translatedFragment,
                                                 new ApiAuthorization().SetBasicAuthorization(wta.UserName,
                                                     wta.Password))
                                             .GetAwaiter()
                                             .GetResult();
-
-                                        var taResult = new ToneResult
+                                        k.emotions = new EmotionsKeyword
                                         {
-                                            DocumentTone = tones.DocumentTone,
-                                            ScrapedPageId = result.ScrapedPageId,
-                                            SetenceTones = tones.SetenceTones
+                                            anger = emotion?.DocumentTone?
+                                                        .ToneCategories?
+                                                        .FirstOrDefault(
+                                                            x => x.CategoryId.Equals("emotion_tone"))?
+                                                        .Tones?
+                                                        .FirstOrDefault(x => x.ToneId.ToLower().Equals("anger"))
+                                                        ?
+                                                        .Score ?? 0,
+                                            disgust = emotion?.DocumentTone?
+                                                          .ToneCategories?
+                                                          .FirstOrDefault(x =>
+                                                              x.CategoryId.Equals("emotion_tone"))?
+                                                          .Tones
+                                                          ?.FirstOrDefault(
+                                                              x => x.ToneId.ToLower().Equals("disgust"))
+                                                          ?.Score ??
+                                                      0,
+                                            fear = emotion?.DocumentTone?
+                                                       .ToneCategories?
+                                                       .FirstOrDefault(x => x.CategoryId.Equals("emotion_tone"))
+                                                       ?
+                                                       .Tones
+                                                       ?.FirstOrDefault(x => x.ToneId.ToLower().Equals("fear"))
+                                                       ?.Score ?? 0,
+                                            joy = emotion?.DocumentTone?
+                                                      .ToneCategories?
+                                                      .FirstOrDefault(x => x.CategoryId.Equals("emotion_tone"))?
+                                                      .Tones
+                                                      ?.FirstOrDefault(x => x.ToneId.ToLower().Equals("joy"))
+                                                      ?.Score ?? 0,
+                                            sadness = emotion?.DocumentTone?
+                                                          .ToneCategories?
+                                                          .FirstOrDefault(x =>
+                                                              x.CategoryId.Equals("emotion_tone"))?
+                                                          .Tones
+                                                          ?.FirstOrDefault(
+                                                              x => x.ToneId.ToLower().Equals("sadness"))
+                                                          ?.Score ?? 0
                                         };
-
-                                        if (taResult != null)
-                                        {
-                                            taResult.ScrapedPageId = scrappedPage.Id;
-                                            dbContext.Tones.Add(taResult);
-                                        }
-
-                                        Debugger.Log(0, "SCP", "Extração de Tom Concluída." + Environment.NewLine);
-
-                                        #endregion
-
-
-                                        dbContext.SaveChanges();
                                     }
-                                    catch (Exception ex)
+
+                                    if (k.sentiment == null)
+                                        k.sentiment = new SentimentKeyword
+                                        {
+                                            score = (k.emotions?.joy ?? 0) - (new double[]
+                                            {
+                                                k.emotions?.anger ?? 0, k.emotions?.disgust ?? 0,
+                                                k.emotions?.fear ?? 0, k.emotions?.sadness ?? 0
+                                            }).Average()
+                                        };
+                                });
+                                result.ScrapedPageId = scrappedPage.Id;
+                                dbContext.ScrapedPages.Add(scrappedPage);
+                                dbContext.NluResults.Add(result);
+
+                                Debugger.Log(0, "SCP", item.Text + "Enriquecido" + Environment.NewLine);
+
+                                #endregion
+
+                                #region ExtractTone
+
+                                foreach (var entity in result.Entity)
+                                {
+                                    var sentences = result.Relations.Select(x => x.sentence);
+                                    foreach (var sentence in sentences)
                                     {
-                                        Debugger.Log(0, "ERR-SCP", ex.Message + Environment.NewLine);
+                                        var translatedSentence = new LanguageTranslatorService()
+                                            .ProccessTranslation(sentence, "pt", "en", wltc.UserName,
+                                                wltc.Password)
+                                            .GetAwaiter()
+                                            .GetResult().RemoveIllegalChars();
+
+                                        var toneResult = new WatsonToneAnalyzerService().PostTone(
+                                                translatedSentence,
+                                                new ApiAuthorization().SetBasicAuthorization(wta.UserName,
+                                                    wta.Password))
+                                            .GetAwaiter()
+                                            .GetResult();
+                                        if (toneResult == null) continue;
+
+                                        var tone = new ToneResult
+                                        {
+                                            DocumentTone = toneResult.DocumentTone,
+                                            ScrapedPageId = result.ScrapedPageId,
+                                            SetenceTones = toneResult.SetenceTones
+                                        };
+                                        tone.NluEntityId = entity.Id;
+                                        tone.ScrapedPageId = result.ScrapedPageId;
+                                        dbContext.Tones.Add(tone);
                                     }
                                 }
+
+                                #endregion
+
+                                #region Extract Personality
+
+                                Debugger.Log(0, "SCP", "Extraindo Personalidade." + Environment.NewLine);
+                                var profile = new PersonalityInsightsService()
+                                    .ProccessText(scrappedPage.Translated, wpic.UserName, wpic.Password,
+                                        wpic.Version)
+                                    .GetAwaiter()
+                                    .GetResult();
+
+                                var piResult = PersonalityResult.Parse(profile);
+
+                                if (piResult != null)
+                                {
+                                    piResult.ScrapedPageId = scrappedPage.Id;
+                                    dbContext.Personalities.Add(piResult);
+                                }
+
+                                Debugger.Log(0, "SCP",
+                                    "Extração de Personalidade Concluída." + Environment.NewLine);
+
+                                #endregion
+
+                                #region Extract Tone
+
+                                Debugger.Log(0, "SCP", "Extraindo Tom." + Environment.NewLine);
+                                var tones = new WatsonToneAnalyzerService()
+                                    .PostTone(scrappedPage.Translated,
+                                        new ApiAuthorization().SetBasicAuthorization(wta.UserName,
+                                            wta.Password))
+                                    .GetAwaiter()
+                                    .GetResult();
+
+                                var taResult = new ToneResult
+                                {
+                                    DocumentTone = tones.DocumentTone,
+                                    ScrapedPageId = result.ScrapedPageId,
+                                    SetenceTones = tones.SetenceTones
+                                };
+
+                                if (taResult != null)
+                                {
+                                    taResult.ScrapedPageId = scrappedPage.Id;
+                                    dbContext.Tones.Add(taResult);
+                                }
+
+                                Debugger.Log(0, "SCP", "Extração de Tom Concluída." + Environment.NewLine);
+
+                                #endregion
+
+
+                                dbContext.SaveChanges();
+                                ExtractPersonality(dbContext);
                             }
                             catch (Exception ex)
                             {
-                                Debugger.Log(0, "ERR", "Falha NLU." + ex.Message);
+                                Debugger.Log(0, "ERR-SCP", ex.Message + Environment.NewLine);
                             }
-                        });
-             /*   });*/
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debugger.Log(0, "ERR", "Falha NLU." + ex.Message);
+                    }
+                });
+            /*   });*/
 
             #endregion
         }
@@ -327,115 +328,110 @@ PrepareQueue(dbContext);
 
         public static void PrepareQueue(ApplicationDbContext dbContext)
         {
+            var today = DateTime.Today;
             //Entidades Diárias
             var l1 = dbContext.Entities.Where(x =>
-                    x.Tier == 1 && x.ExecutionInterval == x.LastExecutionDate.CompareTo(DateTime.Today))
+                    x.Tier == 1 && x.ExecutionInterval <= today.Subtract(x.LastExecutionDate).Days)
+                .AsNoTracking()
                 .Include(x => x.ScrapSources)
                 .ThenInclude(x => x.ScrapSource)
-                .Select(x => new {x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
+                .Select(x => new {x.Id, x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
                 .ToList();
-            
+
             //Entidades Semanais
             var l2 = dbContext.Entities.Where(x =>
-                    x.Tier == 2 && x.ExecutionInterval*7 == x.LastExecutionDate.CompareTo(DateTime.Today))
+                    x.Tier == 2 && x.ExecutionInterval * 7 <= today.Subtract(x.LastExecutionDate).Days)
+                .AsNoTracking()
                 .Include(x => x.ScrapSources)
                 .ThenInclude(x => x.ScrapSource)
-                .Select(x => new {x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
-                .ToList(); 
+                .Select(x => new {x.Id, x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
+                .ToList();
 
             //Entidades Quinzenais
             var l3 = dbContext.Entities.Where(x =>
-                    x.Tier == 3 && x.ExecutionInterval*14 == x.LastExecutionDate.CompareTo(DateTime.Today))
+                    x.Tier == 3 && x.ExecutionInterval * 14 <= today.Subtract(x.LastExecutionDate).Days)
+                .AsNoTracking()
                 .Include(x => x.ScrapSources)
                 .ThenInclude(x => x.ScrapSource)
-                .Select(x => new {x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
-                .ToList(); 
-            
+                .Select(x => new {x.Id, x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
+                .ToList();
+
             //Entidades Mensais
             var l4 = dbContext.Entities.Where(x =>
-                    x.Tier == 4 && x.ExecutionInterval*30 == x.LastExecutionDate.CompareTo(DateTime.Today))
+                    x.Tier == 4 && x.ExecutionInterval * 30 <= today.Subtract(x.LastExecutionDate).Days)
+                .AsNoTracking()
                 .Include(x => x.ScrapSources)
                 .ThenInclude(x => x.ScrapSource)
-                .Select(x => new {x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
+                .Select(x => new {x.Id, x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
                 .ToList();
-            
-            
+
+
             //Join
-            ConcurrentBag<ScrapQueue> queue = new ConcurrentBag<ScrapQueue>();
-            Parallel.Invoke(
-                () =>
-                {
-                    Parallel.ForEach(l1, x =>
-                    {
-                        foreach (var scrapSource in x.Source)
-                        {
+            List<ScrapQueue> queue = new List<ScrapQueue>();
 
-                            queue.Add(new ScrapQueue
-                            {
-                                Url = scrapSource.Url.Replace("{{entity}}", x.Name)
-                            });
-
-                        }
-                    });
-                },() =>
-                {
-                    Parallel.ForEach(l2, x =>
-                    {
-                        foreach (var scrapSource in x.Source)
-                        {
-
-                            queue.Add(new ScrapQueue
-                            {
-                                Url = scrapSource.Url.Replace("{{entity}}", x.Name)
-                            });
-
-                        }
-                    });
-                },
-                () =>
+            l1.ForEach(x =>
             {
-                Parallel.ForEach(l3, x =>
+                foreach (var scrapSource in x.Source)
                 {
-                    foreach (var scrapSource in x.Source)
+                    queue.Add(new ScrapQueue
                     {
-
-                        queue.Add(new ScrapQueue
-                        {
-                            Url = scrapSource.Url.Replace("{{entity}}", x.Name)
-                        });
-
-                    }
-                });
-            },
-                () =>
-                {
-                    Parallel.ForEach(l4, x =>
-                    {
-                        foreach (var scrapSource in x.Source)
-                        {
-
-                            queue.Add(new ScrapQueue
-                            {
-                                Url = scrapSource.Url.Replace("{{entity}}", x.Name)
-                            });
-
-                        }
+                        Url = scrapSource.Url.Replace("{{entity}}", x.Name)
                     });
-                });
-            
-            
-            //Persiste
-            dbContext.ScrapQueue.AddRange(queue.ToArray());
-            dbContext.SaveChanges();
+                }
+            });
 
+            l2.ForEach(x =>
+            {
+                foreach (var scrapSource in x.Source)
+                {
+                    queue.Add(new ScrapQueue
+                    {
+                        Url = scrapSource.Url.Replace("{{entity}}", x.Name)
+                    });
+                }
+            });
+
+            l3.ForEach(x =>
+            {
+                foreach (var scrapSource in x.Source)
+                {
+                    queue.Add(new ScrapQueue
+                    {
+                        Url = scrapSource.Url.Replace("{{entity}}", x.Name)
+                    });
+                }
+            });
+
+            l4.ForEach(x =>
+            {
+                foreach (var scrapSource in x.Source)
+                {
+                    queue.Add(new ScrapQueue
+                    {
+                        Url = scrapSource.Url.Replace("{{entity}}", x.Name)
+                    });
+                }
+            });
+
+            var id = l1.Select(x => x.Id).Union(l2.Select(x => x.Id)).Union(l3.Select(x => x.Id))
+                .Union(l4.Select(x => x.Id)).ToList();
+            
+            foreach (var entity in dbContext.Entities.Where(x=> id.Contains( x.Id)))
+            {
+                entity.LastExecutionDate = DateTime.Today;
+            }
+
+            //Persiste
+            dbContext.ScrapQueue.AddRange(queue);
+            dbContext.SaveChanges();
         }
-        
-        
+
+
         [STAThread]
         public static void ExtractPersonality(ApplicationDbContext context)
         {
-
             var dbContext = context;
+
             #region Set Watson Services Credentials
 
             Debugger.Log(0, "SCP", "Buscando Credenciais." + Environment.NewLine);
@@ -464,7 +460,7 @@ PrepareQueue(dbContext);
                     .Where(x => x.EntityId.HasValue)
                     .Select(x => x.EntityId.Value)
                     .ToList();
-                
+
                 result.ForEach(r => { entities.Add(r.ScrapedPageId, itm.Where(x => x > 0).Distinct().ToList()); });
 
 
