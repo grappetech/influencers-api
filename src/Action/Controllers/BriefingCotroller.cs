@@ -221,7 +221,26 @@ namespace Action.Controllers
                     {
                         entityId = entityId,
                         briefingId = id,
-                        briefing = briefing,
+                        briefing = new BriefingViewModel
+                        {
+                            AgeRange = briefing.AgeRange,
+                            City = briefing.City,
+                            Description = briefing.Description,
+                            Gender = briefing.Gender,
+                            Date = briefing.Date,
+                            DocumentUrl = briefing.DocumentUrl,
+                            Entity = briefing.Entity,
+                            Factor = briefing.Factor,
+                            Id = briefing.Id,
+                            Name = briefing.Name,
+                            Personality = briefing.Personality,
+                            State = briefing.State,
+                            Status = briefing.Status,
+                            Strength = briefing.Strength,
+                            Tone = briefing.Tone,
+                            Value = briefing.Value
+                            
+                        },
                         briefingDate = briefing.Date,
                         status = briefing.Status ?? EStatus.Processed,
                         recomendations = entities
