@@ -70,7 +70,9 @@ namespace Action.Models
                 .HasMaxLength(int.MaxValue);
 
             builder.Entity<Entity>()
-                .HasMany(x => x.Briefings);
+                .HasMany(x => x.Briefings)
+                .WithOne()
+                .HasForeignKey(x=>x.ConnectedEntityId);
 
             builder.Entity<Entity>()
                 .Property(x => x.RelatedRoles)
