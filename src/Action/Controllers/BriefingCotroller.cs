@@ -204,7 +204,7 @@ namespace Action.Controllers
                     if (_dbContext == null)
                         return NotFound("No database connection");
                     var briefing = _dbContext.Briefings.AsNoTracking().FirstOrDefault(x=>x.Id == id);
-                    var data = _dbContext.Entities.Where(x => x.Id != entityId).Take(8).ToList();
+                    var data = _dbContext.Entities.Where(x => x.Id != entityId && x.CategoryId != ECategory.Brand).Take(8).ToList();
                     var random = new Random(Randomize.Next());
                     List<EntityRecomendationViewModel> entities = new List<EntityRecomendationViewModel>();
                     if (data.Count > 0)
