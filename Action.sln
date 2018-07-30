@@ -14,14 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Action", "src\Action\Action.csproj", "{FBE90CB3-17A0-4C81-A1F5-1CAE061D2B97}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ActionUI.Admin", "Action.UI.Admin\ActionUI.Admin.csproj", "{18F6F93D-0F25-444D-B0F4-A21E1BDF122B}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Action.Repository", "Action.Repository\Action.Repository.csproj", "{2791FCED-8838-42ED-B6DF-61B3DAD20DAC}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Action.Data", "Action.Data\Action.Data.csproj", "{9BF09927-8260-4F54-A58E-C7E9DCF1278D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Action.Services", "Action.Services\Action.Services.csproj", "{E485FCC3-EF67-4E16-8CB9-4CEA9F218C4E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
