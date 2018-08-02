@@ -18,8 +18,6 @@
 
             $(document).ready(function () {
 
-
-
                 var sourceId = $('#hdfSourceScrapId').val();
                 if (sourceId == 0) {
                     $('#ddlEndTag').val("body");
@@ -84,50 +82,15 @@
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="projectinput5">Tag Inicio</label>
-                                            <select id="ddlStartTag" asp-for="@Model.SourceScrap.StarTag" class="form-control">
-                                                <option value="">--Selecione--</option>
-                                                @foreach (string tag in Model.SourceScrap.ListTags)
-                                                {
-                                                    if (tag == "body" && string.IsNullOrEmpty(Model.SourceScrap.StarTag))
-                                                    {
-                                                        <option selected="selected" value="@tag">@tag</option>
-
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="@tag">@tag</option>
-
-                                                    }
-
-
-                                                }
-
-                                            </select>
+                                            <input class="form-control" type="text"  asp-for="@Model.SourceScrap.StarTag" />
+                                           
                                         </div>
                                     </div>
 
                                     <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="projectinput5">Tag Fim</label>
-                                            <select id="ddlEndTag" asp-for="@Model.SourceScrap.EndTag" class="form-control">
-                                                <option value="">--Selecione--</option>
-                                                @foreach (string tag in Model.SourceScrap.ListTags)
-                                                {
-                                                    if (tag == "body" && string.IsNullOrEmpty(Model.SourceScrap.EndTag))
-                                                    {
-                                                        <option selected="selected" value="@tag">@tag</option>
-
-                                                    }
-                                                    else
-                                                    {
-                                                        <option value="@tag">@tag</option>
-
-                                                    }
-
-
-                                                }
-
-                                            </select>
+                                            <input class="form-control" type="text" asp-for="@Model.SourceScrap.EndTag" />
                                         </div>
                                     </div>
 
@@ -214,6 +177,7 @@
                                         <i class="fa fa-check-square-o"></i> Salvar
                                     </button>
                                 </div>
+                            </div>
                         </form>
                     </div>
                 </div>
