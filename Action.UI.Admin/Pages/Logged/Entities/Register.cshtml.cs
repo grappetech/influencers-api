@@ -60,7 +60,7 @@ namespace ActionUI.Admin.Pages.Logged.Entities
             {
                 var entity = this._entityService.Get(id);
                 var entitiesRelateds = this._coreEntityService.GetRelatedCoreEntities(id);
-                var industry = this._industryService.Get((int)entity.IndustryId);
+                var industry = entity.IndustryId.HasValue ? this._industryService.Get((int)entity.IndustryId) : null;
 
                 this.Entity = parseToViewModel(entity);
 
@@ -85,7 +85,7 @@ namespace ActionUI.Admin.Pages.Logged.Entities
                         Alias = scrapSourceEntity.ScrapSource.Alias,
                         Limit = scrapSourceEntity.ScrapSource.Limit,
                         Url = scrapSourceEntity.ScrapSource.Url,
-                        IndustryId = (int)entity.IndustryId,
+                        IndustryId = entity.IndustryId.HasValue ? entity.IndustryId.Value  : 0,
                         IsEntityRelated = true,
                         Selected = true,
                         DisplayOrder =100,
@@ -190,7 +190,7 @@ namespace ActionUI.Admin.Pages.Logged.Entities
                 Name = entity.Name,
                 Alias = entity.Alias,
                 CategoryId = (int)entity.CategoryId,
-                IndustryId = (int)entity.IndustryId,
+                IndustryId = entity.IndustryId,
                 FacebookUser = entity.FacebookUser,
                 TweeterUser = entity.TweeterUser,
                 InstagranUser = entity.InstagranUser,

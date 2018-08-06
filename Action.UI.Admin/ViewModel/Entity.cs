@@ -30,7 +30,7 @@ namespace ActionUI.Admin.ViewModel
         public int Tier { get; set; } = 3;
         public int ExecutionInterval { get; set; }
 
-        public int IndustryId { get; set; }
+        public int? IndustryId { get; set; }
 
 
         public string SelectedUnRelatedWatsonEntity { get; set; }
