@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Action.Data.Models.Core;
 using Action.Data.Models.Core.Scrap;
 using WatsonEntity = Action.Data.Models.Watson.NLU.Entity;
@@ -28,6 +29,18 @@ namespace Action.Data.Models.Core.Watson
 
         public int? IndustryId { get; set; }
         public int ExecutionInterval { get; set; }
+        [MaxLength(255)]
+        [Column(TypeName = "varchar(255)")]
+        public string Ethnicity { get; set; }
+
+        [MaxLength(1)]
+        [Column(TypeName = "char(1)")]
+        public string Genre { get; set; }
+
+
+        [Column(TypeName = "datetime")]
+        public DateTime? BirthDate { get; set; }
+
         public string RelatedRoles { get; set; }
         public Industry Industry { get; set; }
 

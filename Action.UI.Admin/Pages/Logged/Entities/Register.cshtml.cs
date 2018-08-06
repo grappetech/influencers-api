@@ -199,7 +199,10 @@ namespace ActionUI.Admin.Pages.Logged.Entities
                 SiteUrl = entity.SiteUrl,
                 Tier = entity.Tier,
                 ExecutionInterval = entity.ExecutionInterval,
-                SelectedRoles = entity.RelatedRoles
+                SelectedRoles = entity.RelatedRoles,
+                Ethnicity = entity.Ethnicity,
+                Genre = entity.Genre,
+                BirthDate = entity.BirthDate
             };
         }
 
@@ -270,7 +273,10 @@ namespace ActionUI.Admin.Pages.Logged.Entities
                 SiteUrl = this.Entity.SiteUrl,
                 Tier = this.Entity.Tier,
                 RelatedRoles = this.Entity.SelectedRoles,
-                ExecutionInterval = this.Entity.ExecutionInterval
+                ExecutionInterval = this.Entity.ExecutionInterval,
+                Ethnicity = this.Entity.Ethnicity,
+                Genre = this.Entity.Genre,
+                BirthDate = this.Entity.BirthDate
             };
 
 

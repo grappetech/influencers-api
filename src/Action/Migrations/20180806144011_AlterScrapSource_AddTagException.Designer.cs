@@ -14,9 +14,10 @@ using System;
 namespace Action.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180806144011_AlterScrapSource_AddTagException")]
+    partial class AlterScrapSource_AddTagException
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -509,24 +510,13 @@ namespace Action.Migrations
 
                     b.Property<string>("Alias");
 
-                    b.Property<DateTime?>("BirthDate")
-                        .HasColumnType("datetime");
-
                     b.Property<int>("CategoryId");
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<string>("Ethnicity")
-                        .HasColumnType("varchar(255)")
-                        .HasMaxLength(255);
-
                     b.Property<int>("ExecutionInterval");
 
                     b.Property<string>("FacebookUser");
-
-                    b.Property<string>("Genre")
-                        .HasColumnType("char(1)")
-                        .HasMaxLength(1);
 
                     b.Property<int?>("IndustryId");
 

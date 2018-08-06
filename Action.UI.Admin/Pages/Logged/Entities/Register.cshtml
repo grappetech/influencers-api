@@ -161,7 +161,35 @@
                                     </div>
                                 </div>
 
-                                <div class="row" id="divRoles">
+                                <div class="row person-relation" style="display:none">
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="projectinput6">Gênero</label>
+                                            <select id="projectinput6" asp-for="@Model.Entity.Genre" class="form-control">
+                                                <option value="">--Selecione--</option>
+                                                <option value="M">Masculino</option>
+                                                <option value="F">Feminino</option>
+                                                <option value="I">Indiferente</option>
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="birthDate" title="Data de Nascimento">Data Nasc.</label>
+                                            <input class="form-control pickadate-dropdown" type="text" id="birthDate" value="@(string.Format("{0:dd/MM/yyyy}",Model.Entity.BirthDate))" asp-for="@Model.Entity.BirthDate" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="ethnicity">Etnia</label>
+                                            <input class="form-control" maxlength="250"  id="ethnicity" asp-for="@Model.Entity.Ethnicity" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row person-relation" id="divRoles">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label for="projectinput6">Profissão</label>
@@ -198,15 +226,15 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-2">
                                         <div class="form-group">
-                                            <label for="projectinput5" class="font-small-1">Intervalo Execução</label>
+                                            <label for="projectinput5" title="Intervalo de Execução" class="font-small-1">Int.Execução</label>
 
                                             <input asp-for="Entity.ExecutionInterval" value="1" type="number" class="form-control" />
 
                                         </div>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-3">
                                         <div class="form-group">
                                             <label for="projectinput5">Frequência</label>
                                             <select id="projectinput5" asp-for="@Model.Entity.Tier" class="form-control">
@@ -273,31 +301,31 @@
                                                                                 typeLink = "N/D";
                                                                             }
 
-                                                                        <tr>
+                                                                            <tr>
 
-                                                                            <td style="display:none">
-                                                                                @source.DisplayOrder
-                                                                            </td>
-                                                                            <td>
-                                                                                <small class="@cssClass font-small-1">&nbsp;</small>
-                                                                            </td>
-                                                                            <td>
-                                                                                <label for="chkIndustry_@source.Id" class="font-small-1">
-                                                                                    <a title="@source.Url"
-                                                                                       class="btnScrapSource"
-                                                                                       data-scrapsourceid="@source.Id">@source.Alias</a>
-                                                                                </label>
-                                                                            </td>
+                                                                                <td style="display:none">
+                                                                                    @source.DisplayOrder
+                                                                                </td>
+                                                                                <td>
+                                                                                    <small class="@cssClass font-small-1">&nbsp;</small>
+                                                                                </td>
+                                                                                <td>
+                                                                                    <label for="chkIndustry_@source.Id" class="font-small-1">
+                                                                                        <a title="@source.Url"
+                                                                                           class="btnScrapSource"
+                                                                                           data-scrapsourceid="@source.Id">@source.Alias</a>
+                                                                                    </label>
+                                                                                </td>
 
-                                                                            <td class="font-small-1"><label for="chkIndustry_@source.Id">@typeLink</label></td>
-                                                                            <td>
-                                                                                <input id="chkScrapSource_@source.Id"
-                                                                                       class="chkScrapSource" @(source.Selected ? "checked=checked" : "")
-                                                                                       data-scrapsourceid=""
-                                                                                       value="@source.Id"
-                                                                                       type="checkbox">
-                                                                            </td>
-                                                                        </tr>
+                                                                                <td class="font-small-1"><label for="chkIndustry_@source.Id">@typeLink</label></td>
+                                                                                <td>
+                                                                                    <input id="chkScrapSource_@source.Id"
+                                                                                           class="chkScrapSource" @(source.Selected ? "checked=checked" : "")
+                                                                                           data-scrapsourceid=""
+                                                                                           value="@source.Id"
+                                                                                           type="checkbox">
+                                                                                </td>
+                                                                            </tr>
 
 
                                                                         }

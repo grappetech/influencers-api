@@ -27,7 +27,7 @@ var Site = {
             if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,6})+$/.test(email)) {
                 return (true)
             }
-            
+
             return (false)
         },
         isStrongPassword: function (value) {
@@ -41,12 +41,30 @@ var Site = {
 
         console.log('Init site.')
         $('#bntLogoutSystem').on('click', function (e) {
-
             e.preventDefault();
             Site.notification.confirm("Aviso", "Deseja realmente sair?", function () {
                 window.location.href = "/Logged/Index?handler=logout"
             });
         });
+
+
+
+        //DatePicker
+        try {
+            $('.pickadate-dropdown').pickadate({
+                format: 'dd/mm/yyyy',
+                formatSubmit: 'yyyy/mm/dd',
+                hiddenPrefix: 'prefix__',
+                hiddenSuffix: '__suffix',
+                selectMonths: true,
+                selectYears: true,
+                selectYears: 238
+
+
+            });
+        } catch (e) {
+
+        }
     },
     ajax: {
         get: function (url, callback) {
@@ -60,7 +78,7 @@ var Site = {
                 //data: dataParameter,
                 //contentType: contentType,
                 url: url,
-               //dataType: "html",
+                //dataType: "html",
                 success: function (data, status, jqXHR) {
                     callback(data, status);
                 },
@@ -77,7 +95,7 @@ var Site = {
 
             if (!contentType)
                 contentType = 'application/x-www-form-urlencoded; charset=UTF-8';
-            
+
             $.ajax({
 
                 type: "POST",
@@ -106,7 +124,7 @@ Site.page = {
         if (!msg) {
             msg = "Aguarde um momento...";
         }
-        $.blockUI({ message: '<h5>'+msg+'</h5>' });
+        $.blockUI({ message: '<h5>' + msg + '</h5>' });
     },
     unloading: function () {
         $.unblockUI();
@@ -116,13 +134,13 @@ Site.page = {
 Site.notification = {
     alert: function (msg) {
         swal(msg);
-       
+
     },
     error: function (msg) {
         swal("Ops!", msg, "error");
     },
-    success: function (msg,callback) {
-        
+    success: function (msg, callback) {
+
 
 
         if (callback && typeof (callback) == "function") {

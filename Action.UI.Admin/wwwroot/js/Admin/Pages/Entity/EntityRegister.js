@@ -1,5 +1,6 @@
 ﻿
 
+
 (function ($) {
 
 
@@ -93,12 +94,14 @@
 
         ShowBrandCategoryOption: function () {
             $('#divRoles').hide();
+            $('.person-relation').hide()
             $('#divIndustry').fadeIn('normal');
         },
         ShowPersonCategoryOption: function () {
 
             $('#divIndustry').hide();
             $('#divRoles').fadeIn('normal');
+            $('.person-relation').fadeIn('normal')
 
         },
         FillForm: function () {
@@ -139,21 +142,23 @@
             var scrapUrl = $(this).find(":selected").data("scrapurl");
             $('#labelScrapUrl').text("").text(scrapUrl);
         },
-        SubmitRegisterForm: function (event) {
 
-            ///Obter todos as entitydaes marcadas com o checkbox
+        Validate: function () {
+            var errors = [];
+
+            var entityName = $('#entityName').val();
+
+
+            if (!entityName || entityName == "" || entityName.length == 0)
+                errors.push('Informe um nome para entidade');
+
+
+            return errors;
+
+        },
+        getEntityChecked: function () {
             var arrEntityChecked = [];
-            var arrEntityUnChecked = [];
-            var arrRolesChecked = [];
-            var arrScrapSourceChecked = [];
-
-
             var oTable = $("#dtEntityNotRelated").dataTable();
-            var dtTableEntityRelated = $("#dtEntityRelated").dataTable();
-            var dtTableScrapSources = $("#dtEntityScrapSource").dataTable();
-
-
-
             //percorrer as linhas do datatable, dessa forma se um valor for marcado em uma das paginas ele
             //será considerado, se não for assim, somente os valores visiveis serão considerados.
             $(".chkUnRelatedEntity:checked", oTable.fnGetNodes()).each(function (index, checkbox) {
@@ -164,6 +169,11 @@
                 }
             });
 
+            return arrEntityChecked;
+        },
+        getRoles: function () {
+
+            var arrRolesChecked = [];
 
             $('.chkRoles:checked').each(function (index, checkbox) {
                 var checked = $(checkbox).is(":checked");
@@ -174,6 +184,36 @@
                 }
             });
 
+            return arrRolesChecked;
+
+        },
+        SubmitRegisterForm: function (event) {
+
+            ///Obter todos as entitydaes marcadas com o checkbox
+            var arrEntityChecked = [];
+            var arrEntityUnChecked = [];
+            var arrRolesChecked = [];
+            var arrScrapSourceChecked = [];
+
+            var arrErrors = RegisterEntity.Validate();
+
+            if (arrErrors.length > 0) {
+
+                Site.notification.error(arrErrors.join("\n"));
+                return;
+            }
+
+
+          
+            var dtTableEntityRelated = $("#dtEntityRelated").dataTable();
+            var dtTableScrapSources = $("#dtEntityScrapSource").dataTable();
+
+
+            arrEntityChecked = RegisterEntity.getEntityChecked();      
+
+            arrRolesChecked = RegisterEntity.getRoles();
+
+         
 
             //dtEntityScrapSource
             $(".chkScrapSource", dtTableScrapSources.fnGetNodes()).each(function (index, checkbox) {

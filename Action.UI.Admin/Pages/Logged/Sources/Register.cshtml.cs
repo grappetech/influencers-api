@@ -78,7 +78,7 @@ namespace ActionUI.Admin.Pages.Logged.Sources
             this.SourceScrap.StarTag = source.StarTag;
             this.SourceScrap.PageStatus = source.PageStatus;
             this.SourceScrap.Url = source.Url;
-            
+            this.SourceScrap.TagException = source.TagException.Replace("|", "\n");
             
             return this.SourceScrap;
 
@@ -118,6 +118,7 @@ namespace ActionUI.Admin.Pages.Logged.Sources
                 StarTag = this.SourceScrap.StarTag,
                 EndTag = this.SourceScrap.EndTag,
                 Limit = this.SourceScrap.Limit,
+                TagException = this.SourceScrap.TagException.Replace(" ","|"),
                 PageStatus = this.SourceScrap.PageStatus,
                 Url = this.SourceScrap.Url
             };

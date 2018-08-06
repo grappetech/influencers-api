@@ -136,6 +136,9 @@ namespace Action.Services
                     entity.IndustryId = modelEntity.IndustryId;
                     entity.ExecutionInterval = modelEntity.ExecutionInterval;
                     entity.Tier = modelEntity.Tier;
+                    entity.Ethnicity = modelEntity.Ethnicity;
+                    entity.Genre = modelEntity.Genre;
+                    entity.BirthDate = modelEntity.BirthDate;
 
 
                     //this._repository.Update(entity);
@@ -148,18 +151,6 @@ namespace Action.Services
                 this._repository.Add(modelEntity);
                 entityId = await this._repository.SaveChangesAsync();
             }
-
-          
-
-            //try
-            //{
-            //    entityId = await this._repository.SaveChangesAsync();
-            //}
-            //catch (Exception ex)
-            //{
-
-            //    throw ex;
-            //}
 
 
             if (entityId > 0)

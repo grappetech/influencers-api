@@ -64,7 +64,7 @@
                                             <input type="hidden" asp-for="SourceScrap.Id" id="hdfSourceScrapId" />
                                             <input type="hidden" id="selectedIndustries" asp-for="SourceScrap.SelectedIndustries" />
 
-                                            <input type="text" id="entityName" asp-for="SourceScrap.Alias" class="form-control">
+                                            <input type="text" id="sourceAlias" asp-for="SourceScrap.Alias" class="form-control">
                                         </div>
                                     </div>
 
@@ -118,6 +118,16 @@
                                     </div>
 
 
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="projectinput3">Exceção</label>
+               
+                                            <textarea id="tagException"  rows="5" cols="2" class="form-control" asp-for="SourceScrap.TagException"></textarea>
+
+                                        </div>
+                                    </div>
                                 </div>
 
 

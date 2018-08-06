@@ -26,6 +26,7 @@ namespace ActionUI.Admin.ViewModel.SourceScrap
         public string EndTag { get; set; }
         public int Limit { get; set; }
         public int Dept { get; set; } = 3;
+        public string TagException { get; set; }
         public EPageStatus PageStatus { get; set; } = EPageStatus.Enabled;
 
 

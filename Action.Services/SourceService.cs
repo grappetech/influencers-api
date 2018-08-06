@@ -138,6 +138,7 @@ namespace Action.Services
                     sourceScrap.Limit = modelSourceScrap.Limit;
                     sourceScrap.PageStatus = modelSourceScrap.PageStatus;
                     sourceScrap.Url = modelSourceScrap.Url;
+                    sourceScrap.TagException = modelSourceScrap.TagException;
 
 
                     //this._repository.Update(sourceScrap);
