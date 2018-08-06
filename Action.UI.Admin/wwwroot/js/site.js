@@ -53,7 +53,7 @@ var Site = {
         try {
             $('.pickadate-dropdown').pickadate({
                 format: 'dd/mm/yyyy',
-                formatSubmit: 'yyyy/mm/dd',
+                formatSubmit: 'yyyy-mm-dd',
                 hiddenPrefix: 'prefix__',
                 hiddenSuffix: '__suffix',
                 selectMonths: true,
