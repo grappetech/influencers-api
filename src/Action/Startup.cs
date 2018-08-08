@@ -132,7 +132,7 @@ namespace Action
 
         private void NotifyApplicationSupport()
         {
-            //SmtpService.SendMessage("luiz@nexo.ai", "[ACTION API INICIALIZATION]", "API INICIALIZADA");
+            SmtpService.SendMessage("luiz@nexo.ai", "[ACTION API INICIALIZATION]", "API INICIALIZADA");
         }
 
         private void EnsureDatabaseCreated(ApplicationDbContext dbContext)
@@ -156,9 +156,9 @@ namespace Action
                Task.Run( ()=>  ApplicationTaskScheduler.ProccessDataExtraction(dbContext)).GetAwaiter().GetResult(), 
                     Cron.Daily());
                 
-                RecurringJob.AddOrUpdate(()=>
+               /* RecurringJob.AddOrUpdate(()=>
                         Task.Run( ()=>  ApplicationTaskScheduler.UpdateEntities(dbContext)).GetAwaiter().GetResult(), 
-                    Cron.Daily());
+                    Cron.Daily());*/
             }
         }
     }

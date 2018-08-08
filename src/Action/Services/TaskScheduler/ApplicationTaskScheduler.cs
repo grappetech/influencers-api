@@ -375,7 +375,9 @@ namespace Action.Services.TaskScheduler
                 {
                     queue.Add(new ScrapQueue
                     {
-                        Url = scrapSource.Url.Replace("{{entity}}", x.Name)
+                        Id = Guid.NewGuid(),
+                        EnqueueDateTime = DateTime.UtcNow,
+                        Url = scrapSource.Url.Replace("{{entity}}", x.Name),
                     });
                 }
             });
@@ -386,7 +388,9 @@ namespace Action.Services.TaskScheduler
                 {
                     queue.Add(new ScrapQueue
                     {
-                        Url = scrapSource.Url.Replace("{{entity}}", x.Name)
+                        Id = Guid.NewGuid(),
+                        EnqueueDateTime = DateTime.UtcNow,
+                        Url = scrapSource.Url.Replace("{{entity}}", x.Name),
                     });
                 }
             });
@@ -397,7 +401,9 @@ namespace Action.Services.TaskScheduler
                 {
                     queue.Add(new ScrapQueue
                     {
-                        Url = scrapSource.Url.Replace("{{entity}}", x.Name)
+                        Id = Guid.NewGuid(),
+                        EnqueueDateTime = DateTime.UtcNow,
+                        Url = scrapSource.Url.Replace("{{entity}}", x.Name),
                     });
                 }
             });
@@ -408,7 +414,10 @@ namespace Action.Services.TaskScheduler
                 {
                     queue.Add(new ScrapQueue
                     {
-                        Url = scrapSource.Url.Replace("{{entity}}", x.Name)
+                        Id = Guid.NewGuid(),
+                        EnqueueDateTime = DateTime.UtcNow,
+                        Url = scrapSource.Url.Replace("{{entity}}", x.Name),
+                        
                     });
                 }
             });

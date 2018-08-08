@@ -341,12 +341,13 @@ namespace Action.Controllers
                 
                 var result = new dynamic[]
                 {
-                    new {name = "joy", score = tones.Select(x => x.emotions.joy).Average()},
-                    new {name = "anger", score = tones.Select(x => x.emotions.anger).Average()},
-                    new {name = "fear", score = tones.Select(x => x.emotions.fear).Average()},
-                    new {name = "sadness", score = tones.Select(x => x.emotions.sadness).Average()},
-                    new {name = "disgust", score = tones.Select(x => x.emotions.disgust).Average()},
-                    new {name = "creativity", score = 0.3}
+                    new {name = "Otimismo", score = tones.Select(x => x.emotions.joy).Average()},
+                    new {name = "Inspiração", score = tones.Select(x => x.emotions.joy - x.emotions.disgust).Average() * 0.8},
+                    new {name = "Indignação", score = tones.Select(x => x.emotions.anger).Average()},
+                    new {name = "Preocupação", score = tones.Select(x => x.emotions.fear).Average()},
+                    new {name = "Pessimismo", score = tones.Select(x => x.emotions.sadness).Average()},
+                    new {name = "Rejeição", score = tones.Select(x => x.emotions.disgust).Average()},
+                    
                 };
 
                 return Ok(result);
