@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 using Action.Models;
 using Action.Models.Core;
+using Action.Models.Scrap;
 using Action.VewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
@@ -42,7 +44,13 @@ namespace Action.Controllers
 
 		private TwitterResultViewModel Mock(int id)
 		{
-			return new TwitterResultViewModel();
+			var social = _dbContext.SocialData.OrderByDescending(x=>x.Date).FirstOrDefault(x => x.EntityId == id && x.Network == ESocialNetwork.Twitter);
+			return new TwitterResultViewModel
+			{
+				Engagement = Convert.ToDouble(social?.Engagement ?? 0),
+				Retweets = social?.Interactions ?? 0,
+				Followers = social?.Followers ?? 0
+			};
 		}
 	}
 }
