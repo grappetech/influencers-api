@@ -33,6 +33,6 @@ namespace Action.Models.Watson
         public ICollection<Briefing> Briefings { get; set; } = new List<Briefing>();
 
         public virtual ICollection<ScrapSourceEntity> ScrapSources { get; set; } = new List<ScrapSourceEntity>();
-
+        public ICollection<Social> SocialData { get; set; } = new List<Social>();
     }
 }

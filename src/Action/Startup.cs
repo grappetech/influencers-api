@@ -2,11 +2,13 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Action.Models;
 using Action.Models.Core;
+using Action.Models.Scrap;
 //using Action.Services.AutoMapper;
 using Action.Services.Scrap.Core;
 using Action.Services.Scrap.V2;
@@ -137,10 +139,7 @@ namespace Action
 
         private void EnsureDatabaseCreated(ApplicationDbContext dbContext)
         {
-            
-            
-           
-          StartScraper(dbContext);
+            StartScraper(dbContext);
         }
 
         private void StartScraper(ApplicationDbContext dbContext)

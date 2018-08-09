@@ -33,6 +33,29 @@ namespace Action.Services.TaskScheduler
         {
             SmtpService.SendMessage("luiz@nexo.ai", "[ACTION-API NLU Started]", $"Date Time: {DateTime.Now}");
 
+            
+            
+
+            var items = dbContext.Entities.Where(x => !string.IsNullOrWhiteSpace(x.TweeterUser)).Select(x=> new {url = x.TweeterUser, id = x.Id}).ToList();
+
+            foreach (var item in items)
+            {
+                try
+                {
+                    int tweets, followers, following, likes;
+                    var social = new Social();
+                    Scrapy.GetTwitterMetrics(item.url, out tweets, out followers, out following, out likes);
+                    social.EntityId = item.id;
+                    social.Network = ESocialNetwork.Twitter;
+                    social.Interactions = likes + tweets;
+                    social.Followers = followers;
+                    social.Following = following;
+                    dbContext.SocialData.Add(social);
+                    dbContext.SaveChanges();
+                }
+                catch{}
+            }
+            
             #region Set Watson Services Credentials
 
             Debugger.Log(0, "SCP", "Buscando Credenciais." + Environment.NewLine);

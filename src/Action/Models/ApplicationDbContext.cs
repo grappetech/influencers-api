@@ -131,7 +131,10 @@ namespace Action.Models
             .WithMany(s => s.ScrapSources)
             .HasForeignKey(x => x.EntityId);
 
-
+            builder.Entity<Social>()
+                .HasOne(x => x.Entity)
+                .WithMany(x => x.SocialData)
+                .HasForeignKey(x => x.EntityId);
 
             base.OnModelCreating(builder);
         }
