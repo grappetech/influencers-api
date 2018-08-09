@@ -540,6 +540,10 @@ namespace Action.Services.TaskScheduler
             }
 
             SmtpService.SendMessage("luiz@nexo.ai", "[ACTION-API NLU Finished]", $"Date Time: {DateTime.Now}");
+            Task.Run(()=>UpdateEntities(dbContext)).GetAwaiter().OnCompleted(() =>
+            {
+                SmtpService.SendMessage("luiz@nexo.ai", "[ACTION-API Entity Update Finished]", $"Date Time: {DateTime.Now}");
+            });
         }
     }
 }

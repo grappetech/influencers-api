@@ -329,15 +329,6 @@ namespace Action.Controllers
                     .SelectMany(x => x.Keywords)
                     .Include(x => x.emotions)
                     .ToList();
-
-
-                /*var creativity = _dbContext.Personalities
-                    .Where(x => x.EntityId == lid)
-                    .SelectMany(x => x.Personality)
-                    .SelectMany(x => x.Details)
-                    .Where(x => x.Name.ToLower().Equals("Imagination"))
-                    .Select(x => x.Percentile)
-                    .Average();*/
                 
                 var result = new dynamic[]
                 {
@@ -623,22 +614,6 @@ namespace Action.Controllers
                 positive > negative && (negative / positive) > 0.20 ? "positive" : "negative";
         }
 
-        private List<MentionMock> MockMentions(long id)
-        {
-            try
-            {
-                var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data",
-                    "mock_mentions_result_" + id.ToString() + ".json"));
-                return JsonConvert.DeserializeObject<List<MentionMock>>(json);
-            }
-            catch
-            {
-                var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data",
-                    "mock_mentions_result.json"));
-                return JsonConvert.DeserializeObject<List<MentionMock>>(json);
-            }
-        }
-
         private dynamic CalculateFeeling(List<double> scores)
         {
             return new
@@ -651,37 +626,5 @@ namespace Action.Controllers
             };
         }
 
-
-        private List<WordMock> MockWords(long id)
-        {
-            return new List<WordMock>();
-        }
-    }
-
-    internal class WordMock
-    {
-        public string id { get; set; }
-        public string text { get; set; }
-        public int weight { get; set; }
-        public string type { get; set; }
-    }
-
-
-    internal class RelationsEntities
-    {
-        public string id { get; set; }
-        public string name { get; set; }
-        public decimal score { get; set; }
-        public List<MentionMock> mentions { get; set; }
-    }
-
-    internal class MentionMock
-    {
-        public string id { get; set; }
-        public string url { get; set; }
-        public string text { get; set; }
-        public string toneId { get; set; }
-        public string type { get; set; }
-        public DateTime date { get; set; }
     }
 }
