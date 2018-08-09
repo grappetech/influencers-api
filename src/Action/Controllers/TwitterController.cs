@@ -50,6 +50,7 @@ namespace Action.Controllers
 				Engagement = Convert.ToDouble(social?.Engagement ?? 0),
 				Retweets = social?.Interactions ?? 0,
 				Followers = social?.Followers ?? 0
+				            
 			};
 		}
 	}
