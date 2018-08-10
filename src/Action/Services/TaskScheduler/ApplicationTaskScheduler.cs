@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,11 +20,13 @@ using Action.Services.Watson.V2.LanguageTanslator;
 using Action.Services.Watson.V2.NaturalLanguageUnderstanding;
 using Action.Services.Watson.V2.PersonalityInsights;
 using Action.Services.Watson.V2.ToneAnalyzer;
+using IBM.WatsonDeveloperCloud.Discovery.v1.Model;
 using IBM.WatsonDeveloperCloud.NaturalLanguageUnderstanding.v1.Model;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using WatsonServices.Services.ApiClient.Core.Models;
 using WatsonServices.Services.ApiClient.Watson;
+using Environment = System.Environment;
 
 namespace Action.Services.TaskScheduler
 {
@@ -341,6 +344,12 @@ namespace Action.Services.TaskScheduler
                 .ThenInclude(x => x.ScrapSource)
                 .Select(x => new {x.Id, x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
                 .ToList();
+            
+            l1.AddRange(dbContext.Entities.Where(x => !string.IsNullOrWhiteSpace(x.SiteUrl) &&
+                    x.Tier == 1 && x.ExecutionInterval <= today.Subtract(x.LastExecutionDate).Days)
+                .AsNoTracking()
+                .Select(x => new {x.Id, x.Name, Source = (new ScrapSource[]{ new ScrapSource{Dept = 2,Url = x.SiteUrl}}).AsEnumerable()}) 
+                .ToList());
 
             //Entidades Semanais
             var l2 = dbContext.Entities.Where(x =>
@@ -350,6 +359,12 @@ namespace Action.Services.TaskScheduler
                 .ThenInclude(x => x.ScrapSource)
                 .Select(x => new {x.Id, x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
                 .ToList();
+            
+            l2.AddRange(dbContext.Entities.Where(x => !string.IsNullOrWhiteSpace(x.SiteUrl) &&
+                x.Tier == 2 && x.ExecutionInterval * 7 <= today.Subtract(x.LastExecutionDate).Days)
+                .AsNoTracking()
+                .Select(x => new {x.Id, x.Name, Source = (new ScrapSource[]{ new ScrapSource{Dept = 2,Url = x.SiteUrl}}).AsEnumerable()}) 
+                .ToList());
 
             //Entidades Quinzenais
             var l3 = dbContext.Entities.Where(x =>
@@ -359,17 +374,28 @@ namespace Action.Services.TaskScheduler
                 .ThenInclude(x => x.ScrapSource)
                 .Select(x => new {x.Id, x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
                 .ToList();
+            
+            l3.AddRange(dbContext.Entities.Where(x => !string.IsNullOrWhiteSpace(x.SiteUrl) &&
+                x.Tier == 3 && x.ExecutionInterval * 14 <= today.Subtract(x.LastExecutionDate).Days)
+                .AsNoTracking()
+                .Select(x => new {x.Id, x.Name, Source = (new ScrapSource[]{ new ScrapSource{Dept = 2,Url = x.SiteUrl}}).AsEnumerable()}) 
+                .ToList());
 
             //Entidades Mensais
             var l4 = dbContext.Entities.Where(x =>
-                    x.Tier == 4 && x.ExecutionInterval * 30 <= today.Subtract(x.LastExecutionDate).Days)
+                x.Tier == 4 && x.ExecutionInterval * 30 <= today.Subtract(x.LastExecutionDate).Days)
                 .AsNoTracking()
                 .Include(x => x.ScrapSources)
                 .ThenInclude(x => x.ScrapSource)
                 .Select(x => new {x.Id, x.Name, Source = x.ScrapSources.Select(y => y.ScrapSource)})
                 .ToList();
 
-
+            l4.AddRange(dbContext.Entities.Where(x => !string.IsNullOrWhiteSpace(x.SiteUrl) &&
+                x.Tier == 4 && x.ExecutionInterval * 30 <= today.Subtract(x.LastExecutionDate).Days)
+                .AsNoTracking()
+                .Select(x => new {x.Id, x.Name, Source = (new ScrapSource[]{ new ScrapSource{Dept = 2,Url = x.SiteUrl}}).AsEnumerable()}) 
+                .ToList());
+            
             //Join
             List<ScrapQueue> queue = new List<ScrapQueue>();
 
