@@ -76,23 +76,6 @@ namespace Action.Services.TaskScheduler
 
             Debugger.Log(0, "SCP", "Extraindo Links das fontes" + Environment.NewLine);
             var linkQueue = new List<ScrapQueue>();
-            /* dbContext.ScrapSources.AsNoTracking()
-                 .ToList().ForEach(s =>
-                 {
-                     dbContext.Entities.Select(e => e.Name).ToList().ForEach(i =>
-                     {
-                         linkQueue.Add(new ScrapQueue
-                         {
-                             EnqueueDateTime = DateTime.UtcNow,
-                             Url = s.Url.Replace("{{entity}}", i.ToLower()),
-                             StartDateTime = DateTime.UtcNow
-                         });
-                     });
- 
- 
-                     dbContext.ScrapQueue.AddRange(linkQueue);
- 
-                     dbContext.SaveChanges();*/
             PrepareQueue(dbContext);
             var queue = dbContext.ScrapQueue
                 .Where(x => !x.Completed)
