@@ -34,11 +34,10 @@ namespace Action.Services.TaskScheduler
             SmtpService.SendMessage("luiz@nexo.ai", "[ACTION-API NLU Started]", $"Date Time: {DateTime.Now}");
 
             
-            
 
-            var items = dbContext.Entities.Where(x => !string.IsNullOrWhiteSpace(x.TweeterUser)).Select(x=> new {url = x.TweeterUser, id = x.Id}).ToList();
+            var tweets = dbContext.Entities.Where(x => !string.IsNullOrWhiteSpace(x.TweeterUser)).Select(x=> new {url = x.TweeterUser, id = x.Id}).ToList();
 
-            foreach (var item in items)
+            foreach (var item in tweets)
             {
                 try
                 {

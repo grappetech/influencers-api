@@ -10,26 +10,25 @@ namespace Action.Services.TaskScheduler
 {
     public class Scrapy
     {
-        
-
-        private static  string GetResponse(string url)
+        internal static InstagramData GetInstagramMetrics(string page)
         {
-            using (var _HttpClient = new HttpClient())
-            {
-                using (var request = new HttpRequestMessage(HttpMethod.Get, new Uri(url)))
-                {
-                    request.Headers.TryAddWithoutValidation("Accept",
-                        "text/html,application/xhtml+xml,application/xml");
-                    request.Headers.TryAddWithoutValidation("User-Agent",
-                        "Mozilla/5.0 (Windows NT 6.2; WOW64; rv:19.0) Gecko/20100101 Firefox/19.0");
-                    using (var response = _HttpClient.SendAsync(request).GetAwaiter().GetResult())
-                    {
-                        response.EnsureSuccessStatusCode();
-                        return response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
-                    }
-                }
-            }
+            HttpClient hc = new HttpClient();
+            hc.BaseAddress = new Uri(page);
+            var strm = hc.GetStringAsync("").Result;
+            
+            HtmlDocument document = new HtmlDocument();
+            document.LoadHtml(strm);
+            var insta = new InstagramData();
+            insta.Posts = Convert.ToInt32(document.DocumentNode?
+                                               .SelectNodes("//header/section/ul/li/span/span")?[0]?.InnerText?.Replace(".","") ?? "0");
+
+            insta.Followers = Convert.ToInt32(document.DocumentNode?
+                                                  .SelectNodes("//header/section/ul/li/a/span")?[0]?.Attributes["title"]?.Value?.Replace(".","") ?? "0");
+            
+            insta.Following = Convert.ToInt32(document.DocumentNode?
+                                                  .SelectNodes("//header/section/ul/li/a/span")?[1]?.InnerText?.Replace(".","") ?? "0");
+            return insta;
         }
         
         internal static TwitterData GetTwitterMetrics(string page)
@@ -84,6 +83,14 @@ namespace Action.Services.TaskScheduler
             internal int Followers;
             internal int Following;
             internal int Favorites;
+
+        }
+        
+        internal struct InstagramData
+        {
+            internal int Posts;
+            internal int Followers;
+            internal int Following;
 
         }
     }
