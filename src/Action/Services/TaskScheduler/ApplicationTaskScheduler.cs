@@ -42,14 +42,13 @@ namespace Action.Services.TaskScheduler
             {
                 try
                 {
-                    int tweets, followers, following, likes;
                     var social = new Social();
-                    Scrapy.GetTwitterMetrics(item.url, out tweets, out followers, out following, out likes);
+                    var data = Scrapy.GetTwitterMetrics(item.url);
                     social.EntityId = item.id;
                     social.Network = ESocialNetwork.Twitter;
-                    social.Interactions = likes + tweets;
-                    social.Followers = followers;
-                    social.Following = following;
+                    social.Interactions = data.Tweets;
+                    social.Followers = data.Followers;
+                    social.Following = data.Following;
                     dbContext.SocialData.Add(social);
                     dbContext.SaveChanges();
                 }

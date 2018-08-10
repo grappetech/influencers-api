@@ -32,7 +32,7 @@ namespace Action.Services.TaskScheduler
             }
         }
         
-        internal static void GetTwitterMetrics(string page, out int tweets, out int followers, out int following, out int favorites)
+        internal static TwitterData GetTwitterMetrics(string page)
         {
 
             HttpClient hc = new HttpClient();
@@ -41,23 +41,20 @@ namespace Action.Services.TaskScheduler
             
             HtmlDocument document = new HtmlDocument();
             document.LoadHtml(strm);
-             tweets = Convert.ToInt32(document.DocumentNode?
-                                           .SelectNodes("//*[@class=\"ProfileNav-item ProfileNav-item--tweets is-active\"]")?.FirstOrDefault()?
-                                           .SelectNodes("//*[@class=\"ProfileNav-value\"]")?.FirstOrDefault()?.Attributes["data-count"]?.Value ?? "0");
+            var tweet = new TwitterData();
+            tweet.Tweets = Convert.ToInt32(document.DocumentNode?
+                                           .SelectNodes("//*[@class=\"ProfileNav-value\"]")?[0]?.Attributes["data-count"]?.Value ?? "0");
 
-             followers = Convert.ToInt32(document.DocumentNode?
-                                                .SelectNodes("//*[@class=\"ProfileNav-item ProfileNav-item--followers\"]")?.FirstOrDefault()?
-                                                .SelectNodes("//*[@class=\"ProfileNav-value\"]")?.FirstOrDefault()?.Attributes["data-count"]?.Value ?? "0");
+            tweet.Followers = Convert.ToInt32(document.DocumentNode?
+                                                .SelectNodes("//*[@class=\"ProfileNav-value\"]")?[2]?.Attributes["data-count"]?.Value ?? "0");
             
-             following = Convert.ToInt32(document.DocumentNode?
-                                                .SelectNodes("//*[@class=\"ProfileNav-item ProfileNav-item--following\"]")?.FirstOrDefault()?
-                                               .SelectNodes("//*[@class=\"ProfileNav-value\"]")?.FirstOrDefault()?.Attributes["data-count"]?.Value ?? "0");
+            tweet.Following = Convert.ToInt32(document.DocumentNode?
+                                                  .SelectNodes("//*[@class=\"ProfileNav-value\"]")?[1]?.Attributes["data-count"]?.Value ?? "0");
             
             
-             favorites = Convert.ToInt32(document.DocumentNode?
-                                                .SelectNodes("//*[@class=\"ProfileNav-item ProfileNav-item--favorites\"]")?.FirstOrDefault()?
-                                                .SelectNodes("//*[@class=\"ProfileNav-value\"]")?.FirstOrDefault()?.Attributes["data-count"]?.Value ?? "0");
-            
+            tweet.Favorites = Convert.ToInt32(document.DocumentNode?
+                                                  .SelectNodes("//*[@class=\"ProfileNav-value\"]")?[3]?.Attributes["data-count"]?.Value ?? "0");
+            return tweet;
         }
 
 
@@ -79,6 +76,15 @@ namespace Action.Services.TaskScheduler
             var metrics = document.DocumentNode.SelectNodes("//div[@class=\"_4bl7 _3xoj\"]");
             var totalSeguidores = metrics.FirstOrDefault()?.Descendants("div")?.FirstOrDefault()?.InnerText;
             Console.WriteLine("Total de Seguidores: " + totalSeguidores);
+        }
+        
+        internal struct TwitterData
+        {
+            internal int Tweets;
+            internal int Followers;
+            internal int Following;
+            internal int Favorites;
+
         }
     }
 }
