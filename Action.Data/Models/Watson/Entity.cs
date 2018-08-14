@@ -1,0 +1,52 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Action.Data.Models.Core;
+using Action.Data.Models.Core.Scrap;
+using WatsonEntity = Action.Data.Models.Watson.NLU.Entity;
+
+namespace Action.Data.Models.Core.Watson
+{
+
+    //Entities
+    public class Entity
+    {
+        [Key]
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public string Alias { get; set; }
+        public ECategory CategoryId { get; set; }
+        public string Category => Enum.GetName(typeof(ECategory), CategoryId);
+        public DateTime Date { get; set; } = DateTime.Today;
+        public string FacebookUser { get; set; }
+        public string TweeterUser { get; set; }
+        public string InstagranUser { get; set; }
+        public string YoutubeUser { get; set; }
+        public string PictureUrl { get; set; }
+        public string SiteUrl { get; set; }
+        public int Tier { get; set; } = 3;
+
+        public int? IndustryId { get; set; }
+        public int ExecutionInterval { get; set; }
+        [MaxLength(255)]
+        [Column(TypeName = "varchar(255)")]
+        public string Ethnicity { get; set; }
+
+        [MaxLength(1)]
+        [Column(TypeName = "char(1)")]
+        public string Genre { get; set; }
+
+
+        [Column(TypeName = "datetime")]
+        public DateTime? BirthDate { get; set; }
+
+        public string RelatedRoles { get; set; }
+        public Industry Industry { get; set; }
+
+        public virtual ICollection<WatsonEntity> RelatedEntities { get; set; } = new List<WatsonEntity>();
+        public virtual List<ScrapSourceEntity> ScrapSources { get; set; } = new List<ScrapSourceEntity>();
+        public ICollection<Briefing> Briefings { get; set; } = new List<Briefing>();
+        
+    }
+}
