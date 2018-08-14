@@ -2,11 +2,13 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Action.Models;
 using Action.Models.Core;
+using Action.Models.Scrap;
 //using Action.Services.AutoMapper;
 using Action.Services.Scrap.Core;
 using Action.Services.Scrap.V2;
@@ -132,15 +134,12 @@ namespace Action
 
         private void NotifyApplicationSupport()
         {
-            //SmtpService.SendMessage("luiz@nexo.ai", "[ACTION API INICIALIZATION]", "API INICIALIZADA");
+            SmtpService.SendMessage("luiz@nexo.ai", "[ACTION API INICIALIZATION]", "API INICIALIZADA");
         }
 
         private void EnsureDatabaseCreated(ApplicationDbContext dbContext)
         {
-            
-            
-           
-        //  StartScraper(dbContext);
+            StartScraper(dbContext);
         }
 
         private void StartScraper(ApplicationDbContext dbContext)
@@ -154,10 +153,6 @@ namespace Action
                 
                RecurringJob.AddOrUpdate(()=>
                Task.Run( ()=>  ApplicationTaskScheduler.ProccessDataExtraction(dbContext)).GetAwaiter().GetResult(), 
-                    Cron.Daily());
-                
-                RecurringJob.AddOrUpdate(()=>
-                        Task.Run( ()=>  ApplicationTaskScheduler.ExtractPersonality(dbContext)).GetAwaiter().GetResult(), 
                     Cron.Daily());
             }
         }

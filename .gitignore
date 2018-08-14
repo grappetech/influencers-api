@@ -3,3 +3,10 @@ obj/
 bin/
 vcap-local.json
 *.csproj.user
+.idea/.idea.Action/.idea/.name
+.idea/.idea.Action/.idea/contentModel.xml
+.idea/.idea.Action/.idea/indexLayout.xml
+.idea/.idea.Action/.idea/modules.xml
+.idea/.idea.Action/.idea/vcs.xml
+.idea/.idea.Action/.idea/workspace.xml
+.idea/.idea.Action/riderModule.iml
