@@ -1,13 +1,15 @@
-﻿using Action.Models.Core;
-using Action.Models.Scrap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using WatsonEntity = Action.Models.Watson.NLU.Entity;
+using Action.Data.Models.Core;
+using Action.Data.Models.Core.Scrap;
+using WatsonEntity = Action.Data.Models.Watson.NLU.Entity;
 
-namespace Action.Models.Watson
+namespace Action.Data.Models.Core.Watson
 {
+
+    //Entities
     public class Entity
     {
         [Key]
@@ -24,10 +26,9 @@ namespace Action.Models.Watson
         public string PictureUrl { get; set; }
         public string SiteUrl { get; set; }
         public int Tier { get; set; } = 3;
+
         public int? IndustryId { get; set; }
-
         public int ExecutionInterval { get; set; }
-
         [MaxLength(255)]
         [Column(TypeName = "varchar(255)")]
         public string Ethnicity { get; set; }
@@ -36,18 +37,16 @@ namespace Action.Models.Watson
         [Column(TypeName = "char(1)")]
         public string Genre { get; set; }
 
-        
+
         [Column(TypeName = "datetime")]
         public DateTime? BirthDate { get; set; }
 
-
         public string RelatedRoles { get; set; }
-        public DateTime LastExecutionDate { get; set; } = DateTime.Today;
         public Industry Industry { get; set; }
-        public virtual ICollection<WatsonEntity> RelatedEntities { get; set; } = new List<WatsonEntity>();
-        public ICollection<Briefing> Briefings { get; set; } = new List<Briefing>();
 
-        public virtual ICollection<ScrapSourceEntity> ScrapSources { get; set; } = new List<ScrapSourceEntity>();
-        public ICollection<Social> SocialData { get; set; } = new List<Social>();
+        public virtual ICollection<WatsonEntity> RelatedEntities { get; set; } = new List<WatsonEntity>();
+        public virtual List<ScrapSourceEntity> ScrapSources { get; set; } = new List<ScrapSourceEntity>();
+        public ICollection<Briefing> Briefings { get; set; } = new List<Briefing>();
+        
     }
 }
