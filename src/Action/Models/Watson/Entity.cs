@@ -27,12 +27,12 @@ namespace Action.Models.Watson
 
         public int ExecutionInterval { get; set; }
         public string RelatedRoles { get; set; }
-
+        public DateTime LastExecutionDate { get; set; } = DateTime.Today;
         public Industry Industry { get; set; }
         public virtual ICollection<WatsonEntity> RelatedEntities { get; set; } = new List<WatsonEntity>();
         public ICollection<Briefing> Briefings { get; set; } = new List<Briefing>();
 
         public virtual ICollection<ScrapSourceEntity> ScrapSources { get; set; } = new List<ScrapSourceEntity>();
-
+        public ICollection<Social> SocialData { get; set; } = new List<Social>();
     }
 }

@@ -39,6 +39,7 @@ namespace Action.Models
 		public DbSet<ScrapQueue> ScrapQueue { get; set; }
 		public DbSet<WatsonCredentials> WatsonCredentials { get; set; }
 		public DbSet<BrickedSource> BrickedSources { get; set; }
+		public DbSet<Social> SocialData { get; set; }
 		
 	}
 }
