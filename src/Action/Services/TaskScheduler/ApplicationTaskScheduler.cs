@@ -456,7 +456,7 @@ namespace Action.Services.TaskScheduler
                 .Union(l4.Select(x => x.Id)).ToList();
             
             foreach (var entity in dbContext.Entities.Where(x=> id.Contains( x.Id)))
-            {
+             {
                 entity.LastExecutionDate = DateTime.Today;
             }
 
