@@ -24,7 +24,7 @@ namespace Action.Models.Core
         public string Analysis { get; set; }
         public decimal Strength { get; set; }
         public string DocumentUrl { get; set; }
-        public int? ConnectedEntityId { get; set; }
+        public long? ConnectedEntityId { get; set; }
         public Entity ConnectedEntity { get; set; }
         public string Report { get; set; }
         public string Report2 { get; set; }

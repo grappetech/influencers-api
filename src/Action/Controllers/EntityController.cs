@@ -329,14 +329,16 @@ namespace Action.Controllers
                     .SelectMany(x => x.Keywords)
                     .Include(x => x.emotions)
                     .ToList();
-
+                
                 var result = new dynamic[]
                 {
-                    new {name = "joy", score = tones.Select(x => x.emotions.joy).Average()},
-                    new {name = "anger", score = tones.Select(x => x.emotions.anger).Average()},
-                    new {name = "fear", score = tones.Select(x => x.emotions.fear).Average()},
-                    new {name = "sadness", score = tones.Select(x => x.emotions.sadness).Average()},
-                    new {name = "disgust", score = tones.Select(x => x.emotions.disgust).Average()}
+                    new {name = "Otimismo", score = tones.Select(x => x.emotions.joy).Average()},
+                    new {name = "Inspiração", score = tones.Select(x => x.emotions.joy - x.emotions.disgust).Average() * 0.8},
+                    new {name = "Indignação", score = tones.Select(x => x.emotions.anger).Average()},
+                    new {name = "Preocupação", score = tones.Select(x => x.emotions.fear).Average()},
+                    new {name = "Pessimismo", score = tones.Select(x => x.emotions.sadness).Average()},
+                    new {name = "Rejeição", score = tones.Select(x => x.emotions.disgust).Average()},
+                    
                 };
 
                 return Ok(result);
@@ -426,8 +428,8 @@ namespace Action.Controllers
                         {
                             text = x.fragment,
                             url = x.retrieved_url,
-                            type = (x.sentiment != null && x.sentiment.score > 4) ? "positive" :
-                                (x.sentiment != null && x.sentiment.score < -4) ? "negative" : "neutro",
+                            type = (x.sentiment != null && x.sentiment.score > 0.4) ? "positive" :
+                                (x.sentiment != null && x.sentiment.score < -0.4) ? "negative" : "neutro",
                             date = DateTime.Today.AddMonths(-1)
                         });
 
@@ -612,22 +614,6 @@ namespace Action.Controllers
                 positive > negative && (negative / positive) > 0.20 ? "positive" : "negative";
         }
 
-        private List<MentionMock> MockMentions(long id)
-        {
-            try
-            {
-                var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data",
-                    "mock_mentions_result_" + id.ToString() + ".json"));
-                return JsonConvert.DeserializeObject<List<MentionMock>>(json);
-            }
-            catch
-            {
-                var json = System.IO.File.ReadAllText(Path.Combine(Startup.RootPath, "App_Data",
-                    "mock_mentions_result.json"));
-                return JsonConvert.DeserializeObject<List<MentionMock>>(json);
-            }
-        }
-
         private dynamic CalculateFeeling(List<double> scores)
         {
             return new
@@ -640,37 +626,5 @@ namespace Action.Controllers
             };
         }
 
-
-        private List<WordMock> MockWords(long id)
-        {
-            return new List<WordMock>();
-        }
-    }
-
-    internal class WordMock
-    {
-        public string id { get; set; }
-        public string text { get; set; }
-        public int weight { get; set; }
-        public string type { get; set; }
-    }
-
-
-    internal class RelationsEntities
-    {
-        public string id { get; set; }
-        public string name { get; set; }
-        public decimal score { get; set; }
-        public List<MentionMock> mentions { get; set; }
-    }
-
-    internal class MentionMock
-    {
-        public string id { get; set; }
-        public string url { get; set; }
-        public string text { get; set; }
-        public string toneId { get; set; }
-        public string type { get; set; }
-        public DateTime date { get; set; }
     }
 }

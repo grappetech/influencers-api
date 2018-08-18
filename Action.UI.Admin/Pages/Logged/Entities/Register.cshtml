@@ -178,7 +178,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="birthDate" title="Data de Nascimento">Data Nasc.</label>
-                                            <input class="form-control pickadate-dropdown" type="text" id="birthDate" data-value="@(string.Format("{0:dd/MM/yyyy}",Model.Entity.BirthDate))" asp-for="@Model.Entity.BirthDate" />
+                                            <input class="form-control pickadate-dropdown" type="text" id="birthDate" value="@(string.Format("{0:dd/MM/yyyy}",Model.Entity.BirthDate))" asp-for="@Model.Entity.BirthDate" />
                                         </div>
                                     </div>
                                     <div class="col-md-3">

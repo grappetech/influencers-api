@@ -1,9 +1,8 @@
-﻿using Action.Models.Core;
+﻿﻿using Action.Models.Core;
 using Action.Models.Scrap;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using WatsonEntity = Action.Models.Watson.NLU.Entity;
 
 namespace Action.Models.Watson
@@ -27,27 +26,13 @@ namespace Action.Models.Watson
         public int? IndustryId { get; set; }
 
         public int ExecutionInterval { get; set; }
-
-        [MaxLength(255)]
-        [Column(TypeName = "varchar(255)")]
-        public string Ethnicity { get; set; }
-
-        [MaxLength(1)]
-        [Column(TypeName = "char(1)")]
-        public string Genre { get; set; }
-
-        
-        [Column(TypeName = "datetime")]
-        public DateTime? BirthDate { get; set; }
-
-
         public string RelatedRoles { get; set; }
-
+        public DateTime LastExecutionDate { get; set; } = DateTime.Today;
         public Industry Industry { get; set; }
         public virtual ICollection<WatsonEntity> RelatedEntities { get; set; } = new List<WatsonEntity>();
         public ICollection<Briefing> Briefings { get; set; } = new List<Briefing>();
 
         public virtual ICollection<ScrapSourceEntity> ScrapSources { get; set; } = new List<ScrapSourceEntity>();
-
+        public ICollection<Social> SocialData { get; set; } = new List<Social>();
     }
 }
