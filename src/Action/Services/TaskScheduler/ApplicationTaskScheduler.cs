@@ -107,7 +107,7 @@ namespace Action.Services.TaskScheduler
                                 try
                                 {
                                     nluAnalysis = nluSvc
-                                        .ProccessUrl(item.Href, wnluc.UserName, wnluc.Password, wnluc.Model,
+                                        .ProccessText(item.Href, wnluc.UserName, wnluc.Password, wnluc.Model,
                                             wnluc.Version).Result;
                                     result = NLUResult.Parse(nluAnalysis);
                                 }
