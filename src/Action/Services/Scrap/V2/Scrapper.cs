@@ -11,7 +11,7 @@ namespace Action.Services.Scrap.V2
 {
     public class Scrapper
     {
-        public async Task<List<LinkItem>> ProccessTask(string pageUri, int depth)
+        public async Task<List<LinkItem>> ProccessLinkTask(string pageUri, int depth)
         {
             var links = new Dictionary<int, List<LinkItem>>();
 

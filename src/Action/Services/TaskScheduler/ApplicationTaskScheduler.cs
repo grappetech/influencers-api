@@ -37,9 +37,9 @@ namespace Action.Services.TaskScheduler
             SmtpService.SendMessage("luiz@nexo.ai", "[ACTION-API NLU Started]", $"Date Time: {DateTime.Now}");
 
             
-
+            #region Social Data
             var tweets = dbContext.Entities.Where(x => !string.IsNullOrWhiteSpace(x.TweeterUser)).Select(x=> new {url = x.TweeterUser, id = x.Id}).ToList();
-
+            
             foreach (var item in tweets)
             {
                 try
@@ -56,6 +56,7 @@ namespace Action.Services.TaskScheduler
                 }
                 catch{}
             }
+            #endregion
             
             #region Set Watson Services Credentials
 
@@ -90,10 +91,9 @@ namespace Action.Services.TaskScheduler
                 {
                     try
                     {
-                        var links = new Scrapper().ProccessTask(scrapQueue.Url, 1)
+                        var links = new Scrapper().ProccessLinkTask(scrapQueue.Url, 1)
                             .GetAwaiter()
-                            .GetResult()
-                            .Where(x => new Uri(x.Href).DnsSafeHost.Equals(new Uri(scrapQueue.Url).DnsSafeHost));
+                            .GetResult();
 
                         foreach (var item in links)
                         {
