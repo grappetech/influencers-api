@@ -18,7 +18,7 @@ namespace Action.Services.Scrap.V2
 
             HtmlWeb web = new HtmlWeb();
             var doc = await web.LoadFromWebAsync(pageUri, Encoding.UTF8);
-            var nodes = doc.DocumentNode.SelectNodes("a");
+            var nodes = doc.DocumentNode.SelectNodes("//a");
             var zlinks = new List<LinkItem>();
             foreach (var node in nodes)
             {
