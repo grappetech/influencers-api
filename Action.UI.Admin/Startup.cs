@@ -75,7 +75,7 @@ namespace ActionUI.Admin
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("pt-BR");
-                options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"),new CultureInfo("en-US") };
+                options.SupportedCultures = new List<CultureInfo> { new CultureInfo("pt-BR"), new CultureInfo("en-US") };
             });
 
 

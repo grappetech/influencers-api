@@ -257,6 +257,23 @@
                 $('#selectedSources').val(arrScrapSourceChecked.join(";"));
             }
 
+            //tratamento da data no componente
+            var birthDate = $("#birthDate").val();
+
+            if (birthDate != "" && birthDate.length > 0) {
+                var arrBirthDate = $("#birthDate").val().split("/");
+
+                if (arrBirthDate != null && Array.isArray(arrBirthDate) && arrBirthDate.length == 3) {
+                    var _birthDate = arrBirthDate.reverse().join("-");
+                    $("#birthDate").val(_birthDate)
+
+                }
+
+                
+            }
+           
+
+
 
             $('.formRegisterEntity').submit();
 

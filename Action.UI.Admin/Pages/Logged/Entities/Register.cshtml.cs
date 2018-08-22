@@ -202,7 +202,7 @@ namespace ActionUI.Admin.Pages.Logged.Entities
                 SelectedRoles = entity.RelatedRoles,
                 Ethnicity = entity.Ethnicity,
                 Genre = entity.Genre,
-                BirthDate = entity.BirthDate
+                BirthDate = entity.BirthDate?.ToString("dd/MM/yyyy")
             };
         }
 
@@ -256,6 +256,9 @@ namespace ActionUI.Admin.Pages.Logged.Entities
             if (this.Entity.CategoryId == (int)Action.Data.Models.Core.ECategory.Personality)
                 this.Entity.CategoryId = (int)Action.Data.Models.Core.ECategory.Person;
 
+            DateTime birthDate = new DateTime();
+            DateTime.TryParse(this.Entity.BirthDate, out birthDate);
+
            var modelEntity =new  Action.Data.Models.Core.Watson.Entity
             {
 
@@ -276,7 +279,7 @@ namespace ActionUI.Admin.Pages.Logged.Entities
                 ExecutionInterval = this.Entity.ExecutionInterval,
                 Ethnicity = this.Entity.Ethnicity,
                 Genre = this.Entity.Genre,
-                BirthDate = this.Entity.BirthDate
+                BirthDate = birthDate
             };
 
 

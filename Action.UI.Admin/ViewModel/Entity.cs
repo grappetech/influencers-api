@@ -34,7 +34,8 @@ namespace ActionUI.Admin.ViewModel
 
         public string Ethnicity { get; set; }
         public string Genre { get; set; }
-        public DateTime? BirthDate { get; set; }
+        //public DateTime? BirthDate { get; set; }
+        public string BirthDate { get; set; }
 
         public string SelectedUnRelatedWatsonEntity { get; set; }
         public string SelectedRoles { get; set; }
