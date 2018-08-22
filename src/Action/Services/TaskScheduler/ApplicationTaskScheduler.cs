@@ -38,7 +38,7 @@ namespace Action.Services.TaskScheduler
 
             
             #region Social Data
-            var tweets = dbContext.Entities.Where(x => !string.IsNullOrWhiteSpace(x.TweeterUser)).Select(x=> new {url = x.TweeterUser, id = x.Id}).ToList();
+            /*var tweets = dbContext.Entities.Where(x => !string.IsNullOrWhiteSpace(x.TweeterUser)).Select(x=> new {url = x.TweeterUser, id = x.Id}).ToList();
             
             foreach (var item in tweets)
             {
@@ -55,7 +55,7 @@ namespace Action.Services.TaskScheduler
                     dbContext.SaveChanges();
                 }
                 catch{}
-            }
+            }*/
             #endregion
             
             #region Set Watson Services Credentials
@@ -150,7 +150,7 @@ namespace Action.Services.TaskScheduler
                                         (end + pos) > nluAnalysis.AnalyzedText.Length
                                             ? (nluAnalysis.AnalyzedText.Length - pos - 1)
                                             : end);
-                                    k.fragment = fragment;
+                                    k.fragment = fragment.RemoveIllegalChars();
                                     k.retrieved_url = scrapQueue.Url;
                                     if (fragment.Length > 100)
                                         k.translatedFragment = new LanguageTranslatorService()
@@ -223,7 +223,7 @@ namespace Action.Services.TaskScheduler
                                 result.ScrapedPageId = scrappedPage.Id;
                                 dbContext.ScrapedPages.Add(scrappedPage);
                                 dbContext.NluResults.Add(result);
-
+                                dbContext.SaveChanges();
                                 Debugger.Log(0, "SCP", item.Text + "Enriquecido" + Environment.NewLine);
 
                                 #endregion
@@ -258,6 +258,7 @@ namespace Action.Services.TaskScheduler
                                         tone.NluEntityId = entity.Id;
                                         tone.ScrapedPageId = result.ScrapedPageId;
                                         dbContext.Tones.Add(tone);
+                                        dbContext.SaveChanges();
                                     }
                                 }
 
@@ -338,6 +339,7 @@ namespace Action.Services.TaskScheduler
             var today = DateTime.Today;
             //Entidades Diárias
             var l1 = dbContext.Entities.Where(x =>
+                    (x.CategoryId == ECategory.Personality || x.CategoryId == ECategory.Person) &&
                     x.Tier == 1 && x.ExecutionInterval <= today.Subtract(x.LastExecutionDate).Days)
                 .AsNoTracking()
                 .Include(x => x.ScrapSources)
@@ -353,6 +355,7 @@ namespace Action.Services.TaskScheduler
 
             //Entidades Semanais
             var l2 = dbContext.Entities.Where(x =>
+                    (x.CategoryId == ECategory.Personality || x.CategoryId == ECategory.Person) &&
                     x.Tier == 2 && x.ExecutionInterval * 7 <= today.Subtract(x.LastExecutionDate).Days)
                 .AsNoTracking()
                 .Include(x => x.ScrapSources)
@@ -368,6 +371,7 @@ namespace Action.Services.TaskScheduler
 
             //Entidades Quinzenais
             var l3 = dbContext.Entities.Where(x =>
+                    (x.CategoryId == ECategory.Personality || x.CategoryId == ECategory.Person) &&
                     x.Tier == 3 && x.ExecutionInterval * 14 <= today.Subtract(x.LastExecutionDate).Days)
                 .AsNoTracking()
                 .Include(x => x.ScrapSources)
@@ -383,6 +387,7 @@ namespace Action.Services.TaskScheduler
 
             //Entidades Mensais
             var l4 = dbContext.Entities.Where(x =>
+                    (x.CategoryId == ECategory.Personality || x.CategoryId == ECategory.Person) &&
                 x.Tier == 4 && x.ExecutionInterval * 30 <= today.Subtract(x.LastExecutionDate).Days)
                 .AsNoTracking()
                 .Include(x => x.ScrapSources)
